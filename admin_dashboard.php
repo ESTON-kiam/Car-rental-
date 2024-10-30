@@ -160,7 +160,7 @@ $conn->close();
                     <div class="card-content">
                         <h3>Total Vehicles</h3>
                         <p class="card-value"><?php echo $totalVehicles; ?></p>
-                        <p class="card-change negative"></p>
+                        <p class="card-change positive">+17% from last month</p>
                     </div>
                     <div class="card-icon">
                         <i class="fas fa-car-side"></i>
@@ -172,7 +172,7 @@ $conn->close();
     <div class="card-content">
         <h3>Total Customers</h3>
         <p class="card-value"><?php echo $totalCustomers; ?></p>
-        <p class="card-change negative"></p>
+        <p class="card-change positive">+13% from last month</p>
     </div>
     <div class="card-icon">
         <i class="fas fa-user"></i> 
@@ -182,11 +182,11 @@ $conn->close();
                 <article class="card">
                     <div class="card-content">
                         <h3>Total Revenue</h3>
-                        <p class="card-value">$50,000</p>
-                        <p class="card-change positive">+20% from last month</p>
+                        <p class="card-value">KSH50,000</p>
+                        <p class="card-change positive">+15% from last month</p>
                     </div>
                     <div class="card-icon">
-                        <i class="fas fa-dollar-sign"></i>
+                        <i class="fas fa-KSH-sign">KSH</i>
                     </div>
                 </article>
             </div>
