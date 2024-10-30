@@ -32,7 +32,7 @@ body {
     left: 0;
     right: 0;
     height: var(--header-height);
-    background-color:;
+    background-color:white;
     box-shadow: var(--card-shadow);
     z-index: 1000;
 }

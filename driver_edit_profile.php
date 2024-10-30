@@ -45,7 +45,7 @@ if (isset($_SESSION['driver_email'])) {
         }
 
         if ($_FILES['driving_license_image']['name']) {
-            $license_dir = "Drivers";
+            $license_dir = "Drivers/";
             $license_file = $license_dir . basename($_FILES["driving_license_image"]["name"]);
             if (move_uploaded_file($_FILES["driving_license_image"]["tmp_name"], $license_file)) {
                 $driving_license_image = $license_file; 
