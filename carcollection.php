@@ -18,11 +18,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle vehicle deletion
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $registration_no = $_POST['registration_no'];
     
-    // Prepare a delete statement
+    
     $stmt = $conn->prepare("DELETE FROM vehicles WHERE registration_no = ?");
     $stmt->bind_param("s", $registration_no);
 
@@ -35,15 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $stmt->close();
 }
 
-// Handle form submission for updating availability status
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability'])) {
     $registration_no = $_POST['registration_no'];
     $current_status = $_POST['current_status'];
     
-    // Toggle between 'Available' and 'Unavailable'
+    
     $new_status = ($current_status === 'Available') ? 'Unavailable' : 'Available';
 
-    // Prepare an update statement
+    
     $stmt = $conn->prepare("UPDATE vehicles SET availability_status = ? WHERE registration_no = ?");
     $stmt->bind_param("ss", $new_status, $registration_no);
 
@@ -195,7 +195,7 @@ $result = $conn->query($query);
             background-color: #c82333;
         }
         
-        /* Responsive grid adjustments */
+       
         @media (max-width: 1200px) {
             .vehicle-list {
                 grid-template-columns: repeat(3, 1fr);
