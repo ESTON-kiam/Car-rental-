@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Vehicle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        form:hover {
+            transform: scale(1.02);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+            transition: border-color 0.3s ease;
+            outline: none;
+            font-size: 16px;
+            background-color: #f9f9f9;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #74ebd5;
+        }
+
+        .custom-file-upload {
+            display: block;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            background-color: #74ebd5;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #69d4bf;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #74ebd5;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #69d4bf;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 180px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -90px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media screen and (max-width: 600px) {
+            form {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <form action="add_vehicles.php" method="post" enctype="multipart/form-data">
+        <h2>Add Vehicle</h2>
+
+        <!-- Vehicle ID -->
+        <label for="vehicle_id">Vehicle ID:</label>
+        <input type="text" id="vehicle_id" name="vehicle_id" placeholder="Enter Vehicle ID" required>
+
+        <!-- Registration Number -->
+        <div class="tooltip">
+            <label for="registration_no">Registration No (6 Characters):</label>
+            <span class="tooltiptext">Must be exactly 6 characters (letters & numbers)</span>
+        </div>
+        <input type="text" id="registration_no" name="registration_no" maxlength="6" minlength="6" pattern="[A-Za-z0-9]{6}" placeholder="e.g. ABC123" required>
+
+        <!-- Model Name -->
+        <label for="model_name">Model Name:</label>
+        <input type="text" id="model_name" name="model_name" placeholder="Enter Model Name" required>
+
+        <!-- Description -->
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" placeholder="Describe the vehicle" required></textarea>
+
+        <!-- Availability Status -->
+        <label for="availability_status">Availability Status:</label>
+        <select id="availability_status" name="availability_status" required>
+            <option value="Available">Available</option>
+            <option value="Unavailable">Unavailable</option>
+        </select>
+
+        
+        <label for="photo" class="custom-file-upload">
+            <i class="fas fa-upload"></i> Upload Photo
+        </label>
+        <input type="file" id="photo" name="photo" accept="image/*" required>
+
+       
+        <button type="submit">Add Vehicle</button>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration</title>
+    <link href="assets/css/customer-reg.css" rel="stylesheet">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
+</head>
+<body>
+    <div class="main">
+        <h2>Customer Registration Form</h2>
+        <form action="Customer_register.php" method="post">
+            <div class="form-group">
+                <div class="form-item">
+                    <label for="first">Full Name:</label>
+                    <input type="text" id="first" name="first" required>
+                </div>
+                <div class="form-item">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-item">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" title="Password must contain at least one number, one alphabet, one symbol, and be at least 8 characters long" required>
+                </div>
+                <div class="form-item">
+                    <label for="repassword">Re-Password:</label>
+                    <input type="password" id="repassword" name="repassword" required>
+                </div>
+                <div class="form-item">
+                    <label for="mobile">Contact:</label>
+                    <input type="tel" id="mobile" name="mobile" minlength="10" maxlength="12" required>
+                </div>
+                <div class="form-item">
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+                <div class="form-item">
+                    <label for="occupation">Occupation:</label>
+                    <input type="text" id="occupation" name="occupation" required>
+                </div>
+                <div class="form-item">
+                    <label for="residence">Residence:</label>
+                    <input type="text" id="residence" name="residence" required>
+                </div>
+                <div class="form-item">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-item">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="terms.html" target="_blank">terms and conditions</a></label>
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <p>Already have an account? <a href="customer_login.html">Login here</a>.</p>
+    </div>
+</body>
+</html>
