@@ -26,16 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $model_name = $_POST['model_name'];
     $description = $_POST['description'];
     $availability_status = $_POST['availability_status'];
+    $price_per_day = $_POST['price_per_day'];
     $photo = $_FILES['photo']['name'];
 
-    // Upload photo
     $target_dir = "Cars/"; 
     $target_file = $target_dir . basename($photo);
     move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
 
-    $sql = "INSERT INTO vehicles (registration_no, model_name, description, availability_status, photo) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO vehicles (registration_no, model_name, description, availability_status, photo, price_per_day) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssss", $registration_no, $model_name, $description, $availability_status, $target_file);
+    $stmt->bind_param("sssssd", $registration_no, $model_name, $description, $availability_status, $target_file, $price_per_day);
     
     if ($stmt->execute()) {
         $success_message = "Vehicle added successfully!";
@@ -185,17 +185,37 @@ $conn->close();
             opacity: 1;
         }
 
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         @media screen and (max-width: 600px) {
             form {
                 padding: 30px;
             }
         }
     </style>
-        <link href="assets/img/p.png" rel="icon">
-        <link href="assets/img/p.png" rel="apple-touch-icon">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
 <body>
-
     <header>
         <h1>Online Car Rental</h1>
         <nav>
@@ -204,14 +224,14 @@ $conn->close();
         </nav>
     </header>
 
-    <!-- Display success or error message -->
     <?php if (!empty($success_message)): ?>
-        <div style="color: green; text-align: center; margin: 20px;">
+        <div class="message success">
             <?php echo $success_message; ?>
         </div>
     <?php endif; ?>
+    
     <?php if (!empty($error_message)): ?>
-        <div style="color: red; text-align: center; margin: 20px;">
+        <div class="message error">
             <?php echo $error_message; ?>
         </div>
     <?php endif; ?>
@@ -219,35 +239,36 @@ $conn->close();
     <form action="" method="post" enctype="multipart/form-data">
         <h2>Add Vehicle</h2>
 
-        <!-- Registration Number -->
         <div class="tooltip">
             <label for="registration_no">Registration No (7 Characters):</label>
             <span class="tooltiptext">(e.g., KBC 213R)</span>
         </div>
-        <input type="text" id="registration_no" name="registration_no" maxlength="8" placeholder="e.g. KBC 213R" required>
+        <input type="text" id="registration_no" name="registration_no" maxlength="8" 
+               placeholder="e.g. KBC 213R" required>
 
-        <!-- Model Name -->
         <label for="model_name">Model Name:</label>
-        <input type="text" id="model_name" name="model_name" placeholder="Enter Model Name" required>
+        <input type="text" id="model_name" name="model_name" 
+               placeholder="Enter Model Name" required>
 
-        <!-- Description -->
         <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" placeholder="Describe the vehicle" required></textarea>
+        <textarea id="description" name="description" rows="4" 
+                  placeholder="Describe the vehicle" required></textarea>
 
-        <!-- Availability Status -->
+        <label for="price_per_day">Price per Day (KSH):</label>
+        <input type="number" id="price_per_day" name="price_per_day" 
+               step="0.01" min="0" placeholder="Enter price per day" required>
+
         <label for="availability_status">Availability Status:</label>
         <select id="availability_status" name="availability_status" required>
             <option value="Available">Available</option>
             <option value="Unavailable">Unavailable</option>
         </select>
 
-        <!-- Upload Photo -->
         <label for="photo" class="custom-file-upload">
             <i class="fas fa-upload"></i> Upload Photo
         </label>
         <input type="file" id="photo" name="photo" accept="image/*" required>
 
-        <!-- Submit Button -->
         <button type="submit">Add Vehicle</button>
     </form>
 

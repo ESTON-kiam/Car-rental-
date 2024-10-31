@@ -1,5 +1,6 @@
 <?php
 session_name('admin_session');
+session_set_cookie_params(1800); 
 session_start();
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {

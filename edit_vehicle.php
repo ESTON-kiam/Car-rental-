@@ -21,7 +21,7 @@ $registration_no = $_GET['registration_no'] ?? '';
 $vehicle = null;
 
 if ($registration_no) {
-    // Fetch vehicle details for the selected registration number
+    
     $stmt = $conn->prepare("SELECT * FROM vehicles WHERE registration_no = ?");
     $stmt->bind_param("s", $registration_no);
     $stmt->execute();
@@ -34,21 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $model_name = $_POST['model_name'];
     $description = $_POST['description'];
     $availability_status = $_POST['availability_status'];
+    $price_per_day = $_POST['price_per_day'];
 
-    // Handle photo upload
+    
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
         $photo = 'uploads/' . basename($_FILES['photo']['name']);
         move_uploaded_file($_FILES['photo']['tmp_name'], $photo);
     } else {
-        $photo = $vehicle['photo']; // Keep the old photo if no new one is uploaded
+        $photo = $vehicle['photo']; 
     }
 
-    // Update vehicle details
-    $stmt = $conn->prepare("UPDATE vehicles SET model_name = ?, description = ?, availability_status = ?, photo = ? WHERE registration_no = ?");
-    $stmt->bind_param("sssss", $model_name, $description, $availability_status, $photo, $registration_no);
+    
+    $stmt = $conn->prepare("UPDATE vehicles SET model_name = ?, description = ?, availability_status = ?, photo = ?, price_per_day = ? WHERE registration_no = ?");
+    $stmt->bind_param("ssssds", $model_name, $description, $availability_status, $photo, $price_per_day, $registration_no);
 
     if ($stmt->execute()) {
-        echo "<p style='color: green;'>Vehicle updated successfully!</p>";
+        header("Location: carcollection.php");
+        exit(); 
+    
     } else {
         echo "<p style='color: red;'>Error updating vehicle: " . $conn->error . "</p>";
     }
@@ -97,7 +100,7 @@ $conn->close();
         }
         .container {
             max-width: 600px;
-            margin: 0 auto; /* Center the form */
+            margin: 0 auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 10px;
@@ -118,8 +121,31 @@ $conn->close();
             transition: border-color 0.3s;
         }
         input:focus, textarea:focus, select:focus {
-            border-color: #007BFF; /* Change border color on focus */
+            border-color: #007BFF;
             outline: none;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .price-field {
+            position: relative;
+        }
+        .price-field:before {
+            content: "KSH";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            z-index: 1;
+        }
+        .price-field input {
+            padding-left: 45px;
         }
         button {
             background-color: #007BFF;
@@ -129,7 +155,7 @@ $conn->close();
             padding: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
-            width: 100%; /* Make button full width */
+            width: 100%;
         }
         button:hover {
             background-color: #0056b3;
@@ -165,6 +191,11 @@ $conn->close();
                 <option value="Available" <?php echo $vehicle['availability_status'] === 'Available' ? 'selected' : ''; ?>>Available</option>
                 <option value="Unavailable" <?php echo $vehicle['availability_status'] === 'Unavailable' ? 'selected' : ''; ?>>Unavailable</option>
             </select>
+
+            <label for="price_per_day">Price per Day:</label>
+            <div class="price-field">
+                <input type="number" id="price_per_day" name="price_per_day" value="<?php echo htmlspecialchars($vehicle['price_per_day']); ?>" required min="0" step="0.01">
+            </div>
 
             <label for="photo">Upload New Photo:</label>
             <input type="file" id="photo" name="photo">

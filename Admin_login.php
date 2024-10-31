@@ -13,11 +13,11 @@
         <form action="" method="post">
             <h2>Admin Login</h2>
             <div class="input-field">
-                <input type="text" id="email" name="email" required>
+                <input type="text" id="email"class="user" name="email" required>
                 <label for="">Enter Your Email</label>
             </div>
             <div class="input-field">
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" class="lock" name="password" required>
                 <label>Enter your password</label>
             </div>
             <div class="forget">

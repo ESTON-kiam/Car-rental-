@@ -18,10 +18,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $registration_no = $_POST['registration_no'];
-    
     
     $stmt = $conn->prepare("DELETE FROM vehicles WHERE registration_no = ?");
     $stmt->bind_param("s", $registration_no);
@@ -35,15 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $stmt->close();
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability'])) {
     $registration_no = $_POST['registration_no'];
     $current_status = $_POST['current_status'];
     
-    
     $new_status = ($current_status === 'Available') ? 'Unavailable' : 'Available';
 
-    
     $stmt = $conn->prepare("UPDATE vehicles SET availability_status = ? WHERE registration_no = ?");
     $stmt->bind_param("ss", $new_status, $registration_no);
 
@@ -56,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
     $stmt->close();
 }
 
-$query = "SELECT registration_no, model_name, description, availability_status, photo FROM vehicles";
+$query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles";
 $result = $conn->query($query);
 ?>
 
@@ -106,6 +101,33 @@ $result = $conn->query($query);
             border-radius: 10px;
             margin-bottom: 10px;
         }
+        .price {
+            font-size: 1.1em;
+            color: #007BFF;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .label {
+            color: #666;
+            font-weight: normal;
+            display: inline;
+            margin-right: 5px;
+        }
+        .value {
+            color: #333;
+            font-weight: bold;
+            display: inline;
+        }
+        .price .label {
+            color: #666;
+        }
+        .price .value {
+            color: #007BFF;
+        }
         header {
             background-color: #007BFF;
             color: white;
@@ -124,11 +146,6 @@ $result = $conn->query($query);
         }
         nav a:hover {
             color: #FFD700;
-        }
-        .vehicle p {
-            font-weight: bold;
-            color: #333;
-            margin: 5px 0;
         }
         .status-section {
             display: flex;
@@ -195,7 +212,6 @@ $result = $conn->query($query);
             background-color: #c82333;
         }
         
-       
         @media (max-width: 1200px) {
             .vehicle-list {
                 grid-template-columns: repeat(3, 1fr);
@@ -212,8 +228,8 @@ $result = $conn->query($query);
             }
         }
     </style>
-        <link href="assets/img/p.png" rel="icon">
-        <link href="assets/img/p.png" rel="apple-touch-icon">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
 <body>
 
@@ -234,8 +250,18 @@ $result = $conn->query($query);
                      alt="<?php echo htmlspecialchars($vehicle['model_name'] ?? 'Vehicle Image'); ?>">
                 
                 <h3><?php echo htmlspecialchars($vehicle['model_name'] ?? 'Unknown Model'); ?></h3>
-                <p>Registration No: <?php echo htmlspecialchars($vehicle['registration_no'] ?? 'N/A'); ?></p>
-                <p>Description: <?php echo htmlspecialchars($vehicle['description'] ?? 'No description available'); ?></p>
+                <p>
+                    <span class="label">Registration No:</span>
+                    <span class="value"><?php echo htmlspecialchars($vehicle['registration_no'] ?? 'N/A'); ?></span>
+                </p>
+                <p>
+                    <span class="label">Description:</span>
+                    <span class="value"><?php echo htmlspecialchars($vehicle['description'] ?? 'No description available'); ?></span>
+                </p>
+                <p class="price">
+                    <span class="label">Price per Day:</span>
+                    <span class="value">KSH <?php echo number_format($vehicle['price_per_day'] ?? 0, 2); ?></span>
+                </p>
                 
                 <div class="status-section">
                     <span class="status-indicator <?php echo ($vehicle['availability_status'] === 'Available') ? 'status-available' : 'status-unavailable'; ?>">
