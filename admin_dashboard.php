@@ -4,7 +4,6 @@ session_set_cookie_params(1800);
 session_start();
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-   
     header("Location: admin_login.php");
     exit();
 }
@@ -19,7 +18,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 $email = $_SESSION['email'];
 $query = "SELECT name, profile_picture FROM admins WHERE email_address='$email'";
 $result = $conn->query($query);
@@ -32,6 +30,7 @@ if ($result && $result->num_rows > 0) {
     $name = "Admin"; 
     $profile_picture = 'default-profile.png'; 
 }
+
 $totalCustomersQuery = "SELECT COUNT(*) as total FROM customers";
 $totalCustomersResult = $conn->query($totalCustomersQuery);
 
@@ -40,6 +39,7 @@ if ($totalCustomersResult) {
 } else {
     $totalCustomers = 0; 
 }
+
 // Fetch total vehicle count
 $vehicleQuery = "SELECT COUNT(*) as total_vehicles FROM vehicles";
 $vehicleResult = $conn->query($vehicleQuery);
@@ -51,6 +51,27 @@ if ($vehicleResult) {
 }
 
 $conn->close();
+
+
+function getGreeting() {
+    $currentHour = (int)date('H');
+    
+    if ($currentHour >= 5 && $currentHour < 12) {
+        return "Good Morning"; 
+    } elseif ($currentHour >= 12 && $currentHour < 16) {
+        return "Good Afternoon"; 
+    } elseif ($currentHour >= 16 && $currentHour < 19) {
+        return "Good Evening"; 
+    } else {
+        return "Good Night"; 
+    }
+}
+
+$greeting = getGreeting();
+
+
+$currentDateTime = date('Y-m-d H:i:s');
+$currentDay = date('l');
 ?>
 
 <!DOCTYPE html>
@@ -142,10 +163,15 @@ $conn->close();
         </nav>
 
         <main class="main-content">
-            <h2><strong style="color: blue;"><?php echo htmlspecialchars($name); ?></strong> Welcome to the Admin Dashboard</h2>
-            <p>This is your dashboard where you can manage your car rental business.</p>
+            <div class="dashboard-greeting">
+                <h2>
+                    <strong class="greeting-name"><?php echo $greeting; ?>, Welcome Back to the Admin Dashboard, <?php echo htmlspecialchars($name); ?></strong>
+                </h2>
+                <p>This is your dashboard where you can manage your car rental business.</p>
+            </div>
+
             <div class="dashboard-cards">
-                <article class="card">
+            <article class="card">
                     <div class="card-content">
                         <h3>Total Bookings</h3>
                         <p class="card-value">1,234</p>
@@ -189,6 +215,7 @@ $conn->close();
                         <i class="fas fa-KSH-sign">KSH</i>
                     </div>
                 </article>
+                </a>
             </div>
         </main>
     </div>

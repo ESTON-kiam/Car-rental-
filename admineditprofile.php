@@ -38,9 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($profile_picture)) {
         $target_dir = "admin/"; 
         $target_file = $target_dir . basename($profile_picture);
-        move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file);
+        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file)) {
+            // File upload success
+        } else {
+            $error_message = "Error uploading file.";
+        }
     } else {
-        $target_file = $admin['profile_picture'];
+        $target_file = $admin['profile_picture']; // Retain old profile picture if none uploaded
     }
 
     $sql = "UPDATE admins SET name=?, contact_no=?, gender=?, profile_picture=? WHERE email_address=?";
@@ -48,7 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssss", $name, $contact_no, $gender, $target_file, $email);
     
     if ($stmt->execute()) {
-        $success_message = "Profile updated successfully!";
+        // Redirect to the view profile page after successful update
+        header("Location: adminviewprofile.php");
+        exit();
     } else {
         $error_message = "Error updating profile: " . $stmt->error;
     }
@@ -59,12 +65,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
+    <title>Admin Edit Profile</title>
     <style>
         body {
             font-family: Arial, sans-serif;

@@ -2,14 +2,15 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+
 session_name('customer_session');
+session_set_cookie_params(1800); 
 session_start();
 
 if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.php");
+    header("Location: customer_login.php"); 
     exit();
 }
-
 
 $servername = "localhost"; 
 $username = "root"; 
@@ -18,11 +19,9 @@ $dbname = "car_rental_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
 
 $customer_id = $_SESSION['customer_id'];
 $sql = "SELECT * FROM customers WHERE id = ?";
@@ -46,6 +45,27 @@ $occupation = $customer_details['occupation'];
 $residence = $customer_details['residence'];
 $profile_picture = $customer_details['profile_picture'] ?? 'path/to/default-profile-picture.jpg';
 
+
+function getGreeting() {
+    $currentHour = (int)date('H');
+    
+    if ($currentHour >= 5 && $currentHour < 12) {
+        return "Good Morning"; 
+    } elseif ($currentHour >= 12 && $currentHour < 16) {
+        return "Good Afternoon"; 
+    } elseif ($currentHour >= 16 && $currentHour < 19) {
+        return "Good Evening"; 
+    } else {
+        return "Good Night"; 
+    }
+}
+
+$greeting = getGreeting();
+
+
+$currentDateTime = date('Y-m-d H:i:s');
+$currentDay = date('l');
+
 $active_bookings = 2; 
 $total_bookings = 15; 
 $loyalty_points = 450; 
@@ -55,12 +75,15 @@ $upcoming_booking = [
     'status' => 'Confirmed'
 ];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard - Online Car Rental</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/customerdash.css">
 </head>
@@ -120,24 +143,24 @@ $upcoming_booking = [
                     <div class="profile-picture">
                         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile">
                     </div>
-                    <span class="profile-name"><?php echo htmlspecialchars($full_name); ?></span>
+                    <span class="profile-name"><strong><?php echo htmlspecialchars($full_name); ?></strong></span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="profile-dropdown">
-                    <a href="profile.php" class="dropdown-item">
+                    <a href="customerviewprofile.php" class="dropdown-item">
                         <i class="fas fa-user"></i>
                         <span>View Profile</span>
                     </a>
-                    <a href="edit-profile.php" class="dropdown-item">
+                    <a href="customereditprofile.php" class="dropdown-item">
                         <i class="fas fa-edit"></i>
                         <span>Edit Profile</span>
                     </a>
-                    <a href="change-password.php" class="dropdown-item">
+                    <a href="customerchangepassword.php" class="dropdown-item">
                         <i class="fas fa-key"></i>
                         <span>Change Password</span>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a href="logout.php" class="dropdown-item">
+                    <a href="customerlogout.php" class="dropdown-item">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -148,7 +171,7 @@ $upcoming_booking = [
 
     <main class="main-content">
         <div class="welcome-message">
-            <h1>Welcome back, <?php echo htmlspecialchars($full_name); ?>!</h1>
+            <h1><?php echo $greeting . ', ' . htmlspecialchars($full_name) . '!'; ?></h1> <!-- Greeting message -->
             <p>Here's an overview of your rental activity</p>
         </div>
 
@@ -189,10 +212,14 @@ $upcoming_booking = [
                 <h3 class="card-title">Quick Actions</h3>
             </div>
             <div class="quick-actions">
-                <button class="action-button">
-                    <i class="fas fa-car-side"></i>
-                    <span>Book Now</span>
-                </button>
+                <form method="POST" action="book_car.php">
+                    <input type="hidden" name="vehicle_id" value="<?php echo $row['vehicle_id']; ?>">
+                    <button type="submit" class="action-button">
+                        <i class="fas fa-car-side"></i>
+                        <span>Book Now</span>
+                    </button>
+                </form>
+
                 <button class="action-button">
                     <i class="fas fa-history"></i>
                     <span>View History</span>
@@ -209,22 +236,6 @@ $upcoming_booking = [
         </div>
     </main>
 
-    <script>
-        function toggleDropdown() {
-            const dropdown = document.querySelector('.profile-dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        }
-        window.onclick = function(event) {
-            if (!event.target.matches('.profile-button')) {
-                const dropdowns = document.getElementsByClassName("profile-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.style.display === 'block') {
-                        openDropdown.style.display = 'none';
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="assets/js/customerdash.js" defer></script>
 </body>
 </html>

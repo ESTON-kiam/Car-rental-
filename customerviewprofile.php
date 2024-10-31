@@ -1,41 +1,31 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params(1800); 
+session_name('customer_session');
 session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: Admin_login.php");
-    exit();
-}
 
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
-$dbname = "car_rental_management"; 
+$dbname = "car_rental_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$email = $_SESSION['email'];
-$query = "SELECT name, contact_no, gender, profile_picture FROM admins WHERE email_address='$email'";
-$result = $conn->query($query);
-
-if ($result && $result->num_rows > 0) {
-    $admin = $result->fetch_assoc();
-    $name = $admin['name'];
-    $contact_no = $admin['contact_no'];
-    $gender = $admin['gender'];
-    $profile_picture = $admin['profile_picture'] ?: 'default-profile.png'; 
-} else {
-    $name = "Admin"; 
-    $contact_no = "N/A";
-    $gender = "N/A";
-    $profile_picture = 'default-profile.png'; 
+if (!isset($_SESSION['customer_id'])) {
+    header("Location: customerlogout.php");
+    exit();
 }
 
-$conn->close();
+$customer_id = $_SESSION['customer_id'];
+$sql = "SELECT full_name, email, mobile, profile_picture, gender FROM customers WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customer_id);
+$stmt->execute();
+$stmt->bind_result($full_name, $email, $phone, $profile_picture, $gender);
+$stmt->fetch();
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +33,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Profile</title>
+    <title>My Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -182,9 +172,10 @@ $conn->close();
 <body>
 
     <div class="header">
-        <h1>Admin Profile</h1>
+        <h1>My Profile</h1>
         <div>
-            <a href="admin_dashboard.php">Dashboard</a>
+            <a href="customer_dashboard.php">Dashboard</a>
+            <a href="customereditprofile.php">Edit Profile</a>
         </div>
     </div>
 
@@ -193,15 +184,20 @@ $conn->close();
             <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture">
         </div>
         <div class="profile-details">
-            <div><strong>Name:</strong> <?php echo htmlspecialchars($name); ?></div>
-            <div><strong>Contact No:</strong> <?php echo htmlspecialchars($contact_no); ?></div>
-            <div><strong>Gender:</strong> <?php echo htmlspecialchars($gender); ?></div>
+            <div><strong>Name:</strong> <?php echo htmlspecialchars($full_name); ?></div>
+            <div><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></div>
+            <div><strong>Phone:</strong> <?php echo htmlspecialchars($phone); ?></div>
+            <div><strong>Gender:</strong> <?php echo htmlspecialchars($gender); ?></div> <!-- Added Gender -->
         </div>
         <div class="button-container">
-            <a href="admineditprofile.php">Edit Profile</a>
-            <a href="adminlogout.php">Logout</a>
+            <a href="customereditprofile.php">Edit Profile</a>
+            <a href="customerlogout.php">Logout</a>
         </div>
     </div>
 
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

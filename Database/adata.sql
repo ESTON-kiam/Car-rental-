@@ -78,4 +78,15 @@ CREATE TABLE deliveries (
     FOREIGN KEY (id) REFERENCES customers(id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id)
 );
-;
+
+
+
+CREATE TABLE sessions (
+    session_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    user_type ENUM('admin', 'customer', 'driver') NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    logout_time TIMESTAMP NULL,
+    ip_address VARCHAR(45), 
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
