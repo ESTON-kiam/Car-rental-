@@ -53,24 +53,21 @@ if ($vehicleResult) {
 $conn->close();
 
 
-function getGreeting() {
-    $currentHour = (int)date('H');
-    
-    if ($currentHour >= 5 && $currentHour < 12) {
-        return "Good Morning"; 
-    } elseif ($currentHour >= 12 && $currentHour < 16) {
-        return "Good Afternoon"; 
-    } elseif ($currentHour >= 16 && $currentHour < 19) {
-        return "Good Evening"; 
-    } else {
-        return "Good Night"; 
-    }
-}
+function getGreeting() {     
+    $currentHour = (int)date('H');     
+    if ($currentHour >= 5 && $currentHour < 12) {         
+        return "Good Morning";     
+    } elseif ($currentHour >= 12 && $currentHour < 16) {         
+        return "Good Afternoon";     
+    } elseif ($currentHour >= 16 && $currentHour < 19) {         
+        return "Good Evening";     
+    } else {         
+        return "Good Night";     
+    } 
+}   
 
-$greeting = getGreeting();
-
-
-$currentDateTime = date('Y-m-d H:i:s');
+$greeting = getGreeting(); 
+$currentDateTime = date('Y-m-d H:i:s'); 
 $currentDay = date('l');
 ?>
 
