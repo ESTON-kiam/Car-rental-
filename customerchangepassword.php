@@ -1,8 +1,16 @@
 <?php
 
 session_name('customer_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+
 
 if (!isset($_SESSION['customer_id'])) {
     header("Location: customer_login.php"); 

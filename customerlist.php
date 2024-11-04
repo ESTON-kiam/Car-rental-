@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
@@ -19,7 +19,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch customers
+
 $query = "SELECT id, full_name, email, mobile, gender, dob, occupation, residence, created_at FROM customers";
 $result = $conn->query($query);
 

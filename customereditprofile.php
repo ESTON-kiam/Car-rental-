@@ -1,7 +1,15 @@
 <?php
 session_name('customer_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+
 
 if (!isset($_SESSION['customer_id'])) {
     header("Location: customer_login.php"); 
@@ -26,7 +34,7 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id'];
 
-// Fetch customer details including gender
+
 $sql = "SELECT full_name, email, mobile, profile_picture, gender FROM customers WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $customer_id);

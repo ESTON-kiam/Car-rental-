@@ -39,36 +39,36 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Database connection settings
+    
     $servername = "localhost"; 
     $username = "root"; 
     $password = ""; 
     $dbname = "car_rental_management"; 
 
-    // Create connection
+    
     $conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Check connection
+    
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Escape user inputs for security
+    
     $email = $conn->real_escape_string(trim($_POST['email']));
     $passwordInput = trim($_POST['password']);
 
-    // Prepare the query to prevent SQL injection
+    
     $checkUserQuery = "SELECT password FROM admins WHERE email_address='$email'";
     $result = $conn->query($checkUserQuery);
 
-    // Check if the query was successful
+ 
     if ($result === false) {
         echo "Error in query: " . $conn->error;
     } else if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $hashedPassword = $row['password'];
 
-        // Verify password
+        
         if (password_verify($passwordInput, $hashedPassword)) {
             
             session_name('admin_session'); 
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['loggedin'] = true; 
             $_SESSION['email'] = $email;   
 
-            // Redirect to admin dashboard
+            
             header("Location: admin_dashboard.php");
             exit();
         } else {
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<p style='color: red;'>Email not found. Please check your email.</p>";
     }
 
-    // Close connection
+   
     $conn->close();
 }
 ?>

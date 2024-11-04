@@ -1,7 +1,15 @@
 <?php
 session_name('customer_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+
 
 if (!isset($_SESSION['customer_id'])) {
     header("Location: customer_login.php"); 
@@ -228,7 +236,7 @@ $result = $stmt->get_result();
                         <p><strong style="color: var(--details-color);">Registration No:</strong> <?php echo htmlspecialchars($row['registration_no']); ?></p>
                         <p><strong style="color: var(--details-color);">Description:</strong> <?php echo htmlspecialchars($row['description']); ?></p>
                         <p class="vehicle-price">Price per day: KSH <?php echo number_format($row['price_per_day'], 2); ?></p>
-                        <button class="rent-button" onclick="location.href='rent_vehicle.php?id=<?php echo $row['vehicle_id']; ?>'">Rent Now</button>
+                        <button class="rent-button" onclick="location.href='customerbooking.php?id=<?php echo $row['vehicle_id']; ?>'">Rent Now</button>
                     </div>
                 </div>
             <?php endwhile; ?>

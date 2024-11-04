@@ -2,15 +2,23 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 session_name('customer_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+
 
 if (!isset($_SESSION['customer_id'])) {
     header("Location: customer_login.php"); 
     exit();
 }
+
 
 $servername = "localhost"; 
 $username = "root"; 
@@ -19,9 +27,11 @@ $dbname = "car_rental_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 
 $customer_id = $_SESSION['customer_id'];
 $sql = "SELECT * FROM customers WHERE id = ?";
@@ -30,11 +40,13 @@ $stmt->bind_param("i", $customer_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+
 if ($result->num_rows > 0) {
     $customer_details = $result->fetch_assoc();
 } else {
     die("Customer not found.");
 }
+
 
 $full_name = $customer_details['full_name'];
 $email = $customer_details['email'];
@@ -63,6 +75,7 @@ $greeting = getGreeting();
 $currentDateTime = date('Y-m-d H:i:s'); 
 $currentDay = date('l');
 
+
 $active_bookings = 2; 
 $total_bookings = 15; 
 $loyalty_points = 450; 
@@ -71,7 +84,11 @@ $upcoming_booking = [
     'date' => '2024-11-05',
     'status' => 'Confirmed'
 ];
+
+
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
