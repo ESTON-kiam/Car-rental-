@@ -421,7 +421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="footer">
-        <p>&copy; <?php echo date("Y"); ?> Car Rentals. All rights reserved.</p>
+        <p>&copy;2025 <?php echo date("Y"); ?> Car Rentals. All rights reserved.</p>
     </div>
 
     <script>
