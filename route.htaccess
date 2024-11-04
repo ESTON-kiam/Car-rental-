@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Remove the .php extension from the URL
+RewriteRule ^Admin_login$ Admin_login.php [L]

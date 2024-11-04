@@ -18,7 +18,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get vehicle ID from the URL
+
 $vehicle_id = $_GET['id'] ?? null;
 
 if ($vehicle_id) {
@@ -39,7 +39,7 @@ if ($vehicle_id) {
     exit();
 }
 
-// Check if the customer already has an active or pending booking
+
 $existing_booking_sql = "SELECT * FROM bookings WHERE customer_id = ? AND booking_status != 'completed'";
 $existing_booking_stmt = $conn->prepare($existing_booking_sql);
 $existing_booking_stmt->bind_param("i", $_SESSION['customer_id']);
@@ -51,7 +51,7 @@ if ($existing_booking_result->num_rows > 0) {
     exit();
 }
 
-// Fetch drivers from the database
+
 $drivers = [];
 $driver_sql = "SELECT driver_id, name FROM drivers WHERE availability_status = 'Available'";
 $driver_result = $conn->query($driver_sql);
@@ -62,9 +62,9 @@ if ($driver_result->num_rows > 0) {
     }
 }
 
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
+    
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $pick_up_location = $_POST['pick_up_location'];
@@ -75,17 +75,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $advance_deposit = $_POST['advance_deposit'];
     $fare = $_POST['fare'];
     
-    // Begin transaction
+    
     $conn->begin_transaction();
 
     try {
-        // Update vehicle availability status
+        
         $update_sql = "UPDATE vehicles SET availability_status = 'Unavailable' WHERE vehicle_id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("i", $vehicle_id);
         $update_stmt->execute();
 
-        // Insert booking record
+        
         $booking_sql = "INSERT INTO bookings (vehicle_id, customer_id, start_date, end_date, pick_up_location, 
                        pick_up_time, car_type, charge_type, driver_option, total_fare, advance_deposit, booking_status) 
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
@@ -105,24 +105,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $booking_stmt->execute();
 
-        // If driver is selected, add driver assignment
+        
         if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
             $driver_assign_sql = "INSERT INTO driver_assignments (booking_id, driver_id) VALUES (LAST_INSERT_ID(), ?)";
             $driver_assign_stmt = $conn->prepare($driver_assign_sql);
             $driver_assign_stmt->bind_param("i", $_POST['driver_id']);
             $driver_assign_stmt->execute();
 
-            // Update driver availability
             $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
             $update_driver_stmt = $conn->prepare($update_driver_sql);
             $update_driver_stmt->bind_param("i", $_POST['driver_id']);
             $update_driver_stmt->execute();
         }
 
-        // Commit transaction
+        
         $conn->commit();
         
-        // Redirect to customer dashboard
+       
         header("Location: customerdashboard.php");
         exit();
     } catch (Exception $e) {
