@@ -18,9 +18,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
+// Fetch vehicle_id from GET parameter
 $vehicle_id = $_GET['id'] ?? null;
 
+$full_name = ''; // Initialize variable for full name from customers table
+$registration_no = ''; // Initialize variable for registration number from vehicles table
+$model_name = ''; // Initialize variable for model name from vehicles table
+
+// Check if a vehicle is selected
 if ($vehicle_id) {
     $sql = "SELECT * FROM vehicles WHERE vehicle_id = ?";
     $stmt = $conn->prepare($sql);
@@ -30,6 +35,8 @@ if ($vehicle_id) {
 
     if ($result->num_rows > 0) {
         $vehicle = $result->fetch_assoc();
+        $registration_no = $vehicle['registration_no'];
+        $model_name = $vehicle['model_name'];
     } else {
         echo "Vehicle not found.";
         exit();
@@ -39,21 +46,31 @@ if ($vehicle_id) {
     exit();
 }
 
+$customer_id = $_SESSION['customer_id']; 
+$customer_sql = "SELECT full_name FROM customers WHERE id = ?";
+$customer_stmt = $conn->prepare($customer_sql);
+$customer_stmt->bind_param("i", $customer_id);
+$customer_stmt->execute();
+$customer_result = $customer_stmt->get_result();
 
+if ($customer_result->num_rows > 0) {
+    $customer = $customer_result->fetch_assoc();
+    $full_name = $customer['full_name'];
+}
+
+// Check for existing bookings
 $existing_booking_sql = "SELECT * FROM bookings WHERE customer_id = ? AND booking_status != 'completed'";
 $existing_booking_stmt = $conn->prepare($existing_booking_sql);
-$existing_booking_stmt->bind_param("i", $_SESSION['customer_id']);
+$existing_booking_stmt->bind_param("i", $customer_id);
 $existing_booking_stmt->execute();
 $existing_booking_result = $existing_booking_stmt->get_result();
 
 if ($existing_booking_result->num_rows > 0) {
-   
     header("Location: booking_restriction_page.php");
     exit();
 }
 
-
-
+// Fetch available drivers
 $drivers = [];
 $driver_sql = "SELECT driver_id, name FROM drivers WHERE availability_status = 'Available'";
 $driver_result = $conn->query($driver_sql);
@@ -64,9 +81,14 @@ if ($driver_result->num_rows > 0) {
     }
 }
 
-
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+    // Debug POST data
+    echo "POST Data:<br>";
+    print_r($_POST);
+    echo "<br>";
+
+    // Convert form data to appropriate types
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $pick_up_location = $_POST['pick_up_location'];
@@ -74,27 +96,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $car_type = $_POST['car_type'];
     $charge_type = $_POST['charge_type'];
     $driver_option = $_POST['driver_option'];
-    $advance_deposit = $_POST['advance_deposit'];
-    $fare = $_POST['fare'];
-    
+    $fare = floatval($_POST['fare']);  // Convert to float
+    $advance_deposit = $fare * 0.7;
     
     $conn->begin_transaction();
 
     try {
-        
+        // Update vehicle availability
         $update_sql = "UPDATE vehicles SET availability_status = 'Unavailable' WHERE vehicle_id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("i", $vehicle_id);
         $update_stmt->execute();
 
+        // Insert booking
+        $booking_sql = "INSERT INTO bookings (
+            vehicle_id, customer_id, start_date, end_date, 
+            pick_up_location, pick_up_time, car_type, 
+            charge_type, driver_option, total_fare, 
+            advance_deposit, booking_status, registration_no, 
+            model_name
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)";
         
-        $booking_sql = "INSERT INTO bookings (vehicle_id, customer_id, start_date, end_date, pick_up_location, 
-                       pick_up_time, car_type, charge_type, driver_option, total_fare, advance_deposit, booking_status) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
         $booking_stmt = $conn->prepare($booking_sql);
-        $booking_stmt->bind_param("iisssssssdd", 
+        if (!$booking_stmt) {
+            throw new Exception("Prepare failed: " . $conn->error);
+        }
+
+        // Bind parameters with strict type checking
+        $booking_status = 'pending';
+        if (!$booking_stmt->bind_param("iisssssssddss", 
             $vehicle_id, 
-            $_SESSION['customer_id'],
+            $customer_id,
             $start_date,
             $end_date,
             $pick_up_location,
@@ -103,33 +135,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $charge_type,
             $driver_option,
             $fare,
-            $advance_deposit
-        );
-        $booking_stmt->execute();
-
-        
-        if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
-            $driver_assign_sql = "INSERT INTO driver_assignments (booking_id, driver_id) VALUES (LAST_INSERT_ID(), ?)";
-            $driver_assign_stmt = $conn->prepare($driver_assign_sql);
-            $driver_assign_stmt->bind_param("i", $_POST['driver_id']);
-            $driver_assign_stmt->execute();
-
-            $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
-            $update_driver_stmt = $conn->prepare($update_driver_sql);
-            $update_driver_stmt->bind_param("i", $_POST['driver_id']);
-            $update_driver_stmt->execute();
+            $advance_deposit,
+            $registration_no,
+            $model_name
+        )) {
+            throw new Exception("Binding parameters failed: " . $booking_stmt->error);
         }
 
+        if (!$booking_stmt->execute()) {
+            throw new Exception("Execute failed: " . $booking_stmt->error);
+        }
         
+        $booking_id = $conn->insert_id;
+        echo "New booking ID: " . $booking_id . "<br>";
+
+        // Handle driver assignment if driver is requested
+        if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
+            $driver_id = $_POST['driver_id'];
+
+            $driver_assign_sql = "INSERT INTO driver_assignments (
+                booking_id, 
+                vehicle_id, 
+                registration_no, 
+                model_name, 
+                driver_id,
+                customer_id,
+                fullname,
+                assigned_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+            
+            $driver_assign_stmt = $conn->prepare($driver_assign_sql);
+            if (!$driver_assign_stmt) {
+                throw new Exception("Prepare failed: " . $conn->error);
+            }
+
+            if (!$driver_assign_stmt->bind_param("iississ", 
+                $booking_id,
+                $vehicle_id,
+                $registration_no,
+                $model_name,
+                $driver_id,
+                $customer_id,
+                $full_name
+            )) {
+                throw new Exception("Binding parameters failed: " . $driver_assign_stmt->error);
+            }
+
+            if (!$driver_assign_stmt->execute()) {
+                throw new Exception("Execute failed: " . $driver_assign_stmt->error);
+            }
+
+            // Update driver availability
+            $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
+            $update_driver_stmt = $conn->prepare($update_driver_sql);
+            $update_driver_stmt->bind_param("i", $driver_id);
+            $update_driver_stmt->execute();
+        } else {
+            echo "Driver option not selected or driver_id not set<br>";
+        }
+
         $conn->commit();
-        
-       
-        header("Location: customerdashboard.php");
+        echo "Transaction committed successfully!<br>";
+        header("Location: Customer_dashboard.php");
         exit();
     } catch (Exception $e) {
-       
         $conn->rollback();
-        echo "Error: " . $e->getMessage();
+        echo "Error occurred:<br>";
+        echo "Error message: " . $e->getMessage() . "<br>";
+        echo "Stack trace:<br>";
+        echo nl2br($e->getTraceAsString());
         exit();
     }
 }
@@ -308,6 +382,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 font-size: 2rem;
             }
         }
+        .deposit-display {
+            background: linear-gradient(145deg, #e0f2fe, #ffffff);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e0f2fe;
+        }
+
+        .deposit-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .deposit-amount {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -415,9 +512,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="fare-amount" id="fare_display">KSH 0.00</div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="advance_deposit">Advance Deposit</label>
-                <input type="number" class="form-control" name="advance_deposit" required>
+            <div class="deposit-display">
+                <div class="deposit-label">Required Deposit (70%)</div>
+                <div class="deposit-amount" id="deposit_display">KSH 0.00</div>
             </div>
 
             <button type="submit" class="btn btn-confirm w-100">Confirm Booking</button>
@@ -425,7 +522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="footer">
-        <p>&copy;2025 <?php echo date("Y"); ?> Car Rentals. All rights reserved.</p>
+        <p>&copy; <?php echo date("Y"); ?> Car Rentals. All rights reserved.</p>
     </div>
 
     <script>
@@ -442,20 +539,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const driverCost = driverOption === 'yes' ? 2000 : 0;
                 const acCost = carType === 'With AC' ? 500 : 0;
                 
-                // Calculate fare based on charge type
                 const chargeType = document.querySelector('select[name="charge_type"]').value;
                 let totalFare;
                 if (chargeType === 'per_day') {
                     totalFare = (pricePerDay * dayDiff) + driverCost + (acCost * dayDiff);
                 } else {
-                    const distance = 1; // Assuming 1 km for calculation
-                    totalFare = (distance * 2000) + driverCost; // KSH 2000 per km
+                    const distance = 1; 
+                    totalFare = (distance * 2000) + driverCost; 
                 }
+                
+                const deposit = totalFare * 0.7; // Calculate 70% deposit
                 
                 document.getElementById('fare').value = totalFare;
                 document.getElementById('fare_display').textContent = `KSH ${totalFare.toLocaleString()}`;
+                document.getElementById('deposit_display').textContent = `KSH ${deposit.toLocaleString()}`;
             } else {
                 document.getElementById('fare_display').textContent = 'KSH 0.00';
+                document.getElementById('deposit_display').textContent = 'KSH 0.00';
             }
         }
 

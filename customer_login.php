@@ -118,6 +118,8 @@ $conn->close();
                 <p>Don't have an account? <a href="customer_registration.html">Register</a></p>
             </div>
         </form>
+        
     </div>
+   
 </body>
 </html>
