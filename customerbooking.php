@@ -522,7 +522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="footer">
-        <p>&copy; <?php echo date("Y"); ?> Car Rentals. All rights reserved.</p>
+        <p>&copy; <?php echo date("Y"); ?>Online Car Rentals. All rights reserved.Designed by Eston Kiama</p>
     </div>
 
     <script>
