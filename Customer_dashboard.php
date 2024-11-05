@@ -96,9 +96,9 @@ $debug = [
 
 
 
-$active_bookings = 2; 
-$total_bookings = 15; 
-$loyalty_points = 450; 
+$active_bookings = 1; 
+$total_bookings = 2; 
+$loyalty_points = 50; 
 $upcoming_booking = [
     'car' => 'Toyota Camry',
     'date' => '2024-11-05',
