@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
-        $photo = 'uploads/' . basename($_FILES['photo']['name']);
+        $photo = 'Cars/' . basename($_FILES['photo']['name']);
         move_uploaded_file($_FILES['photo']['tmp_name'], $photo);
     } else {
         $photo = $vehicle['photo']; 

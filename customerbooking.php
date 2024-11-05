@@ -47,9 +47,11 @@ $existing_booking_stmt->execute();
 $existing_booking_result = $existing_booking_stmt->get_result();
 
 if ($existing_booking_result->num_rows > 0) {
-    echo "You cannot book another vehicle until your previous booking is completed.";
+   
+    header("Location: booking_restriction_page.php");
     exit();
 }
+
 
 
 $drivers = [];
@@ -140,6 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Car - Premium Booking Experience</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <style>
@@ -163,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .navbar-custom {
-            background-color: #1e293b; /* Updated header background color */
+            background-color: #1e293b;
             padding: 1.25rem 0;
             position: fixed;
             width: 100%;
