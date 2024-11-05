@@ -57,23 +57,43 @@ $occupation = $customer_details['occupation'];
 $residence = $customer_details['residence'];
 $profile_picture = $customer_details['profile_picture'] ?? 'path/to/default-profile-picture.jpg';
 
+date_default_timezone_set('Africa/Nairobi');
 
-function getGreeting() {     
-    $currentHour = (int)date('H');     
-    if ($currentHour >= 5 && $currentHour < 12) {         
-        return "Good Morning";     
-    } elseif ($currentHour >= 12 && $currentHour < 16) {         
-        return "Good Afternoon";     
-    } elseif ($currentHour >= 16 && $currentHour < 19) {         
-        return "Good Evening";     
-    } else {         
-        return "Good Night";     
-    } 
-}   
+function getGreeting() {
+    $currentHour = (int)date('H');
+    
+    
+    error_log("Current hour in Nairobi: " . $currentHour);
+    
+    if ($currentHour >= 5 && $currentHour < 12) {
+        return "Good Morning";
+    } elseif ($currentHour >= 12 && $currentHour < 16) {
+        return "Good Afternoon";
+    } elseif ($currentHour >= 16 && $currentHour < 19) {
+        return "Good Evening";
+    } else {
+        return "Good Night";
+    }
+}
 
-$greeting = getGreeting(); 
-$currentDateTime = date('Y-m-d H:i:s'); 
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+$greeting = getGreeting();
+$currentDateTime = date('Y-m-d H:i:s');
 $currentDay = date('l');
+
+
+$debug = [
+    'Timezone' => date_default_timezone_get(),
+    'Current Time' => $currentDateTime,
+    'Current Hour' => date('H'),
+    'Day' => $currentDay,
+    'Greeting' => $greeting
+];
+
 
 
 $active_bookings = 2; 
