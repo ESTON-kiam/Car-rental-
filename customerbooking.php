@@ -18,14 +18,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch vehicle_id from GET parameter
+
 $vehicle_id = $_GET['id'] ?? null;
 
-$full_name = ''; // Initialize variable for full name from customers table
-$registration_no = ''; // Initialize variable for registration number from vehicles table
-$model_name = ''; // Initialize variable for model name from vehicles table
+$full_name = ''; 
+$registration_no = ''; 
+$model_name = ''; 
 
-// Check if a vehicle is selected
+
 if ($vehicle_id) {
     $sql = "SELECT * FROM vehicles WHERE vehicle_id = ?";
     $stmt = $conn->prepare($sql);
@@ -58,7 +58,7 @@ if ($customer_result->num_rows > 0) {
     $full_name = $customer['full_name'];
 }
 
-// Check for existing bookings
+
 $existing_booking_sql = "SELECT * FROM bookings WHERE customer_id = ? AND booking_status != 'completed'";
 $existing_booking_stmt = $conn->prepare($existing_booking_sql);
 $existing_booking_stmt->bind_param("i", $customer_id);
@@ -70,7 +70,7 @@ if ($existing_booking_result->num_rows > 0) {
     exit();
 }
 
-// Fetch available drivers
+
 $drivers = [];
 $driver_sql = "SELECT driver_id, name FROM drivers WHERE availability_status = 'Available'";
 $driver_result = $conn->query($driver_sql);
@@ -81,14 +81,14 @@ if ($driver_result->num_rows > 0) {
     }
 }
 
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Debug POST data
+   
     echo "POST Data:<br>";
     print_r($_POST);
     echo "<br>";
 
-    // Convert form data to appropriate types
+   
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $pick_up_location = $_POST['pick_up_location'];
@@ -96,19 +96,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $car_type = $_POST['car_type'];
     $charge_type = $_POST['charge_type'];
     $driver_option = $_POST['driver_option'];
-    $fare = floatval($_POST['fare']);  // Convert to float
+    $fare = floatval($_POST['fare']);  
     $advance_deposit = $fare * 0.7;
     
     $conn->begin_transaction();
 
     try {
-        // Update vehicle availability
+       
         $update_sql = "UPDATE vehicles SET availability_status = 'Unavailable' WHERE vehicle_id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("i", $vehicle_id);
         $update_stmt->execute();
 
-        // Insert booking
+        
         $booking_sql = "INSERT INTO bookings (
             vehicle_id, customer_id, start_date, end_date, 
             pick_up_location, pick_up_time, car_type, 
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
-        // Bind parameters with strict type checking
+        
         $booking_status = 'pending';
         if (!$booking_stmt->bind_param("iisssssssddss", 
             $vehicle_id, 
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $booking_id = $conn->insert_id;
         echo "New booking ID: " . $booking_id . "<br>";
 
-        // Handle driver assignment if driver is requested
+        
         if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
             $driver_id = $_POST['driver_id'];
 
@@ -185,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Execute failed: " . $driver_assign_stmt->error);
             }
 
-            // Update driver availability
+          
             $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
             $update_driver_stmt = $conn->prepare($update_driver_sql);
             $update_driver_stmt->bind_param("i", $driver_id);
