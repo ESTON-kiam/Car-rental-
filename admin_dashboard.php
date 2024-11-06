@@ -195,6 +195,7 @@ $debug = [
                     </li>
                     <li><a href="carcollection.php"><i class="fas fa-users"></i><span>Car collection</span></a></li>
                     <li><a href="admininvoices.php"><i class="fas fa-users"></i><span>Invoices</span></a></li>
+                    <li><a href="admin_support_view.php"><i class="fas fa-users"></i><span>Support Reply</span></a></li>
                 </ul>
             </div>
         </nav>
