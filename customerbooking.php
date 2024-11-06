@@ -1,16 +1,31 @@
 <?php 
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_name('customer_session');
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
+
 
 if (!isset($_SESSION['customer_id'])) {
     header("Location: customer_login.php"); 
     exit();
 }
 
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
 $dbname = "car_rental_management";
+
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -201,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->commit();
         echo "Transaction committed successfully!<br>";
-        header("Location: Customer_dashboard.php");
+        header("Location: customerbookingconfrimation.php");
         exit();
     } catch (Exception $e) {
         $conn->rollback();
@@ -221,6 +236,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Car Booking Experience</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         :root {

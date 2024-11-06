@@ -63,7 +63,7 @@
 <div class="restriction-container">
     <h1>Booking Restricted</h1>
     <p>You cannot book another vehicle until your previous booking is completed.</p>
-    <a href="Customer_dashboard.php" class="dashboard-button">Go to Dashboard</a>
+    <a href="customerbookingconfrimation.php" class="dashboard-button">Go to Confirmation</a>
 </div>
 
 </body>
