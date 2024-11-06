@@ -2,19 +2,18 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Stronger session security
 session_name('customer_session');
 session_set_cookie_params([
     'lifetime' => 1800,
     'path' => '/',
     'domain' => '',
-    'secure' => true, // Changed to true for HTTPS
+    'secure' => true, 
     'httponly' => true,
     'samesite' => 'Strict'
 ]);
 session_start();
 
-// Check for session timeout
+
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
     session_unset();
     session_destroy();
@@ -30,7 +29,7 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id'];
 
-// Database configuration - Consider moving to separate config file
+
 $config = [
     'host' => 'localhost',
     'username' => 'root',
@@ -38,7 +37,7 @@ $config = [
     'dbname' => 'car_rental_management'
 ];
 
-// Database connection with error handling
+
 try {
     $conn = new mysqli($config['host'], $config['username'], $config['password'], $config['dbname']);
     if ($conn->connect_error) {
@@ -50,7 +49,7 @@ try {
     die("Sorry, there was a problem connecting to the database. Please try again later.");
 }
 
-// Function to fetch messages
+
 function fetchMessages($conn, $customer_id) {
     $query = "SELECT sender, message, created_at FROM support_messages 
               WHERE customer_id = ? 
@@ -61,7 +60,16 @@ function fetchMessages($conn, $customer_id) {
     return $stmt->get_result();
 }
 
-// If it's an AJAX request to fetch new messages
+
+function sendMessage($conn, $customer_id, $message) {
+    $query = "INSERT INTO support_messages (customer_id, sender, message, created_at) 
+              VALUES (?, 'customer', ?, NOW())";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("is", $customer_id, $message);
+    $stmt->execute();
+}
+
+
 if (isset($_GET['fetch_messages'])) {
     $result = fetchMessages($conn, $customer_id);
     while ($row = $result->fetch_assoc()) {
@@ -89,6 +97,13 @@ if (isset($_GET['fetch_messages'])) {
     exit;
 }
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $message = $_POST['message'];
+    sendMessage($conn, $customer_id, $message);
+    exit;
+}
+
 $result = fetchMessages($conn, $customer_id);
 ?>
 
@@ -98,17 +113,19 @@ $result = fetchMessages($conn, $customer_id);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Support Chat</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg">
-        <!-- Header -->
+       
         <div class="p-4 border-b">
             <h2 class="text-xl font-semibold">Support Chat</h2>
             <p class="text-sm text-gray-500">Customer ID: <?= htmlspecialchars($customer_id) ?></p>
         </div>
         
-        <!-- Chat messages -->
+        
         <div id="chatBox" class="h-96 overflow-y-scroll p-4 bg-gray-50">
             <?php while ($row = $result->fetch_assoc()): ?>
                 <?php if ($row['sender'] == 'customer'): ?>
@@ -198,13 +215,12 @@ $result = fetchMessages($conn, $customer_id);
             if (message === '') return;
 
             try {
-                const formData = new FormData();
-                formData.append('message', message);
-                formData.append('customer_id', '<?= $customer_id ?>');
-
-                const response = await fetch('support_send.php', {
+                const response = await fetch('', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ message: message })
                 });
 
                 if (response.ok) {

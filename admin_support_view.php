@@ -1,5 +1,5 @@
 <?php
-// Enable error reporting for debugging
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -41,6 +41,8 @@ $customers = $conn->query($customerQuery);
 <head>
     <meta charset="UTF-8">
     <title>Admin Support View</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
@@ -52,7 +54,7 @@ $customers = $conn->query($customerQuery);
                 <h3 class="font-semibold text-lg mb-2">Chat with <?= htmlspecialchars($customer['full_name']) ?></h3>
                 
                 <?php
-                // Fetch messages for this specific customer
+                
                 $msgQuery = "SELECT sender, message, created_at FROM support_messages WHERE customer_id = ? ORDER BY created_at ASC";
                 $stmt = $conn->prepare($msgQuery);
                 $stmt->bind_param("i", $customer['id']);
@@ -78,7 +80,7 @@ $customers = $conn->query($customerQuery);
                 
                 <?php $stmt->close(); ?>
 
-                <!-- Admin response form -->
+                
                 <form action="admin_support_send.php" method="POST" class="flex mt-4">
                     <input type="hidden" name="customer_id" value="<?= $customer['id'] ?>">
                     <input type="text" name="message" required placeholder="Reply to <?= htmlspecialchars($customer['full_name']) ?>" class="flex-1 border p-2 rounded-l-lg">
