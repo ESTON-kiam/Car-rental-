@@ -94,18 +94,47 @@ $debug = [
     'Greeting' => $greeting
 ];
 
+$sql_active_or_pending = "SELECT COUNT(*) AS active_or_pending_bookings FROM bookings WHERE customer_id = ? AND booking_status IN ('active', 'pending')";
 
 
-$active_bookings = 1; 
-$total_bookings = 2; 
-$loyalty_points = 50; 
-$upcoming_booking = [
-    'car' => 'Toyota Camry',
-    'date' => '2024-11-05',
-    'status' => 'Confirmed'
-];
+$sql_total = "SELECT COUNT(*) AS total_bookings FROM bookings WHERE customer_id = ?";
 
 
+$stmt_active_or_pending = $conn->prepare($sql_active_or_pending);
+$stmt_active_or_pending->bind_param('i', $customer_id);
+$stmt_active_or_pending->execute();
+$result_active_or_pending = $stmt_active_or_pending->get_result();
+$active_or_pending_booking_data = $result_active_or_pending->fetch_assoc();
+$active_bookings = $active_or_pending_booking_data['active_or_pending_bookings'];
+
+
+$stmt_total = $conn->prepare($sql_total);
+$stmt_total->bind_param('i', $customer_id);
+$stmt_total->execute();
+$result_total = $stmt_total->get_result();
+$total_booking_data = $result_total->fetch_assoc();
+$total_bookings = $total_booking_data['total_bookings'];
+
+
+$loyalty_points = $total_bookings * 10;
+$sql_upcoming = "SELECT model_name AS car, booking_date AS date, booking_status AS status
+                 FROM bookings 
+                 WHERE customer_id = ? 
+                 AND (booking_status = 'active' OR booking_status = 'pending') 
+                 ORDER BY booking_date ASC LIMIT 1"; 
+
+
+$stmt_upcoming = $conn->prepare($sql_upcoming);
+$stmt_upcoming->bind_param('i', $customer_id);
+$stmt_upcoming->execute();
+$result_upcoming = $stmt_upcoming->get_result();
+
+
+if ($result_upcoming->num_rows > 0) {
+    $upcoming_booking = $result_upcoming->fetch_assoc();
+} else {
+    $upcoming_booking = null; 
+}
 $conn->close();
 ?>
 
@@ -141,7 +170,7 @@ $conn->close();
                 </a>
             </div>
             <div class="nav-item">
-                <a href="booking_history.php" class="nav-link">
+                <a href="customerbookinghistory.php" class="nav-link">
                     <i class="fas fa-history"></i>
                     <span>Booking History</span>
                 </a>
@@ -210,14 +239,15 @@ $conn->close();
         </div>
 
         <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h3 class="card-title">Active Bookings</h3>
-                    <i class="fas fa-car text-primary"></i>
-                </div>
-                <div class="card-value"><?php echo $active_bookings; ?></div>
-                <div class="card-subtitle">Out of <?php echo $total_bookings; ?> total bookings</div>
-            </div>
+        <div class="dashboard-card">
+    <div class="card-header">
+        <h3 class="card-title">Active and Pending Bookings</h3>
+        <i class="fas fa-car text-primary"></i>
+    </div>
+    <div class="card-value"><?php echo $active_bookings; ?></div>
+    <div class="card-subtitle">Out of <?php echo $total_bookings; ?> total bookings</div>
+</div>
+
 
             <div class="dashboard-card">
                 <div class="card-header">
@@ -229,15 +259,23 @@ $conn->close();
             </div>
 
             <div class="dashboard-card">
-                <div class="card-header">
-                    <h3 class="card-title">Upcoming Booking</h3>
-                    <i class="fas fa-calendar text-success"></i>
-                </div>
-                <div class="card-value"><?php echo $upcoming_booking['car']; ?></div>
-                <div class="card-subtitle">
-                    <?php echo date('F j, Y', strtotime($upcoming_booking['date'])); ?>
-                    <span class="status-badge status-confirmed"><?php echo $upcoming_booking['status']; ?></span>
-                </div>
+    <div class="card-header">
+        <h3 class="card-title">Upcoming Booking</h3>
+        <i class="fas fa-calendar text-success"></i>
+    </div>
+    <?php if ($upcoming_booking) { ?>
+        <div class="card-value"><?php echo $upcoming_booking['car']; ?></div>
+        <div class="card-subtitle">
+            <?php echo date('F j, Y', strtotime($upcoming_booking['date'])); ?>
+            <span class="status-badge status-<?php echo strtolower($upcoming_booking['status']); ?>">
+                <?php echo ucfirst($upcoming_booking['status']); ?>
+            </span>
+        </div>
+    <?php } else { ?>
+        <div class="card-value">No upcoming bookings</div>
+        <div class="card-subtitle">You have no active or pending bookings.</div>
+    <?php } ?>
+</div>
             </div>
         </div>
 

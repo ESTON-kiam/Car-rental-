@@ -1,6 +1,13 @@
 <?php
 session_name('admin_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 session_start();
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -40,7 +47,7 @@ if ($totalCustomersResult) {
     $totalCustomers = 0; 
 }
 
-// Fetch total vehicle count
+
 $vehicleQuery = "SELECT COUNT(*) as total_vehicles FROM vehicles";
 $vehicleResult = $conn->query($vehicleQuery);
 $totalVehicles = 0;
@@ -49,8 +56,19 @@ if ($vehicleResult) {
     $vehicleData = $vehicleResult->fetch_assoc();
     $totalVehicles = $vehicleData['total_vehicles'];
 }
+$bookingQuery = "SELECT COUNT(*) as total_bookings FROM bookings";
+$bookingResult = $conn->query($bookingQuery);
+$totalBookings = 0;
+
+if ($bookingResult) {
+    $bookingData = $bookingResult->fetch_assoc();
+    $totalBookings = $bookingData['total_bookings'];
+}
 
 $conn->close();
+
+
+
 
 
 date_default_timezone_set('Africa/Nairobi');
@@ -163,7 +181,7 @@ $debug = [
                             <li><a href="driverslist.php"><i class="fas fa-id-card"></i>Driver List</a></li>
                         </ul>
                     </li>
-                    <li><a href="car_booked_record.html"><i class="fas fa-book"></i><span>Car Bookings</span></a></li>
+                    <li><a href="carbookings.php"><i class="fas fa-book"></i><span>Car Bookings</span></a></li>
                     <li>
                         <button class="dropdown-toggle" aria-expanded="false" aria-controls="payment-menu">
                             <i class="fas fa-money-bill-wave"></i><span>Payment History</span><i class="fas fa-chevron-right"></i>
@@ -192,14 +210,14 @@ $debug = [
             <article class="card">
                     <div class="card-content">
                         <h3>Total Bookings</h3>
-                        <p class="card-value">1,234</p>
+                        <p class="card-value"><?php echo number_format($totalBookings); ?></p>
                         <p class="card-change positive">+12% from last month</p>
                     </div>
                     <div class="card-icon">
                         <i class="fas fa-car"></i>
                     </div>
                 </article>
-              <a href="carcollection.php">
+             
                 <article class="card">
                     <div class="card-content">
                         <h3>Total Vehicles</h3>
@@ -209,9 +227,9 @@ $debug = [
                     <div class="card-icon">
                         <i class="fas fa-car-side"></i>
                     </div>
-                </article></a>
+                </article>
 
-                <a href="customerlist.php">
+                
                 <article class="card">
     <div class="card-content">
         <h3>Total Customers</h3>
@@ -221,7 +239,7 @@ $debug = [
     <div class="card-icon">
         <i class="fas fa-user"></i> 
     </div>
-</article></a>
+</article>
 
                 <article class="card">
                     <div class="card-content">
