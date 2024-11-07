@@ -1,8 +1,9 @@
 <?php
-
+// Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Start a secure session
 session_name('admin_session');
 session_set_cookie_params([
     'lifetime' => 1800,
@@ -14,23 +15,25 @@ session_set_cookie_params([
 ]);
 session_start();
 
+// Check if the user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: Admin_login.php");
     exit();
 }
 
-
+// Database connection parameters
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
 $dbname = "car_rental_management"; 
 
+// Create a new mysqli instance and check connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
+// Fetch distinct customers with support messages
 $customerQuery = "SELECT DISTINCT c.id, c.full_name FROM support_messages sm JOIN customers c ON sm.customer_id = c.id";
 $customers = $conn->query($customerQuery);
 
@@ -44,55 +47,135 @@ $customers = $conn->query($customerQuery);
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for chat bubbles */
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .message-bubble.admin {
+            background-color: #e0f7fa; /* Light blue for admin */
+            margin-left: auto; /* Align to right */
+        }
+        .message-bubble.customer {
+            background-color: #f1f1f1; /* Light gray for customer */
+        }
+        .chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        /* Positioning for chatbox */
+        .chat-box-container {
+            margin-left: 20px; /* Slightly shift right */
+            transition: all 0.3s ease; /* Smooth transition */
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto py-10">
-        <h2 class="text-2xl font-bold mb-6">Customer Support Messages</h2>
-        
-        <?php while ($customer = $customers->fetch_assoc()): ?>
-            <div class="bg-white shadow-md rounded-lg mb-6 p-6">
-                <h3 class="font-semibold text-lg mb-2">Chat with <?= htmlspecialchars($customer['full_name']) ?></h3>
-                
+    <div class="container mx-auto py-10 flex">
+        <div class="w-1/3">
+            <h2 class="text-2xl font-bold mb-6">Customer Support Messages</h2>
+
+            <!-- Customer List -->
+            <div class="mb-6">
+                <?php while ($customer = $customers->fetch_assoc()): ?>
+                    <div class="bg-white shadow-md rounded-lg mb-4 p-4 cursor-pointer hover:bg-gray-100">
+                        <a href="?customer_id=<?= htmlspecialchars($customer['id']) ?>" class="text-blue-600 hover:underline">
+                            <?= htmlspecialchars($customer['full_name']) ?>
+                        </a>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <!-- Chat Box -->
+        <div class="chat-box-container w-2/3">
+            <?php if (isset($_GET['customer_id'])): ?>
                 <?php
-                
+                // Fetch messages for the selected customer
+                $selected_customer_id = intval($_GET['customer_id']);
                 $msgQuery = "SELECT sender, message, created_at FROM support_messages WHERE customer_id = ? ORDER BY created_at ASC";
                 $stmt = $conn->prepare($msgQuery);
-                $stmt->bind_param("i", $customer['id']);
-                $stmt->execute();
-                $messages = $stmt->get_result();
+                if ($stmt) {
+                    $stmt->bind_param("i", $selected_customer_id);
+                    $stmt->execute();
+                    $messages = $stmt->get_result();
+                }
 
-                if ($messages->num_rows > 0): ?>
-                    <div class="border p-4 rounded-lg overflow-y-auto max-h-60 bg-gray-50 mb-4" style="max-height: 400px;">
+                // Fetch customer details for display
+                $customerDetailsQuery = "SELECT full_name FROM customers WHERE id = ?";
+                $stmtDetails = $conn->prepare($customerDetailsQuery);
+                if ($stmtDetails) {
+                    $stmtDetails->bind_param("i", $selected_customer_id);
+                    $stmtDetails->execute();
+                    $resultDetails = $stmtDetails->get_result();
+
+                    // Check if customer details were found
+                    if ($resultDetails && $resultDetails->num_rows > 0) {
+                        $customerDetails = $resultDetails->fetch_assoc();
+                        ?>
+                        <h3 class="font-semibold text-lg mb-4">Chat with <?= htmlspecialchars($customerDetails['full_name']) ?></h3>
+                        <?php
+                    } else {
+                        echo "<p class='text-red-500'>Customer not found.</p>";
+                    }
+                }
+                ?>
+
+                <!-- Display Messages -->
+                <div class="chat-container border p-4 rounded-lg bg-gray-50 mb-4" id="chat-box">
+                    <?php if (isset($messages) && $messages->num_rows > 0): ?>
                         <?php while ($msg = $messages->fetch_assoc()): ?>
-                            <div class="mb-3 <?= $msg['sender'] == 'admin' ? 'text-right' : 'text-left' ?>">
-                                <span class="font-semibold <?= $msg['sender'] == 'admin' ? 'text-blue-500' : 'text-gray-600' ?>">
-                                    <?= $msg['sender'] == 'admin' ? 'Admin' : htmlspecialchars($customer['full_name']) ?>:
-                                </span>
-                                <div class="inline-block px-4 py-2 rounded-lg <?= $msg['sender'] == 'admin' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' ?>">
-                                    <?= htmlspecialchars($msg['message']) ?>
-                                </div>
+                            <div class="message-bubble <?= ($msg['sender'] == 'admin') ? 'admin' : 'customer' ?>">
+                                <strong><?= ($msg['sender'] == 'admin') ? 'Admin' : htmlspecialchars($customerDetails['full_name']) ?>:</strong>
+                                <p><?= htmlspecialchars($msg['message']) ?></p>
+                                <span class="text-xs text-gray-500"><?= date('H:i', strtotime($msg['created_at'])) ?></span>
                             </div>
                         <?php endwhile; ?>
-                    </div>
-                <?php else: ?>
-                    <p class="text-gray-500">No messages yet with <?= htmlspecialchars($customer['full_name']) ?>.</p>
-                <?php endif; ?>
-                
-                <?php $stmt->close(); ?>
+                    <?php else: ?>
+                        <p class="text-gray-500">No messages yet with <?= isset($customerDetails) ? htmlspecialchars($customerDetails['full_name']) : '' ?>.</p>
+                    <?php endif; ?>
+                </div>
 
-                
-                <form action="admin_support_send.php" method="POST" class="flex mt-4">
-                    <input type="hidden" name="customer_id" value="<?= $customer['id'] ?>">
-                    <input type="text" name="message" required placeholder="Reply to <?= htmlspecialchars($customer['full_name']) ?>" class="flex-1 border p-2 rounded-l-lg">
+                <!-- Message Sending Form -->
+                <form action="admin_support_send.php" method="POST" class="flex mt-4" id="message-form">
+                    <input type="hidden" name="customer_id" value="<?= htmlspecialchars($selected_customer_id) ?>">
+                    <input type="text" name="message" required placeholder="Reply to <?= isset($customerDetails) ? htmlspecialchars($customerDetails['full_name']) : '' ?>" class="flex-1 border p-2 rounded-l-lg">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg">Send</button>
                 </form>
-            </div>
-        <?php endwhile; ?>
 
-        <?php
-        $customers->close();
-        $conn->close();
-        ?>
+            <?php endif; ?>
+
+            <?php
+            // Close the database connection
+            if (isset($customers)) {
+                $customers->close();
+            }
+            if (isset($conn)) {
+                $conn->close();
+            }
+            ?>
+        </div>
     </div>
+
+    <script>
+        // Scroll to the bottom of the chat when new messages are added
+        const chatBox = document.getElementById('chat-box');
+        
+        // Function to scroll to the bottom of the chat box
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Call scrollToBottom on page load and after form submission
+        window.onload = scrollToBottom;
+
+        document.getElementById('message-form').onsubmit = function() {
+            setTimeout(scrollToBottom, 100); // Delay to allow new message to appear
+        };
+    </script>
 </body>
 </html>
