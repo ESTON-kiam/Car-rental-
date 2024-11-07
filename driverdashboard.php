@@ -1,19 +1,18 @@
 <?php
+
 session_name('driver_session');
 session_set_cookie_params([
     'lifetime' => 1800,
     'path' => '/',
     'domain' => '',
-    'secure' => false, 
+    'secure' => false,
     'httponly' => true,
     'samesite' => 'Strict'
 ]);
 session_start();
-
-
-header("Cache-Control: no-cache, no-store, must-revalidate"); 
-header("Pragma: no-cache"); 
-header("Expires: 0"); 
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 
 if (!isset($_SESSION['driver_id'])) {
     header("Location: Driver_login.php");
@@ -24,7 +23,6 @@ $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "car_rental_management";
-
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
@@ -33,46 +31,84 @@ if ($conn->connect_error) {
 
 $driver_id = $_SESSION['driver_id'];
 
-
 $query = "SELECT name, profile_picture FROM drivers WHERE driver_id='$driver_id'";
 $result = $conn->query($query);
-
 if ($result && $result->num_rows > 0) {
     $driver = $result->fetch_assoc();
     $name = $driver['name'];
     $profile_picture = !empty($driver['profile_picture']) ? $driver['profile_picture'] : 'default-profile.jpg';
 } else {
-    $name = "Driver"; 
+    $name = "Driver";
     $profile_picture = 'default-profile.jpg';
 }
 
-
-$pendingCountQuery = "SELECT COUNT(*) as pending_count FROM deliveries WHERE driver_id='$driver_id' AND status='pending'";
+$pendingCountQuery = "
+SELECT COUNT(*) as pending_count FROM driver_assignments da 
+JOIN bookings b ON da.booking_id = b.booking_id 
+WHERE da.driver_id='$driver_id' AND b.booking_status='pending'";
 $pendingCountResult = $conn->query($pendingCountQuery);
-$pending_count = ($pendingCountResult && $pendingCountResult->num_rows > 0) ? $pendingCountResult->fetch_assoc()['pending_count'] : 0;
+$pending_count = ($pendingCountResult && $pendingCountResult->num_rows > 0) ? 
+                 $pendingCountResult->fetch_assoc()['pending_count'] : 0;
 
+$pendingAssignmentsQuery = "
+SELECT a.assignment_id, a.booking_id, a.vehicle_id, a.registration_no, a.model_name, 
+       a.assigned_at, c.full_name AS customer_name, b.start_date, b.pick_up_time 
+FROM driver_assignments a 
+JOIN customers c ON a.customer_id = c.id 
+JOIN bookings b ON a.booking_id = b.booking_id 
+WHERE a.driver_id='$driver_id' AND b.booking_status='pending' 
+ORDER BY a.assigned_at ASC";
+$assignments = $conn->query($pendingAssignmentsQuery);
 
-$pendingDeliveriesQuery = "
-    SELECT d.*, c.full_name as customer_name, v.model_name as vehicle_model 
-    FROM deliveries d
-    JOIN customers c ON d.customer_id = c.id
-    JOIN vehicles v ON d.vehicle_id = v.vehicle_id
-    WHERE d.driver_id='$driver_id' AND d.status='pending'
-    ORDER BY d.delivery_date ASC
-";
-$deliveries = $conn->query($pendingDeliveriesQuery);
+$bookingsQuery = "
+SELECT booking_id, vehicle_id, registration_no, model_name, pick_up_location, start_date, pick_up_time 
+FROM bookings WHERE driver_option='no' AND booking_status='pending'";
+$bookingsResult = $conn->query($bookingsQuery);
 
-// Fetch completed deliveries
-$completedDeliveriesQuery = "
-    SELECT d.*, c.full_name as customer_name, v.model_name as vehicle_model 
-    FROM deliveries d
-    JOIN customers c ON d.customer_id = c.id
-    JOIN vehicles v ON d.vehicle_id = v.vehicle_id
-    WHERE d.driver_id='$driver_id' AND d.status='completed'
-    ORDER BY d.completion_date DESC
-    LIMIT 10
-";
-$completed = $conn->query($completedDeliveriesQuery);
+if (isset($_POST['complete_booking'])) {
+    $bookingId = $_POST['booking_id'];
+    $assignmentId = $_POST['assignment_id']; 
+    
+    $updateBookingStatusQuery = "
+    UPDATE bookings SET booking_status='active' 
+    WHERE booking_id='$bookingId'";
+    
+    $updateDriverStatusQuery = "
+    UPDATE drivers SET availability_status='available' 
+    WHERE driver_id='$driver_id'";
+    
+    
+    $insertCompletedTaskQuery = "
+    INSERT INTO completed_tasks (assignment_id, driver_id, booking_id, vehicle_id, registration_no, model_name, completed_at)
+    SELECT da.assignment_id, da.driver_id, b.booking_id, v.vehicle_id, v.registration_no, v.model_name, NOW()
+    FROM driver_assignments da
+    JOIN bookings b ON da.booking_id = b.booking_id
+    JOIN vehicles v ON da.vehicle_id = v.vehicle_id
+    WHERE da.assignment_id = ?";
+    
+    // Prepare the update and insert queries using prepared statements
+    $stmtUpdateBookingStatus = $conn->prepare($updateBookingStatusQuery);
+    $stmtUpdateDriverStatus = $conn->prepare($updateDriverStatusQuery);
+    $stmtInsertCompletedTask = $conn->prepare($insertCompletedTaskQuery);
+    
+    // Bind parameters to the prepared statements
+    $stmtInsertCompletedTask->bind_param("i", $assignmentId); // Binding assignment_id as an integer
+    
+    // Execute all queries
+    if ($stmtUpdateBookingStatus->execute() && $stmtUpdateDriverStatus->execute() && $stmtInsertCompletedTask->execute()) {
+        // If all queries execute successfully, redirect to the dashboard
+        header("Location: driverdashboard.php");
+        exit();
+    } else {
+        // Handle the case where the query execution fails
+        echo "Error: " . $conn->error;
+    }
+    
+    // Close prepared statements
+    $stmtUpdateBookingStatus->close();
+    $stmtUpdateDriverStatus->close();
+    $stmtInsertCompletedTask->close();
+}
 
 $conn->close();
 ?>
@@ -87,32 +123,35 @@ $conn->close();
     <link rel="stylesheet" href="assets/css/driverdash.css">
     <script src="assets/js/driverdash.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    
-    <script>
-        window.onload = function() {
-          
-            if (!<?php echo isset($_SESSION['driver_id']) ? 'true' : 'false'; ?>) {
-                window.location.href = "Driver_login.php";
-            }
-        };
-    </script>
+    <style>
+        .action-btn {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .action-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
-
 <body>
 <header class="header" role="banner">
     <div class="header-content">
-        <h1>
-            <i class="fas fa-car"></i>
-            Drivers' Dashboard
-        </h1>
+        <h1><i class="fas fa-car"></i> Drivers' Dashboard</h1>
         <div class="profile" role="navigation" aria-label="User menu">
             <button class="profile-button" aria-expanded="false" aria-controls="profile-menu">
-            <div class="profile-picture">
-    <img id="profile-img" src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Driver profile picture" loading="lazy" width="40" height="40">
-</div>
-                <span class="profile-name"><?php echo htmlspecialchars($driver['name']); ?></span>
+                <div class="profile-picture">
+                    <img id="profile-img" src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Driver profile picture" loading="lazy" width="40" height="40">
+                </div>
+                <span class="profile-name"><?php echo htmlspecialchars($name); ?></span>
             </button>
             <div id="profile-menu" class="profile-dropdown" hidden>
                 <nav>
@@ -132,178 +171,108 @@ $conn->close();
     <!-- Sidebar -->
     <aside class="sidebar">
         <nav>
-        
-
             <ul class="nav-menu">
-            <li class="nav-item">
-                    <a href="driverdashboard.php" class="nav-link" data-section="schedule">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link active" data-section="deliveries">
-                        <i class="fas fa-truck"></i>
-                        Pending Deliveries
-                        <span class="badge"><?php echo $pending_count; ?></span>
-                    </a>
+                    <a href="#" class="nav-link active"><i class="fas fa-tasks"></i> Pending Assignments <span class="badge"><?php echo $pending_count; ?></span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="schedule">
-                        <i class="fas fa-calendar"></i>
-                        Schedule
-                    </a>
+                    <a href="#" class="nav-link"><i class="fas fa-calendar"></i> Schedule</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="completed">
-                        <i class="fas fa-check-circle"></i>
-                        Completed Deliveries
-                    </a>
+                    <a href="drivercompleteassignmen.php" class="nav-link"><i class="fas fa-check-circle"></i> Completed Assignments</a>
                 </li>
-                
                 <li class="nav-item">
-                    <a href="driverlogout.php" class="nav-link">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
-                    </a>
+                    <a href="driverlogout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </li>
             </ul>
         </nav>
     </aside>
 
     <main class="main-content">
-        <section id="deliveries" class="content-section">
+
+        <!-- Pending Assignments Section -->
+        <section id="assignments" class="content-section">
             <div class="section-header">
-                <h1>Pending Deliveries</h1>
+                <h1>Pending Assignments</h1>
                 <div class="actions">
-                    <button class="refresh-btn" onclick="refreshDeliveries()">
-                        <i class="fas fa-sync"></i> Refresh
-                    </button>
+                    <button class='refresh-btn' onclick='refreshAssignments()'><i class='fas fa-sync'></i> Refresh</button>
                 </div>
             </div>
-            <div class="delivery-cards" id="deliveryList">
-                <?php
-                while ($delivery = $deliveries->fetch_assoc()) {
-                    ?>
-                    <div class="delivery-card">
-                        <div class="delivery-header">
-                            <h3>Delivery #<?php echo htmlspecialchars($delivery['id']); ?></h3>
-                            <span class="delivery-date">
-                                <?php echo date('M d, Y', strtotime($delivery['delivery_date'])); ?>
-                            </span>
+
+            <div class='assignment-cards' id='assignmentList'>
+                <?php while ($assignment = $assignments->fetch_assoc()) { ?>
+                    <div class='assignment-card'>
+                        <div class='assignment-header'>
+                            <h3>Assignment <?php echo htmlspecialchars($assignment['assignment_id']); ?></h3>
+                            <span class='assignment-date'><?php echo date('M d, Y', strtotime($assignment['assigned_at'])); ?></span>
                         </div>
-                        <div class="delivery-details">
-                            <p><strong>Customer:</strong> <?php echo htmlspecialchars($delivery['customer_name']); ?></p>
-                            <p><strong>Vehicle:</strong> <?php echo htmlspecialchars($delivery['vehicle_model']); ?></p>
-                            <p><strong>Address:</strong> <?php echo htmlspecialchars($delivery['delivery_address']); ?></p>
+
+                        <div class='assignment-details'>
+                            <p><strong>Customer:</strong> <?php echo htmlspecialchars($assignment['customer_name']); ?></p>
+                            <p><strong>Vehicle:</strong> <?php echo htmlspecialchars($assignment['model_name']); ?></p>
+                            <p><strong>Registration No:</strong> <?php echo htmlspecialchars($assignment['registration_no']); ?></p>
+                            <p><strong>Start Date:</strong> <?php echo htmlspecialchars($assignment['start_date']); ?></p>
+                            <p><strong>Pick-Up Time:</strong> <?php echo htmlspecialchars($assignment['pick_up_time']); ?></p>
                         </div>
-                        <div class="delivery-actions">
-                            <button onclick="startDelivery(<?php echo $delivery['id']; ?>)" class="action-btn">
-                                Start Delivery
-                            </button>
-                            <button onclick="viewRoute(<?php echo $delivery['id']; ?>)" class="action-btn secondary">
-                                View Route
-                            </button>
-                        </div>
-                    </div>
-                    <?php
-                }
-                if ($deliveries->num_rows === 0) {
-                    echo '<div class="no-deliveries">No pending deliveries at the moment.</div>';
-                }
-                ?>
+
+                        <!-- Complete Button -->
+                        <form method='post'>
+                            <input type='hidden' name='assignment_id' value='<?php echo htmlspecialchars($assignment['assignment_id']); ?>'>
+                            <button type='submit' name='complete_assignment' onclick='return confirm("Are you sure you want to mark this assignment as completed?");' class='action-btn'>Complete Assignment</button>
+                        </form>
+
+                    </div><?php } 
+
+                    if ($assignments->num_rows === 0) {
+                        echo '<div class=\'no-assignments\'>No pending assignments at the moment.</div>';
+                    } ?>
             </div>
+
         </section>
 
-        <section id="schedule" class="content-section" style="display: none;">
-            <h1>Delivery Schedule</h1>
-            <div id="calendar"></div>
-        </section>
-
-        <section id="completed" class="content-section" style="display: none;">
-            <h1>Completed Deliveries</h1>
-            <div class="completed-list" id="completedDeliveries">
-                <?php
-                $stmt = $conn->prepare("
-                    SELECT d.*, c.name as customer_name, v.model as vehicle_model 
-                    FROM deliveries d
-                    JOIN customers c ON d.customer_id = c.id
-                    JOIN vehicles v ON d.vehicle_id = v.id
-                    WHERE d.driver_id = ? AND d.status = 'completed'
-                    ORDER BY d.completion_date DESC
-                    LIMIT 10
-                ");
-                $stmt->bind_param("i", $driver_id);
-                $stmt->execute();
-                $completed = $stmt->get_result();
-
-                while ($delivery = $completed->fetch_assoc()) {
-                    ?>
-                    <div class="completed-card">
-                        <div class="completed-header">
-                            <h3>Delivery #<?php echo htmlspecialchars($delivery['id']); ?></h3>
-                            <span class="completed-date">
-                                <?php echo date('M d, Y', strtotime($delivery['completion_date'])); ?>
-                            </span>
-                        </div>
-                        <div class="completed-details">
-                            <p><strong>Customer:</strong> <?php echo htmlspecialchars($delivery['customer_name']); ?></p>
-                            <p><strong>Vehicle:</strong> <?php echo htmlspecialchars($delivery['vehicle_model']); ?></p>
-                            <p><strong>Status:</strong> Completed</p>
-                        </div>
-                    </div>
-                    <?php
-                }
-                if ($completed->num_rows === 0) {
-                    echo '<div class="no-completed">No completed deliveries at the moment.</div>';
-                }
-                ?>
+        
+        <section id='bookings' class='content-section'>
+            <div class='section-header'>
+                <h1>Available Bookings</h1>
             </div>
+
+            <div class='booking-cards' id='bookingList'>
+                <?php while ($booking = $bookingsResult->fetch_assoc()) { ?>
+                    <div class='booking-card'>
+                        <div class='booking-header'>
+                            <h3>Booking <?php echo htmlspecialchars($booking['booking_id']); ?></h3>
+                        </div>
+
+                        <div class='booking-details'>
+                            <p><strong>Vehicle:</strong> <?php echo htmlspecialchars($booking['model_name']); ?></p>
+                            <p><strong>Registration No:</strong> <?php echo htmlspecialchars($booking['registration_no']); ?></p>
+                            <p><strong>Pick-Up Location:</strong> <?php echo htmlspecialchars($booking['pick_up_location']); ?></p>
+                            <p><strong>Start Date:</strong> <?php echo htmlspecialchars($booking['start_date']); ?></p>
+                            <p><strong>Pick-Up Time:</strong> <?php echo htmlspecialchars($booking['pick_up_time']); ?></p>
+                        </div>
+
+                        <form method='post'>
+                            <input type='hidden' name='booking_id' value='<?php echo htmlspecialchars($booking['booking_id']); ?>'>
+                            <input type='hidden' name='assignment_id' value='<?php echo htmlspecialchars($assignment['assignment_id']); ?>'> <!-- Capture assignment ID -->
+                            <button type='submit' name='complete_booking' onclick='return confirm("Are you sure you want to mark this booking as completed?");' class='action-btn'>Complete Booking</button>
+                        </form>
+
+                    </div><?php } 
+
+                    if ($bookingsResult->num_rows === 0) {
+                        echo '<div class=\'no-bookings\'>No available bookings at the moment.</div>';
+                    } ?>
+            </div>
+
         </section>
 
-        <section id="profile" class="content-section" style="display: none;">
-            <h1>Your Profile</h1>
-            <div class="profile-info">
-                <img src="<?php echo htmlspecialchars($driver['profile_photo'] ?? '/api/placeholder/40/40'); ?>" alt="Profile Picture">
-                <p><strong>Name:</strong> <?php echo htmlspecialchars($driver['name']); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($driver['email']); ?></p>
-                <p><strong>Phone:</strong> <?php echo htmlspecialchars($driver['phone']); ?></p>
-            </div>
-        </section>
     </main>
+
 </div>
 
-<script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: [
-            
-        ],
-        dateClick: function(info) {
-            alert('Date: ' + info.dateStr);
-        }
-    });
-    calendar.render();
-});
-
-
-function refreshDeliveries() {
-    
-}
-
-
-function startDelivery(deliveryId) {
-   
-}
-
-
-function viewRoute(deliveryId) {
-    
-}
-</script>
-
 </body>
+
 </html>

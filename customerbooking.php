@@ -359,23 +359,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="text-gray-600">Complete your booking details below</p>
             </div>
             <!-- Vehicle Details Card -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Selected Vehicle Details</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <p class="text-gray-600">Registration Number</p>
-            <p class="font-semibold"><?php echo htmlspecialchars($registration_no); ?></p>
-        </div>
-        <div>
-            <p class="text-gray-600">Model Name</p>
-            <p class="font-semibold"><?php echo htmlspecialchars($model_name); ?></p>
-        </div>
-        <div>
-            <p class="text-gray-600">Price Per Day</p>
-            <p class="font-semibold">KSH <?php echo number_format($vehicle['price_per_day']); ?></p>
-        </div>
-    </div>
-</div>
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-semibold mb-4">Selected Vehicle Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-600">Registration Number</p>
+                        <p class="font-semibold"><?php echo htmlspecialchars($registration_no); ?></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Model Name</p>
+                        <p class="font-semibold"><?php echo htmlspecialchars($model_name); ?></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Price Per Day</p>
+                        <p class="font-semibold">KSH <?php echo number_format($vehicle['price_per_day']); ?></p>
+                    </div>
+                </div>
+            </div>
 
             <form action="" method="POST" onsubmit="return validateAndSubmit()">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -480,7 +480,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (startDate && endDate && startDate < endDate) {
             const timeDiff = endDate - startDate;
             const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            const driverCost = driverOption === 'yes' ? 2000 : 0;
+            const driverCost = driverOption === 'yes' ? 2000 : 0; // Cost only if driver is included
             const acCost = carType === 'With AC' ? 500 : 0;
             
             const chargeType = document.querySelector('select[name="charge_type"]').value;
@@ -488,7 +488,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (chargeType === 'per_day') {
                 totalFare = (pricePerDay * dayDiff) + driverCost + (acCost * dayDiff);
             } else {
-                const distance = 1;
+                const distance = 1; // Assuming a default distance for per KM calculation
                 totalFare = (distance * 2000) + driverCost;
             }
             
@@ -523,23 +523,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return false;
         }
         
-        
         calculateAndDisplayFare();
-        
         
         if (!window.calculatedFare || !window.calculatedDeposit) {
             alert("Please ensure all booking details are filled correctly.");
             return false;
         }
         
-      
         document.getElementById('fare_hidden').value = window.calculatedFare;
         document.getElementById('deposit_hidden').value = window.calculatedDeposit;
         
         return true;
     }
 
-   
     document.getElementById('start_date').addEventListener('change', calculateAndDisplayFare);
     document.getElementById('end_date').addEventListener('change', calculateAndDisplayFare);
     document.getElementById('car_type').addEventListener('change', calculateAndDisplayFare);
@@ -549,7 +545,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
     document.querySelector('select[name="charge_type"]').addEventListener('change', calculateAndDisplayFare);
 
-    
     window.addEventListener('load', calculateAndDisplayFare);
 </script>
 </body>
