@@ -42,6 +42,7 @@ if ($result && $result->num_rows > 0) {
     $profile_picture = 'default-profile.jpg';
 }
 
+
 $pendingCountQuery = "
 SELECT COUNT(*) as pending_count FROM driver_assignments da 
 JOIN bookings b ON da.booking_id = b.booking_id 
@@ -49,6 +50,7 @@ WHERE da.driver_id='$driver_id' AND b.booking_status='pending'";
 $pendingCountResult = $conn->query($pendingCountQuery);
 $pending_count = ($pendingCountResult && $pendingCountResult->num_rows > 0) ? 
                  $pendingCountResult->fetch_assoc()['pending_count'] : 0;
+
 
 $pendingAssignmentsQuery = "
 SELECT a.assignment_id, a.booking_id, a.vehicle_id, a.registration_no, a.model_name, 
@@ -60,59 +62,68 @@ WHERE a.driver_id='$driver_id' AND b.booking_status='pending'
 ORDER BY a.assigned_at ASC";
 $assignments = $conn->query($pendingAssignmentsQuery);
 
+
 $bookingsQuery = "
 SELECT booking_id, vehicle_id, registration_no, model_name, pick_up_location, start_date, pick_up_time 
 FROM bookings WHERE driver_option='no' AND booking_status='pending'";
 $bookingsResult = $conn->query($bookingsQuery);
 
-if (isset($_POST['complete_booking'])) {
-    $bookingId = $_POST['booking_id'];
-    $assignmentId = $_POST['assignment_id']; 
-    
-    $updateBookingStatusQuery = "
-    UPDATE bookings SET booking_status='active' 
-    WHERE booking_id='$bookingId'";
-    
-    $updateDriverStatusQuery = "
-    UPDATE drivers SET availability_status='available' 
-    WHERE driver_id='$driver_id'";
-    
-    
-    $insertCompletedTaskQuery = "
-    INSERT INTO completed_tasks (assignment_id, driver_id, booking_id, vehicle_id, registration_no, model_name, completed_at)
-    SELECT da.assignment_id, da.driver_id, b.booking_id, v.vehicle_id, v.registration_no, v.model_name, NOW()
-    FROM driver_assignments da
-    JOIN bookings b ON da.booking_id = b.booking_id
-    JOIN vehicles v ON da.vehicle_id = v.vehicle_id
-    WHERE da.assignment_id = ?";
-    
-    // Prepare the update and insert queries using prepared statements
-    $stmtUpdateBookingStatus = $conn->prepare($updateBookingStatusQuery);
-    $stmtUpdateDriverStatus = $conn->prepare($updateDriverStatusQuery);
-    $stmtInsertCompletedTask = $conn->prepare($insertCompletedTaskQuery);
-    
-    // Bind parameters to the prepared statements
-    $stmtInsertCompletedTask->bind_param("i", $assignmentId); // Binding assignment_id as an integer
-    
-    // Execute all queries
-    if ($stmtUpdateBookingStatus->execute() && $stmtUpdateDriverStatus->execute() && $stmtInsertCompletedTask->execute()) {
-        // If all queries execute successfully, redirect to the dashboard
-        header("Location: driverdashboard.php");
-        exit();
-    } else {
-        // Handle the case where the query execution fails
-        echo "Error: " . $conn->error;
+
+if (isset($_POST['complete_assignment'])) {
+    $assignmentId = isset($_POST['assignment_id']) ? $_POST['assignment_id'] : null; 
+    $bookingId = isset($_POST['booking_id']) ? $_POST['booking_id'] : null;
+
+    if ($bookingId) {
+        
+        $updateBookingStatusQuery = "
+        UPDATE bookings SET booking_status='active' 
+        WHERE booking_id=?";
+        
+        $stmtUpdateBookingStatus = $conn->prepare($updateBookingStatusQuery);
+        $stmtUpdateBookingStatus->bind_param("i", $bookingId);
+        $stmtUpdateBookingStatus->execute();
+        $stmtUpdateBookingStatus->close();
+    } else if ($assignmentId) {
+        
+        $updateBookingStatusQuery = "
+        UPDATE bookings SET booking_status='active' 
+        WHERE booking_id=(SELECT booking_id FROM driver_assignments WHERE assignment_id=?)";
+        
+        $updateDriverStatusQuery = "
+        UPDATE drivers SET availability_status='available' 
+        WHERE driver_id='$driver_id'";
+        
+        
+        $insertCompletedTaskQuery = "
+        INSERT INTO completed_tasks (assignment_id, driver_id, booking_id, vehicle_id, registration_no, model_name, completed_at)
+        SELECT da.assignment_id, da.driver_id, b.booking_id, v.vehicle_id, v.registration_no, v.model_name, NOW()
+        FROM driver_assignments da
+        JOIN bookings b ON da.booking_id = b.booking_id
+        JOIN vehicles v ON da.vehicle_id = v.vehicle_id
+        WHERE da.assignment_id = ?";
+        
+        $stmtUpdateBookingStatus = $conn->prepare($updateBookingStatusQuery);
+        $stmtUpdateDriverStatus = $conn->prepare($updateDriverStatusQuery);
+        $stmtInsertCompletedTask = $conn->prepare($insertCompletedTaskQuery);
+        
+        $stmtUpdateBookingStatus->bind_param("i", $assignmentId);
+        $stmtInsertCompletedTask->bind_param("i", $assignmentId); 
+        
+        if ($stmtUpdateBookingStatus->execute() && $stmtUpdateDriverStatus->execute() && $stmtInsertCompletedTask->execute()) {
+            header("Location: driverdashboard.php");
+            exit();
+        } else {
+            echo "Error: " . $conn->error;
+        }
+        
+        $stmtUpdateBookingStatus->close();
+        $stmtUpdateDriverStatus->close();
+        $stmtInsertCompletedTask->close();
     }
-    
-    // Close prepared statements
-    $stmtUpdateBookingStatus->close();
-    $stmtUpdateDriverStatus->close();
-    $stmtInsertCompletedTask->close();
 }
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -120,12 +131,14 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Dashboard - Car Rental System</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="assets/css/driverdash.css">
     <script src="assets/js/driverdash.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
         .action-btn {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50; 
             border: none;
             color: white;
             padding: 10px 20px;
@@ -168,7 +181,6 @@ $conn->close();
 </header>
 
 <div class="dashboard">
-    <!-- Sidebar -->
     <aside class="sidebar">
         <nav>
             <ul class="nav-menu">
@@ -179,7 +191,7 @@ $conn->close();
                     <a href="#" class="nav-link active"><i class="fas fa-tasks"></i> Pending Assignments <span class="badge"><?php echo $pending_count; ?></span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link"><i class="fas fa-calendar"></i> Schedule</a>
+                    <a href="driverschedule.php" class="nav-link"><i class="fas fa-calendar"></i> Schedule</a>
                 </li>
                 <li class="nav-item">
                     <a href="drivercompleteassignmen.php" class="nav-link"><i class="fas fa-check-circle"></i> Completed Assignments</a>
@@ -192,8 +204,6 @@ $conn->close();
     </aside>
 
     <main class="main-content">
-
-        <!-- Pending Assignments Section -->
         <section id="assignments" class="content-section">
             <div class="section-header">
                 <h1>Pending Assignments</h1>
@@ -218,22 +228,18 @@ $conn->close();
                             <p><strong>Pick-Up Time:</strong> <?php echo htmlspecialchars($assignment['pick_up_time']); ?></p>
                         </div>
 
-                        <!-- Complete Button -->
                         <form method='post'>
                             <input type='hidden' name='assignment_id' value='<?php echo htmlspecialchars($assignment['assignment_id']); ?>'>
                             <button type='submit' name='complete_assignment' onclick='return confirm("Are you sure you want to mark this assignment as completed?");' class='action-btn'>Complete Assignment</button>
                         </form>
-
                     </div><?php } 
 
                     if ($assignments->num_rows === 0) {
                         echo '<div class=\'no-assignments\'>No pending assignments at the moment.</div>';
                     } ?>
             </div>
-
         </section>
 
-        
         <section id='bookings' class='content-section'>
             <div class='section-header'>
                 <h1>Available Bookings</h1>
@@ -256,23 +262,17 @@ $conn->close();
 
                         <form method='post'>
                             <input type='hidden' name='booking_id' value='<?php echo htmlspecialchars($booking['booking_id']); ?>'>
-                            <input type='hidden' name='assignment_id' value='<?php echo htmlspecialchars($assignment['assignment_id']); ?>'> <!-- Capture assignment ID -->
-                            <button type='submit' name='complete_booking' onclick='return confirm("Are you sure you want to mark this booking as completed?");' class='action-btn'>Complete Booking</button>
+                            <button type='submit' name='complete_assignment' onclick='return confirm("Are you sure you want to mark this booking as completed?");' class='action-btn'>Complete Booking</button>
                         </form>
-
                     </div><?php } 
 
                     if ($bookingsResult->num_rows === 0) {
                         echo '<div class=\'no-bookings\'>No available bookings at the moment.</div>';
                     } ?>
             </div>
-
         </section>
-
     </main>
-
 </div>
 
 </body>
-
 </html>
