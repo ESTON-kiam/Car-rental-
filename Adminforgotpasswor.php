@@ -22,31 +22,37 @@ if ($conn->connect_error) {
 $message = '';
 $messageType = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'];
-    $result = $conn->query("SELECT * FROM drivers WHERE email='$email'");
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email_address'])) {
+    $email_address = $_POST['email_address'];
+
+   
+    $result = $conn->query("SELECT * FROM admins WHERE email_address='$email_address'");
 
     if ($result->num_rows > 0) {
-        $token = bin2hex(random_bytes(32)); 
+       
+        $token = bin2hex(random_bytes(32));
         $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-        $conn->query("UPDATE drivers SET reset_token='$token', token_expiration='$expiry' WHERE email='$email'");
+        
+        $conn->query("UPDATE admins SET reset_token='$token', token_expiration='$expiry' WHERE email_address='$email_address'");
 
+        
         $mail = new PHPMailer;
-        $mail->isSMTP();                                           
-        $mail->Host = 'smtp.gmail.com';                   
-        $mail->SMTPAuth = true;                                
-        $mail->Username = 'engestonbrandon@gmail.com';        
-        $mail->Password = 'dsth izzm npjl qebi';               
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;   
-        $mail->Port = 587;                                     
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username   = 'engestonbrandon@gmail.com';            
+            $mail->Password   = 'dsth izzm npjl qebi'; 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
 
         $mail->setFrom('no-reply@gmail.com', 'Online Car Rental');
-        $mail->addAddress($email);
+        $mail->addAddress($email_address);
         $mail->isHTML(true);
         $mail->Subject = 'Password Reset Request';
 
-        $resetLink = "http://localhost:8000/driverresetpassword.php?token=$token";
+        $resetLink = "http://localhost:8000/Adminresetpassword.php?token=$token";
         $mail->Body = "
             <h2>Password Reset Request</h2>
             <p>Click the link below to reset your password:</p>
@@ -54,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>This link will expire in 1 hour.</p>
         ";
 
+       
         if ($mail->send()) {
             $message = "A password reset link has been sent to your email address.";
             $messageType = "success";
@@ -67,13 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$conn->close(); 
+$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Driver Forgot Password</title>
+    <title>Admin Forgot Password</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -84,13 +92,13 @@ $conn->close();
 </head>
 <body>
 <div class="container">
-    <h2>Driver Forgot Password</h2>
+    <h2>Admin Forgot Password</h2>
     <form method="POST" action="">
-        <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+    <input type="email" name="email_address" class="form-control" placeholder="Enter your email" required>
+
         <button type="submit" class="btn btn-success btn-block">Send Reset Link</button>
     </form>
 </div>
-
 
 <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

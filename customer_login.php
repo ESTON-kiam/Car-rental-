@@ -181,7 +181,7 @@ try {
                     <input type="checkbox" id="remember" name="remember">
                     <p>Remember me</p>
                 </label>
-                <a href="forgot_password.php">Forgot password?</a>
+                <a href="customerforgotpassword.php">Forgot password?</a>
             </div>
             <button type="submit">Log In</button>
             <div class="register">

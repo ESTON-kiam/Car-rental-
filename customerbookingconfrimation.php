@@ -115,8 +115,8 @@ $duration = $start_date->diff($end_date)->days;
     <script>
         window.addEventListener('beforeunload', function (e) {
             var confirmationMessage = "Are you sure you want to leave this page? Any unsaved changes will be lost.";
-            e.returnValue = confirmationMessage; // Standard for most browsers
-            return confirmationMessage; // For some browsers like Firefox
+            e.returnValue = confirmationMessage; 
+            return confirmationMessage; 
         });
     </script>
 
@@ -137,7 +137,7 @@ $duration = $start_date->diff($end_date)->days;
 
     <div class="container mx-auto mt-24 p-6">
         <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-            <!-- Invoice Header -->
+            
             <div class="border-b pb-4 mb-6">
                 <div class="flex justify-between items-start">
                     <div>
@@ -154,7 +154,7 @@ $duration = $start_date->diff($end_date)->days;
                 </div>
             </div>
 
-            <!-- Customer Details -->
+           
             <div class="grid grid-cols-2 gap-8 mb-8">
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Customer Details</h3>
@@ -173,7 +173,7 @@ $duration = $start_date->diff($end_date)->days;
                 </div>
             </div>
 
-            <!-- Vehicle Details -->
+           
             <div class="mb-8">
                 <h3 class="text-lg font-semibold mb-2">Vehicle Details</h3>
                 <div class="bg-gray-50 rounded-lg p-4">
@@ -185,7 +185,7 @@ $duration = $start_date->diff($end_date)->days;
             </div>
 
             <?php if ($driver_details): ?>
-            <!-- Driver Details -->
+          
             <div class="mb-8">
                 <h3 class="text-lg font-semibold mb-2">Assigned Driver</h3>
                 <div class="bg-gray-50 rounded-lg p-4">
@@ -196,7 +196,6 @@ $duration = $start_date->diff($end_date)->days;
             </div>
             <?php endif; ?>
 
-            <!-- Payment Details -->
             <div class="border-t pt-6">
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-lg font-semibold">Total Fare:</span>
@@ -212,7 +211,7 @@ $duration = $start_date->diff($end_date)->days;
                 </div>
             </div>
 
-            <!-- Make Payment Button -->
+            
             <div class="mt-6 text-center">
                 <a href="make_payment.php?booking_id=<?php echo $booking['booking_id']; ?>" 
                    class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition duration-200">
@@ -220,7 +219,7 @@ $duration = $start_date->diff($end_date)->days;
                 </a>
             </div>
 
-            <!-- Terms and Conditions -->
+            
             <div class="mt-8 text-sm text-gray-600">
                 <h4 class="font-semibold mb-2">Terms and Conditions:</h4>
                 <ul class="list-disc pl-5 space-y-1">
@@ -232,7 +231,7 @@ $duration = $start_date->diff($end_date)->days;
                 </ul>
             </div>
 
-            <!-- Footer -->
+            
             <div class="mt-8 text-center text-gray-600">
                 <p>Thank you for choosing our service!</p>
                 <p>For any queries, please contact our support team.</p>
