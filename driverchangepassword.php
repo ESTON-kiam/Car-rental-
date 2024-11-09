@@ -42,13 +42,13 @@ require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
-// Handle password change form submission
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Fetch current password and email from the database
+   
     $query = "SELECT password, email FROM drivers WHERE driver_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $driver_id);
@@ -80,9 +80,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $mail->Port       = 587;                                  
 
             $mail->setFrom('no-reply@gmail.com', 'Online Car Rental');
-                    $mail->addAddress($driver['email']); // Add the driver's email
+                    $mail->addAddress($driver['email']); 
 
-                    // Content
+                    
                     $mail->isHTML(true);
                     $mail->Subject = 'Password Change Notification';
                     $mail->Body    = 'Hello, your password has been successfully changed. If you did not make this change, please contact support.';
@@ -113,7 +113,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Password</title>
     <style>
-        /* Best Styling */
+        
         * {
             margin: 0;
             padding: 0;
@@ -134,13 +134,13 @@ $conn->close();
             padding: 10px 20px;
             text-align: center;
             border-radius: 8px;
-            width: 100%; /* Make the header full-width */
-            position: absolute; /* Position it above the content */
-            top: 0; /* Align it to the top */
+            width: 100%; 
+            position: absolute; 
+            top: 0; 
         }
         header h2 {
             font-size: 24px;
-            margin-bottom: 5px; /* Space below the title */
+            margin-bottom: 5px; 
         }
         header nav a {
             color: #fff;
@@ -161,7 +161,7 @@ $conn->close();
             width: 100%;
             text-align: center;
             color: #333;
-            margin-top: 80px; /* Space below the header */
+            margin-top: 80px; 
         }
         h3 {
             color: #333;

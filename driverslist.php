@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
@@ -19,7 +19,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Include license_image in the SELECT statement
+
 $query = "SELECT driver_id, name, email, contact_no, residence, driving_license_no, license_image FROM drivers";
 $result = $conn->query($query);
 ?>
@@ -43,7 +43,7 @@ $result = $conn->query($query);
         tr:hover { background-color: #f1f1f1; }
         h2 { color: #333; text-align: center; }
         .delete-button { color: red; text-decoration: none; padding: 8px 12px; border: 1px solid red; border-radius: 4px; background-color: #f8d7da; cursor: pointer; }
-        .driver-image { width: 50px; height: auto; } /* Adjust the size as necessary */
+        .driver-image { width: 50px; height: auto; } 
     </style>
 </head>
 <body>
@@ -67,7 +67,7 @@ $result = $conn->query($query);
             <th>Contact No</th>
             <th>Residence</th>
             <th>Driving License No</th>
-            <th>License Image</th> <!-- New column for license image -->
+            <th>License Image</th> 
             <th>Action</th>
         </tr>
     </thead>

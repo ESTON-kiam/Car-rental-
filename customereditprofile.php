@@ -47,12 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    $gender = $_POST['gender']; // Get gender from form
+    $gender = $_POST['gender']; 
 
-    $profile_picture_update = false; // Flag to track if profile picture is updated
-    $error_message = ''; // Initialize error message
-
-    // Check if a new profile picture is being uploaded
+    $profile_picture_update = false; 
+    $error_message = ''; 
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == UPLOAD_ERR_OK) {
         $target_dir = "Customerprofile/";
         $target_file = $target_dir . basename($_FILES["profile_picture"]["name"]);
@@ -60,20 +58,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
 
         if ($check !== false && move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
-            $profile_picture_update = true; // Set flag to true
+            $profile_picture_update = true; 
         } else {
             $error_message = "There was an error uploading your file.";
         }
     }
 
-    // Prepare the SQL statement for updating customer details
+    
     if ($profile_picture_update) {
-        // Update with new profile picture
+        
         $sql = "UPDATE customers SET full_name = ?, email = ?, mobile = ?, gender = ?, profile_picture = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssssi", $full_name, $email, $phone, $gender, $target_file, $customer_id);
     } else {
-        // Update without changing profile picture
+        
         $sql = "UPDATE customers SET full_name = ?, email = ?, mobile = ?, gender = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssi", $full_name, $email, $phone, $gender, $customer_id);
@@ -82,8 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $stmt->close();
 
-    // Optionally add a success message or redirect after the update
-    header("Location: customerviewprofile.php"); // Redirect to view profile
+    
+    header("Location: customerviewprofile.php"); 
     exit();
 }
 ?>
@@ -98,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* CSS styles remain unchanged */
+        
         :root {
             --primary-color: #007bff;
             --secondary-color: #0056b3;

@@ -109,7 +109,7 @@ $result = $stmt->get_result();
 
         .search-bar {
             display: flex;
-            margin-top: 70px; /* Adjusted for header */
+            margin-top: 70px; 
             justify-content: center;
             align-items: center;
         }
@@ -189,13 +189,13 @@ $result = $stmt->get_result();
 
         @media (max-width: 768px) {
             .vehicle-card {
-                width: calc(50% - 20px); /* Two columns on smaller screens */
+                width: calc(50% - 20px); 
             }
         }
 
         @media (max-width: 480px) {
             .vehicle-card {
-                width: 100%; /* One column on mobile screens */
+                width: 100%; 
             }
         }
 

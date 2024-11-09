@@ -122,7 +122,7 @@ $duration = $start_date->diff($end_date)->days;
 
 </head>
 <body class="bg-gray-50">
-    <!-- Navbar -->
+    
     <nav class="bg-gradient-to-r from-blue-800 to-blue-900 fixed w-full top-0 z-50 px-6 py-4 no-print">
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.php" class="text-2xl font-bold text-white tracking-wider">Car Rentals</a>

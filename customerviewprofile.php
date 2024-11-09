@@ -201,7 +201,7 @@ $stmt->close();
             <div><strong>Name:</strong> <?php echo htmlspecialchars($full_name); ?></div>
             <div><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></div>
             <div><strong>Phone:</strong> <?php echo htmlspecialchars($phone); ?></div>
-            <div><strong>Gender:</strong> <?php echo htmlspecialchars($gender); ?></div> <!-- Added Gender -->
+            <div><strong>Gender:</strong> <?php echo htmlspecialchars($gender); ?></div> 
         </div>
         <div class="button-container">
             <a href="customereditprofile.php">Edit Profile</a>

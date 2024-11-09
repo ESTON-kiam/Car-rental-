@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_booking'])) {
     $end_date = $_POST['end_date'];
     $total_fare = $_POST['total_fare'];
 
-    // Use the correct variable for booking status
+   
     $update_query = "UPDATE bookings SET booking_status = ?, start_date = ?, end_date = ?, total_fare = ? WHERE booking_id = ?";
     $stmt = $conn->prepare($update_query);
     $stmt->bind_param("sssdi", $status, $start_date, $end_date, $total_fare, $booking_id);
@@ -85,7 +85,7 @@ $conn->close();
             color: #333;
         }
 
-        /* Form Styling */
+        
         .container {
             max-width: 600px;
             margin: 3rem auto;

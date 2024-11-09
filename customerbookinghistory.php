@@ -42,14 +42,14 @@ $stmt_history->bind_param('i', $customer_id);
 $stmt_history->execute();
 $result_history = $stmt_history->get_result();
 
-// Pagination
+
 $per_page = 10;
 $total_books = $result_history->num_rows;
 $total_pages = ceil($total_books / $per_page);
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $offset = ($page - 1) * $per_page;
 
-// Modify query to handle pagination
+
 $sql_paginated_history = $sql_history . " LIMIT ?, ?";
 $stmt_paginated_history = $conn->prepare($sql_paginated_history);
 $stmt_paginated_history->bind_param('iii', $customer_id, $offset, $per_page);
@@ -177,7 +177,7 @@ $result_paginated_history = $stmt_paginated_history->get_result();
                 </tbody>
             </table>
 
-            <!-- Pagination -->
+           
             <div class="d-flex justify-content-center">
                 <ul class="pagination">
                     <?php for ($i = 1; $i <= $total_pages; $i++): ?>

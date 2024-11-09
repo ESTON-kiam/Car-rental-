@@ -26,14 +26,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the booking ID from the URL
+
 $invoice_id = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : 0;
 
 if ($invoice_id == 0) {
     die("Invalid Invoice ID.");
 }
 
-// Query to fetch the invoice details
+
 $sql = "SELECT b.booking_id, b.created_at, b.total_fare, b.vehicle_id, b.driver_option, 
             c.full_name, c.email, c.mobile, c.residence,
             CONCAT(
@@ -76,11 +76,11 @@ $invoice = $result->fetch_assoc();
     <title>Invoice Details</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script>
-        // JavaScript for 'Are you sure?' confirmation before reload or navigate away
+        
         window.addEventListener("beforeunload", function (event) {
             var message = "Are you sure you want to leave this page? You might lose your changes.";
-            event.returnValue = message; // Standard for most browsers
-            return message; // For some older browsers (e.g., Internet Explorer)
+            event.returnValue = message; 
+            return message; 
         });
     </script>
 </head>

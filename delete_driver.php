@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
@@ -19,11 +19,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the ID parameter is set
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Prepare and bind the statement
+  
     $stmt = $conn->prepare("DELETE FROM drivers WHERE driver_id = ?");
     $stmt->bind_param("i", $id);
 

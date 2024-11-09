@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $age = htmlspecialchars($_POST['age']);
     $password = htmlspecialchars($_POST['password']); 
 
-    // Hash the password before storing it
+    
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT); 
 
     $license_no = "LIC-" . uniqid();
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($uploadOk == 1 && move_uploaded_file($_FILES["license_image"]["tmp_name"], $license_image)) {
         
-        // Update the query to include the password
+        
         $stmt = $conn->prepare("INSERT INTO drivers (name, contact_no, email, residence, age, driving_license_no, license_image, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssisss", $name, $contact, $email, $residence, $age, $license_no, $license_image, $hashedPassword); // Bind the hashed password
 

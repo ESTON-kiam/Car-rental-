@@ -33,14 +33,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get vehicle ID from URL
+
 $vehicle_id = $_GET['id'] ?? null;
 
 $full_name = ''; 
 $registration_no = ''; 
 $model_name = ''; 
 
-// Fetch vehicle details
+
 if ($vehicle_id) {
     $sql = "SELECT * FROM vehicles WHERE vehicle_id = ?";
     $stmt = $conn->prepare($sql);
@@ -61,7 +61,7 @@ if ($vehicle_id) {
     exit();
 }
 
-// Get customer details
+
 $customer_id = $_SESSION['customer_id']; 
 $customer_sql = "SELECT full_name FROM customers WHERE id = ?";
 $customer_stmt = $conn->prepare($customer_sql);
@@ -74,7 +74,7 @@ if ($customer_result->num_rows > 0) {
     $full_name = $customer['full_name'];
 }
 
-// Check for existing bookings
+
 $existing_booking_sql = "SELECT * FROM bookings WHERE customer_id = ? AND booking_status != 'completed'";
 $existing_booking_stmt = $conn->prepare($existing_booking_sql);
 $existing_booking_stmt->bind_param("i", $customer_id);
@@ -86,7 +86,7 @@ if ($existing_booking_result->num_rows > 0) {
     exit();
 }
 
-// Get available drivers
+
 $drivers = [];
 $driver_sql = "SELECT driver_id, name FROM drivers WHERE availability_status = 'Available'";
 $driver_result = $conn->query($driver_sql);
@@ -97,14 +97,14 @@ if ($driver_result->num_rows > 0) {
     }
 }
 
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Debug output
+    
     echo "POST Data:<br>";
     print_r($_POST);
     echo "<br>";
 
-    // Get form data
+    
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $pick_up_location = $_POST['pick_up_location'];
@@ -113,11 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $charge_type = $_POST['charge_type'];
     $driver_option = $_POST['driver_option'];
     
-    // Get fare and deposit from hidden fields
+   
     $fare = floatval($_POST['fare_hidden']);
     $advance_deposit = floatval($_POST['deposit_hidden']);
 
-    // Validate the values
     if ($fare <= 0 || $advance_deposit <= 0) {
         echo "Invalid fare or deposit amount";
         exit();
@@ -126,13 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Update vehicle status
+        
         $update_sql = "UPDATE vehicles SET availability_status = 'Unavailable' WHERE vehicle_id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("i", $vehicle_id);
         $update_stmt->execute();
 
-        // Create booking
+        
         $booking_sql = "INSERT INTO bookings (
             vehicle_id, customer_id, start_date, end_date, 
             pick_up_location, pick_up_time, car_type, 
@@ -171,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $booking_id = $conn->insert_id;
         
-        // Handle driver assignment if selected
+       
         if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
             $driver_id = $_POST['driver_id'];
 
@@ -207,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Execute failed: " . $driver_assign_stmt->error);
             }
 
-            // Update driver status
+            
             $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
             $update_driver_stmt = $conn->prepare($update_driver_sql);
             $update_driver_stmt->bind_param("i", $driver_id);
@@ -343,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navbar -->
+    
     <nav class="navbar fixed w-full top-0 z-50 px-6 py-4">
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.php" class="text-2xl font-bold text-white tracking-wider">Car Rentals</a>
@@ -351,14 +350,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </nav>
 
-    <!-- Main Content -->
+    
     <div class="container mx-auto mt-24 px-4">
         <div class="booking-container">
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold text-gray-800 mb-4">Book Your Premium Experience</h1>
                 <p class="text-gray-600">Complete your booking details below</p>
             </div>
-            <!-- Vehicle Details Card -->
+            
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
                 <h2 class="text-2xl font-semibold mb-4">Selected Vehicle Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -379,7 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form action="" method="POST" onsubmit="return validateAndSubmit()">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Left Column -->
+                    
                     <div class="space-y-6">
                         <div class="form-group">
                             <label class="form-label">Start Date</label>
@@ -408,7 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- Right Column -->
+                    
                     <div class="space-y-6">
                         <div class="form-group">
                             <label class="form-label">End Date</label>
@@ -442,7 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Fare Display -->
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     <div class="fare-card">
                         <h3 class="text-xl font-semibold mb-2">Total Fare</h3>
@@ -462,7 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <!-- Footer -->
+    
     <footer class="bg-white py-6 mt-12">
         <div class="container mx-auto text-center text-gray-600">
             <p>&copy; <?php echo date("Y"); ?> Online Car Rentals. All rights reserved. Designed by Eston Kiama</p>
@@ -480,7 +479,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (startDate && endDate && startDate < endDate) {
             const timeDiff = endDate - startDate;
             const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            const driverCost = driverOption === 'yes' ? 2000 : 0; // Cost only if driver is included
+            const driverCost = driverOption === 'yes' ? 2000 : 0; 
             const acCost = carType === 'With AC' ? 500 : 0;
             
             const chargeType = document.querySelector('select[name="charge_type"]').value;
@@ -488,21 +487,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (chargeType === 'per_day') {
                 totalFare = (pricePerDay * dayDiff) + driverCost + (acCost * dayDiff);
             } else {
-                const distance = 1; // Assuming a default distance for per KM calculation
+                const distance = 1; 
                 totalFare = (distance * 2000) + driverCost;
             }
             
             const deposit = totalFare * 0.7;
             
-            // Update the display
+           
             document.getElementById('fare_display').textContent = `KSH ${totalFare.toLocaleString()}`;
             document.getElementById('deposit_display').textContent = `KSH ${deposit.toLocaleString()}`;
             
-            // Update hidden input fields
+            
             document.getElementById('fare_hidden').value = totalFare;
             document.getElementById('deposit_hidden').value = deposit;
 
-            // Store values for form submission
+            
             window.calculatedFare = totalFare;
             window.calculatedDeposit = deposit;
         }

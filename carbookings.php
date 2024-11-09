@@ -21,13 +21,13 @@ if ($conn->connect_error) {
 if (isset($_POST['delete_booking'])) {
     $booking_id = $_POST['booking_id'];
 
-    // First, delete related driver assignments
+    
     $delete_assignments_query = "DELETE FROM driver_assignments WHERE booking_id = ?";
     $stmt = $conn->prepare($delete_assignments_query);
     $stmt->bind_param("i", $booking_id);
     $stmt->execute();
 
-    // Now, delete the booking
+    
     $delete_booking_query = "DELETE FROM bookings WHERE booking_id = ?";
     $stmt = $conn->prepare($delete_booking_query);
     $stmt->bind_param("i", $booking_id);

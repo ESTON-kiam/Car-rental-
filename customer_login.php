@@ -29,7 +29,7 @@ try {
     }
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Validate email
+        
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $error_type = 'warning';
             $error_message = "Please enter a valid email address.";
@@ -71,7 +71,7 @@ try {
 
                             setcookie('remember_token', $token, time() + (86400 * 30), "/", "", false, true); 
                         } catch (Exception $e) {
-                            // Log the error but don't show to user
+                            
                             error_log("Remember token error: " . $e->getMessage());
                         }
                     }
@@ -145,7 +145,7 @@ try {
             100% { opacity: 0; }
         }
 
-        /* Improve form field validation styling */
+       
         .input-field input:invalid {
             border-color: #dc3545;
         }
@@ -191,7 +191,7 @@ try {
     </div>
 
     <script>
-        // Remove alert messages after animation completes
+      
         document.addEventListener('DOMContentLoaded', function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
@@ -200,7 +200,7 @@ try {
                 }, 5000);
             });
 
-            // Client-side email validation
+           
             const emailInput = document.getElementById('email');
             emailInput.addEventListener('input', function() {
                 if (emailInput.validity.typeMismatch) {

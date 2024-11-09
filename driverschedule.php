@@ -112,17 +112,17 @@ $result = $stmt->get_result();
             $status_text = '';
 
             if ($time_difference < 3600) {
-                // Less than 1 hour
+                
                 $minutes = floor($time_difference / 60);
                 $status_text = "Pickup in $minutes minutes";
                 $status_class = 'status-soon';
             } else if ($time_difference < 86400) {
-                // Less than 24 hours
+              
                 $hours = floor($time_difference / 3600);
                 $status_text = "Pickup in $hours hours";
                 $status_class = 'status-upcoming';
             } else {
-                // More than a day away
+                
                 $days = floor($time_difference / 86400);
                 $status_text = "Pickup in $days days";
                 $status_class = 'status-upcoming';
@@ -156,7 +156,7 @@ $conn->close();
 ?>
 
 <script>
-// Update current time and auto refresh
+
 setInterval(function() {
     const timeElement = document.querySelector('.current-time');
     const now = new Date();
@@ -169,7 +169,7 @@ setInterval(function() {
         hour12:true
     });
     
-    // Refresh page every 5 minutes
+    
     if (now.getMinutes() % 5 === 0) {
         location.reload();
     }
