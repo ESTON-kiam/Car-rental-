@@ -185,7 +185,7 @@ $conn->close();
         <nav>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="#" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    <a href="driverdashboard.php" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link active"><i class="fas fa-tasks"></i> Pending Assignments <span class="badge"><?php echo $pending_count; ?></span></a>

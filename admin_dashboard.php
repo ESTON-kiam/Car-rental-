@@ -65,7 +65,7 @@ if ($bookingResult) {
     $totalBookings = $bookingData['total_bookings'];
 }
 
-$conn->close();
+
 
 
 
@@ -107,7 +107,26 @@ $debug = [
     'Day' => $currentDay,
     'Greeting' => $greeting
 ];
+$sql = "SELECT COUNT(*) AS available_vehicles 
+        FROM vehicles 
+        WHERE availability_status='available'";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$available_vehicles = $row['available_vehicles'];
 
+$sql = "SELECT COUNT(*) AS completed_bookings
+        FROM bookings
+        WHERE booking_status = 'completed'";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$completed_bookings = $row['completed_bookings'];
+$last_month_completed = 10; 
+$percentage_change = ($completed_bookings - $last_month_completed) / $last_month_completed * 100;
+$change_class = $percentage_change >= 0 ? 'positive' : 'negative';
+$last_month_available = 23; 
+$percentage_change = ($available_vehicles - $last_month_available) / $last_month_available * 100;
+$change_class = $percentage_change >= 0 ? 'positive' : 'negative';
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -253,7 +272,32 @@ $debug = [
                         <i class="fas fa-KSH-sign">KSH</i>
                     </div>
                 </article>
-                </a>
+
+                <article class="card">
+    <div class="card-content">
+        <h3>Available Vehicles</h3>
+        <p class="card-value">KSH<?php echo number_format($available_vehicles, 0); ?></p>
+        <p class="card-change <?php echo $change_class; ?>">
+            <?php echo number_format($percentage_change, 2); ?>% from last month
+        </p>
+    </div>
+    <div class="card-icon">
+        <i class="fas fa-KSH-sign">NUM</i>
+    </div>
+</article>
+<article class="card">
+    <div class="card-content">
+        <h3>Completed Bookings</h3>
+        <p class="card-value">KSH<?php echo number_format($completed_bookings, 0); ?></p>
+        <p class="card-change <?php echo $change_class; ?>">
+            <?php echo number_format($percentage_change, 2); ?>% from last month
+        </p>
+    </div>
+    <div class="card-icon">
+        <i class="fas fa-KSH-sign">NUM</i>
+    </div>
+</article>
+              
             </div>
         </main>
     </div>
