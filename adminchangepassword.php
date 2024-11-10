@@ -119,7 +119,7 @@ $conn->close();
             color: #333;
         }
         header {
-            background-color: #007BFF; /* Blue color for the header */
+            background-color: #007BFF; 
             color: white;
             padding: 15px;
             text-align: center;
@@ -148,7 +148,7 @@ $conn->close();
             box-sizing: border-box;
         }
         button {
-            background-color: #007BFF; /* Blue color for button */
+            background-color: #007BFF;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -157,11 +157,11 @@ $conn->close();
             width: 100%;
         }
         button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #0056b3; 
         }
         .success-message {
             text-align: center;
-            color: #007BFF; /* Blue color for success message */
+            color: #007BFF; 
         }
         .error-message {
             text-align: center;

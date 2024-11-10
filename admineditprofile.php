@@ -46,12 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $target_dir = "admin/"; 
         $target_file = $target_dir . basename($profile_picture);
         if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file)) {
-            // File upload success
+            
         } else {
             $error_message = "Error uploading file.";
         }
     } else {
-        $target_file = $admin['profile_picture']; // Retain old profile picture if none uploaded
+        $target_file = $admin['profile_picture']; 
     }
 
     $sql = "UPDATE admins SET name=?, contact_no=?, gender=?, profile_picture=? WHERE email_address=?";
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssss", $name, $contact_no, $gender, $target_file, $email);
     
     if ($stmt->execute()) {
-        // Redirect to the view profile page after successful update
+       
         header("Location: adminviewprofile.php");
         exit();
     } else {
@@ -122,7 +122,7 @@ $conn->close();
             box-sizing: border-box;
         }
         button {
-            background-color: #007BFF; /* Blue color for button */
+            background-color: #007BFF; 
             color: white;
             border: none;
             padding: 10px 15px;
@@ -131,14 +131,14 @@ $conn->close();
             width: 100%;
         }
         button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #0056b3;
         }
         img {
             margin-top: 10px;
         }
         .success-message {
             text-align: center;
-            color: #007BFF; /* Blue color for success message */
+            color: #007BFF; 
         }
         .error-message {
             text-align: center;

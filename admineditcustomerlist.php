@@ -15,7 +15,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
@@ -26,14 +26,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch the customer data
+
 $customerId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $query = "SELECT * FROM customers WHERE id = $customerId";
 $result = $conn->query($query);
 $customer = $result->fetch_assoc();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Update customer details
+    
     $fullName = $conn->real_escape_string($_POST['full_name']);
     $email = $conn->real_escape_string($_POST['email']);
     $mobile = $conn->real_escape_string($_POST['mobile']);
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($conn->query($updateQuery) === TRUE) {
         echo "<p style='color: green;'>Customer details updated successfully.</p>";
-        header("Location: customerlist.php"); // Redirect back to customer list
+        header("Location: customerlist.php");
         exit();
     } else {
         echo "Error updating record: " . $conn->error;
@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box; /* Make sure padding doesn't add to width */
+            box-sizing: border-box; 
         }
         button {
             background-color: #007BFF;
@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 16px;
         }
         button:hover {
-            background-color: #0056b3; /* Darker shade on hover */
+            background-color: #0056b3; 
         }
         p {
             text-align: center;

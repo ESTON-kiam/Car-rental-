@@ -26,11 +26,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle deletion of an invoice
+
 if (isset($_GET['delete_invoice_id'])) {
     $invoice_id = $_GET['delete_invoice_id'];
 
-    // Delete invoice from the database
+    
     $sql = "DELETE FROM bookings WHERE booking_id = ?";
 
     if ($stmt = $conn->prepare($sql)) {
@@ -51,7 +51,7 @@ if (isset($_GET['delete_invoice_id'])) {
     exit();
 }
 
-// Query to fetch all bookings and related customer data
+
 $sql = "SELECT b.booking_id, b.created_at, b.total_fare, 
             c.full_name, c.email, c.mobile, c.residence,
             CONCAT(
@@ -92,7 +92,7 @@ $result = $conn->query($sql);
     </nav>
 
     <div class="container mx-auto mt-24 p-6">
-        <!-- Success/Error Message -->
+     
         <?php if (isset($_SESSION['success_message'])): ?>
             <div class="bg-green-500 text-white p-4 mb-4 rounded">
                 <?php echo $_SESSION['success_message']; ?>

@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Connection failed: " . htmlspecialchars($conn->connect_error));
         }
 
-        // Validate email
+        
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $error_type = 'warning';
             $error_message = "Please enter a valid email address.";
@@ -53,17 +53,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['email'] = $email;
                     $_SESSION['last_activity'] = time();
 
-                    // Set remember me cookie if checked
+                    
                     if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
                         $token = bin2hex(random_bytes(32));
                         $token_hash = password_hash($token, PASSWORD_DEFAULT);
                         
-                        // Store token in database
+                        
                         $stmt = $conn->prepare("UPDATE admins SET remember_token = ? WHERE email_address = ?");
                         $stmt->bind_param("ss", $token_hash, $email);
                         $stmt->execute();
                         
-                        // Set secure cookie
+                        
                         setcookie('admin_remember', $token, [
                             'expires' => time() + (30 * 24 * 60 * 60),
                             'path' => '/',
@@ -215,7 +215,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle alert messages
+            
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 setTimeout(() => {
@@ -223,7 +223,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }, 5000);
             });
 
-            // Form validation
+            
             const form = document.querySelector('form');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
@@ -239,7 +239,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 );
             });
 
-            // Prevent multiple form submissions
+            
             form.addEventListener('submit', function(e) {
                 const submitButton = this.querySelector('button[type="submit"]');
                 if (submitButton.disabled) {

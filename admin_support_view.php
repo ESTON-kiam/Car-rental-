@@ -1,9 +1,9 @@
 <?php
-// Enable error reporting for debugging
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Start a secure session
+
 session_name('admin_session');
 session_set_cookie_params([
     'lifetime' => 1800,
@@ -15,25 +15,25 @@ session_set_cookie_params([
 ]);
 session_start();
 
-// Check if the user is logged in
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: Admin_login.php");
     exit();
 }
 
-// Database connection parameters
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
 $dbname = "car_rental_management"; 
 
-// Create a new mysqli instance and check connection
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch distinct customers with support messages
+
 $customerQuery = "SELECT DISTINCT c.id, c.full_name FROM support_messages sm JOIN customers c ON sm.customer_id = c.id";
 $customers = $conn->query($customerQuery);
 
@@ -48,7 +48,7 @@ $customers = $conn->query($customerQuery);
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Custom styles for chat bubbles */
+        
         .message-bubble {
             max-width: 70%;
             padding: 10px;
@@ -57,20 +57,20 @@ $customers = $conn->query($customerQuery);
             position: relative;
         }
         .message-bubble.admin {
-            background-color: #e0f7fa; /* Light blue for admin */
-            margin-left: auto; /* Align to right */
+            background-color: #e0f7fa; 
+            margin-left: auto; 
         }
         .message-bubble.customer {
-            background-color: #f1f1f1; /* Light gray for customer */
+            background-color: #f1f1f1; 
         }
         .chat-container {
             max-height: 400px;
             overflow-y: auto;
         }
-        /* Positioning for chatbox */
+        
         .chat-box-container {
-            margin-left: 20px; /* Slightly shift right */
-            transition: all 0.3s ease; /* Smooth transition */
+            margin-left: 20px; 
+            transition: all 0.3s ease; 
         }
     </style>
 </head>
@@ -79,7 +79,7 @@ $customers = $conn->query($customerQuery);
         <div class="w-1/3">
             <h2 class="text-2xl font-bold mb-6">Customer Support Messages</h2>
 
-            <!-- Customer List -->
+            
             <div class="mb-6">
                 <?php while ($customer = $customers->fetch_assoc()): ?>
                     <div class="bg-white shadow-md rounded-lg mb-4 p-4 cursor-pointer hover:bg-gray-100">
@@ -91,11 +91,11 @@ $customers = $conn->query($customerQuery);
             </div>
         </div>
 
-        <!-- Chat Box -->
+        
         <div class="chat-box-container w-2/3">
             <?php if (isset($_GET['customer_id'])): ?>
                 <?php
-                // Fetch messages for the selected customer
+                
                 $selected_customer_id = intval($_GET['customer_id']);
                 $msgQuery = "SELECT sender, message, created_at FROM support_messages WHERE customer_id = ? ORDER BY created_at ASC";
                 $stmt = $conn->prepare($msgQuery);
@@ -105,7 +105,7 @@ $customers = $conn->query($customerQuery);
                     $messages = $stmt->get_result();
                 }
 
-                // Fetch customer details for display
+               
                 $customerDetailsQuery = "SELECT full_name FROM customers WHERE id = ?";
                 $stmtDetails = $conn->prepare($customerDetailsQuery);
                 if ($stmtDetails) {
@@ -113,7 +113,7 @@ $customers = $conn->query($customerQuery);
                     $stmtDetails->execute();
                     $resultDetails = $stmtDetails->get_result();
 
-                    // Check if customer details were found
+                    
                     if ($resultDetails && $resultDetails->num_rows > 0) {
                         $customerDetails = $resultDetails->fetch_assoc();
                         ?>
@@ -125,7 +125,7 @@ $customers = $conn->query($customerQuery);
                 }
                 ?>
 
-                <!-- Display Messages -->
+                
                 <div class="chat-container border p-4 rounded-lg bg-gray-50 mb-4" id="chat-box">
                     <?php if (isset($messages) && $messages->num_rows > 0): ?>
                         <?php while ($msg = $messages->fetch_assoc()): ?>
@@ -140,7 +140,7 @@ $customers = $conn->query($customerQuery);
                     <?php endif; ?>
                 </div>
 
-                <!-- Message Sending Form -->
+               
                 <form action="admin_support_send.php" method="POST" class="flex mt-4" id="message-form">
                     <input type="hidden" name="customer_id" value="<?= htmlspecialchars($selected_customer_id) ?>">
                     <input type="text" name="message" required placeholder="Reply to <?= isset($customerDetails) ? htmlspecialchars($customerDetails['full_name']) : '' ?>" class="flex-1 border p-2 rounded-l-lg">
@@ -150,7 +150,7 @@ $customers = $conn->query($customerQuery);
             <?php endif; ?>
 
             <?php
-            // Close the database connection
+            
             if (isset($customers)) {
                 $customers->close();
             }
@@ -162,19 +162,19 @@ $customers = $conn->query($customerQuery);
     </div>
 
     <script>
-        // Scroll to the bottom of the chat when new messages are added
+        
         const chatBox = document.getElementById('chat-box');
         
-        // Function to scroll to the bottom of the chat box
+        
         function scrollToBottom() {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Call scrollToBottom on page load and after form submission
+        
         window.onload = scrollToBottom;
 
         document.getElementById('message-form').onsubmit = function() {
-            setTimeout(scrollToBottom, 100); // Delay to allow new message to appear
+            setTimeout(scrollToBottom, 100); 
         };
     </script>
 </body>
