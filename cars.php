@@ -218,7 +218,7 @@ $result = $stmt->get_result();
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-lg-0">
+      <a href="index.php" class="logo d-flex align-items-center me-auto me-lg-0">
        
         <h1 class="sitename">Online Car Rental</h1>
         <span>.</span>
@@ -226,11 +226,11 @@ $result = $stmt->get_result();
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html#hero" class="active">Home<br></a></li>
-          <li><a href="index.html#about">About</a></li>
-          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.php#hero" class="active">Home<br></a></li>
+          <li><a href="index.php#about">About</a></li>
+          <li><a href="index.php#services">Services</a></li>
           <li><a href="#">Cars</a></li>
-          <li><a href="index.html#team">Team</a></li>
+          <li><a href="index.php#team">Team</a></li>
           <li class="dropdown"><a href="#"><span>Portals</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="customer/">Customer</a></li>
@@ -244,7 +244,7 @@ $result = $stmt->get_result();
               </li>
             </ul>
           </li>
-          <li><a href="index.html#contact">Contact</a></li>
+          <li><a href="index.php#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -282,7 +282,7 @@ $result = $stmt->get_result();
     <div class="container">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="index.php" class="logo d-flex align-items-center">
             <span class="sitename">Car Rental</span>
           </a>
           <div class="footer-contact pt-3">
@@ -333,7 +333,7 @@ $result = $stmt->get_result();
 
   <div class="copyright">
     <div class="container text-center">
-      <p>© <span>2024</span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
+      <p>© <span> <?php echo date("Y"); ?></span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
       <div class="credits">
         
         Designed by <a href="https://estonkiama.netlify.app/">Eston Kiama</a>

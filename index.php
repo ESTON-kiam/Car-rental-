@@ -35,7 +35,7 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-lg-0">
+      <a href="index.php" class="logo d-flex align-items-center me-auto me-lg-0">
        
         <h1 class="sitename">Online Car Rental</h1>
         <span>.</span>
@@ -279,7 +279,7 @@
           <div class="icon">
             <i class="bi bi-car-front-fill"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>Daily Car Rentals</h3>
           </a>
           <p>Book a car for your daily travel needs with our flexible rental options. Whether for business or leisure, we have a vehicle for you.</p>
@@ -291,7 +291,7 @@
           <div class="icon">
             <i class="bi bi-calendar3"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>Long-Term Rentals</h3>
           </a>
           <p>Need a car for an extended period? Our long-term rental plans offer great deals for extended stays with the vehicle of your choice.</p>
@@ -303,7 +303,7 @@
           <div class="icon">
             <i class="bi bi-compass"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>GPS Navigation Services</h3>
           </a>
           <p>Stay on the right track with our GPS-enabled vehicles, ensuring smooth and accurate navigation throughout your journey.</p>
@@ -315,7 +315,7 @@
           <div class="icon">
             <i class="bi bi-fuel-pump-fill"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>Fuel Management</h3>
           </a>
           <p>Take advantage of our fuel management services, ensuring your car is always ready to go without the hassle of refueling.</p>
@@ -327,7 +327,7 @@
           <div class="icon">
             <i class="bi bi-shield-check"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>Insurance Coverage</h3>
           </a>
           <p>Drive with peace of mind knowing that all our vehicles come with comprehensive insurance coverage for your safety and security.</p>
@@ -339,7 +339,7 @@
           <div class="icon">
             <i class="bi bi-gear"></i>
           </div>
-          <a href="service-details.html" class="stretched-link">
+          <a href="service-details.php" class="stretched-link">
             <h3>Maintenance and Support</h3>
           </a>
           <p>Our cars are regularly maintained to ensure the highest performance. Plus, our support team is available 24/7 for any assistance.</p>
@@ -719,7 +719,7 @@
       <div class="container">
         <div class="row gy-4">
           <div class="col-lg-4 col-md-6 footer-about">
-            <a href="index.html" class="logo d-flex align-items-center">
+            <a href="index.php" class="logo d-flex align-items-center">
               <span class="sitename">Car Rental</span>
             </a>
             <div class="footer-contact pt-3">
@@ -770,7 +770,7 @@
 
     <div class="copyright">
       <div class="container text-center">
-        <p>© <span>2024</span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
+        <p>© <span> <?php echo date("Y"); ?></span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
         <div class="credits">
           
           Designed by <a href="https://estonkiama.netlify.app/">Eston Kiama</a>

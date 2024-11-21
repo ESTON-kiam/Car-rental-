@@ -35,7 +35,7 @@
   <header id="header" class="header d-flex align-items-center position-relative">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-lg-0">
+      <a href="index.php" class="logo d-flex align-items-center me-auto me-lg-0">
         
         <h1 class="sitename">Online Car Rental</h1>
         <span>.</span>
@@ -43,9 +43,9 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html#hero">Home<br></a></li>
-          <li><a href="index.html#about">About</a></li>
-          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.php#hero">Home<br></a></li>
+          <li><a href="index.php#about">About</a></li>
+          <li><a href="index.php#services">Services</a></li>
           <li><a href="cars.php">Cars</a></li>
           <li><a href="terms.html">Terms</a></li>
           <li class="dropdown"><a href="#"><span>Portals</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
@@ -88,7 +88,7 @@
   <nav class="breadcrumbs">
     <div class="container">
       <ol>
-        <li><a href="index.html">Home</a></li>
+        <li><a href="index.php">Home</a></li>
         <li class="current">Service Details</li>
       </ol>
     </div>
@@ -166,7 +166,7 @@
       <div class="container">
         <div class="row gy-4">
           <div class="col-lg-4 col-md-6 footer-about">
-            <a href="index.html" class="logo d-flex align-items-center">
+            <a href="index.php" class="logo d-flex align-items-center">
               <span class="sitename">Car Rental</span>
             </a>
             <div class="footer-contact pt-3">
@@ -213,7 +213,7 @@
 
     <div class="copyright">
       <div class="container text-center">
-        <p>© <span>2024</span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
+        <p>© <span> <?php echo date("Y"); ?></span> <strong class="px-1 sitename">Online Car Rental</strong> <span>All Rights Reserved</span></p>
         <div class="credits">
           
           Designed by <a href="https://estonkiama.netlify.app/">Eston Kiama</a>
