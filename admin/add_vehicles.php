@@ -79,21 +79,8 @@ $conn->close();
             height: 100vh;
         }
 
-        header {
-            width: 100%;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
+       
+       
 
         nav a {
             margin: 0 15px;
@@ -225,11 +212,9 @@ $conn->close();
 <body>
     <header>
         <h1>Online Car Rental</h1>
-        <nav>
-            <a href="dashboard.php">Dashboard</a>
-            <a href="carcollection.php">Car Collection</a>
-        </nav>
+       <?php include('include/header.php') ?>
     </header>
+    <?php include('include/sidebar.php') ?>
 
     <?php if (!empty($success_message)): ?>
         <div class="message success">

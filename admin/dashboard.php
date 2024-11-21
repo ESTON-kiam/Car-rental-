@@ -144,80 +144,11 @@ $conn->close();
     <link rel="stylesheet" href="assets/css/admindash.css">
 </head>
 <body>
-    <header class="header" role="banner">
-        <div class="header-content">
-            <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1>
-                <i class="fas fa-car"></i>
-                Online Car Rental
-            </h1>
-            <div class="profile" role="navigation" aria-label="User menu">
-                <button class="profile-button" aria-expanded="false" aria-controls="profile-menu">
-                    <div class="profile-picture">
-                        <img id="profile-img" src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Admin profile picture" loading="lazy" width="40" height="40">
-                    </div>
-                    <span class="profile-name"><?php echo htmlspecialchars($name); ?></span>
-                </button>
-                <div id="profile-menu" class="profile-dropdown" hidden>
-                    <nav>
-                        <ul>
-                            <li><a href="viewprofile.php"><i class="fas fa-user"></i> View Profile</a></li>
-                            <li><a href="editprofile.php"><i class="fas fa-edit"></i> Edit Profile</a></li>
-                            <li><a href="changepassword.php"><i class="fas fa-key"></i> Change Password</a></li>
-                            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
+    <header>
+        <?php include('include/header.php') ?>
     </header>
 
-    <div class="container">
-        <nav class="sidebar" role="navigation" aria-label="Main navigation">
-            <div class="sidebar-content">
-                <ul>
-                    <li><a href="dashboard.php" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li><a href="add_vehicles.php"><i class="fas fa-car-side"></i><span>Add Vehicle</span></a></li>
-                    <li>
-                        <button class="dropdown-toggle" aria-expanded="false" aria-controls="staff-menu">
-                            <i class="fas fa-users"></i><span>Add Staff</span><i class="fas fa-chevron-right"></i>
-                        </button>
-                        <ul id="staff-menu" class="dropdown" hidden>
-                            <li><a href="driverreg.php"><i class="fas fa-id-card"></i> Driver</a></li>
-                            <li><a href="add_employee.html"><i class="fas fa-user-tie"></i> Employee</a></li>
-                            <li><a href="reg.html"><i class="fas fa-id-card"></i>Add Admin</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <button class="dropdown-toggle" aria-expanded="false" aria-controls="staff-menu">
-                            <i class="fas fa-users"></i><span>List</span><i class="fas fa-chevron-right"></i>
-                        </button>
-                        <ul id="staff-menu" class="dropdown" hidden>
-                            <li><a href="customerlist.php"><i class="fas fa-id-card"></i> Customers List</a></li>
-                            <li><a href="add_employee.html"><i class="fas fa-user-tie"></i> Employee List</a></li>
-                            <li><a href="driverslist.php"><i class="fas fa-id-card"></i>Driver List</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="carbookings.php"><i class="fas fa-book"></i><span>Car Bookings</span></a></li>
-                    <li>
-                        <button class="dropdown-toggle" aria-expanded="false" aria-controls="payment-menu">
-                            <i class="fas fa-money-bill-wave"></i><span>Payment History</span><i class="fas fa-chevron-right"></i>
-                        </button>
-                        <ul id="payment-menu" class="dropdown" hidden>
-                            <li><a href="all_payments.html"><i class="fas fa-list"></i> All Payments</a></li>
-                            <li><a href="pending_payments.html"><i class="fas fa-clock"></i> Pending Payments</a></li>
-                            <li><a href="cancelled_payments.html"><i class="fas fa-times-circle"></i> Cancelled Payments</a></li>
-                            <li><a href="successful_payments.html"><i class="fas fa-check-circle"></i> Successful Payments</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="carcollection.php"><i class="fas fa-users"></i><span>Car collection</span></a></li>
-                    <li><a href="invoices.php"><i class="fas fa-users"></i><span>Invoices</span></a></li>
-                    <li><a href="support_view.php"><i class="fas fa-users"></i><span>Support Reply</span></a></li>
-                </ul>
-            </div>
-        </nav>
+    <?php include('include/sidebar.php') ?>
 
         <main class="main-content">
             <div class="dashboard-greeting">
