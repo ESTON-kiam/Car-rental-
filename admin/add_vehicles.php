@@ -76,35 +76,29 @@ $conn->close();
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-        }
-
-       
-       
-
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #74ebd5;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        nav a:hover {
-            color: #69d4bf;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         form {
             background: white;
             border-radius: 15px;
             padding: 40px;
-            max-width: 500px;
             width: 100%;
+            max-width: 900px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-column {
+            display: flex;
+            flex-direction: column;
         }
 
         h2 {
+            grid-column: 1 / -1;
             text-align: center;
             margin-bottom: 30px;
             font-size: 24px;
@@ -136,6 +130,7 @@ $conn->close();
         }
 
         button {
+            grid-column: 1 / -1;
             width: 100%;
             padding: 15px;
             background-color: #74ebd5;
@@ -185,7 +180,7 @@ $conn->close();
             border-radius: 10px;
             text-align: center;
             width: 100%;
-            max-width: 500px;
+            max-width: 900px;
         }
 
         .success {
@@ -200,9 +195,14 @@ $conn->close();
             border: 1px solid #f5c6cb;
         }
 
-        @media screen and (max-width: 600px) {
+        @media screen and (max-width: 768px) {
             form {
+                grid-template-columns: 1fr;
                 padding: 30px;
+            }
+
+            button {
+                grid-column: 1;
             }
         }
     </style>
@@ -212,7 +212,7 @@ $conn->close();
 <body>
     <header>
         <h1>Online Car Rental</h1>
-       <?php include('include/header.php') ?>
+        <?php include('include/header.php') ?>
     </header>
     <?php include('include/sidebar.php') ?>
 
@@ -230,39 +230,42 @@ $conn->close();
 
     <form action="" method="post" enctype="multipart/form-data">
         <h2>Add Vehicle</h2>
+        
+        <div class="form-column">
+            <div class="tooltip">
+                <label for="registration_no">Registration No (7 Characters):</label>
+                <span class="tooltiptext">(e.g., KBC 213R)</span>
+            </div>
+            <input type="text" id="registration_no" name="registration_no" maxlength="8" 
+                   placeholder="e.g. KBC 213R" required>
 
-        <div class="tooltip">
-            <label for="registration_no">Registration No (7 Characters):</label>
-            <span class="tooltiptext">(e.g., KBC 213R)</span>
+            <label for="model_name">Model Name:</label>
+            <input type="text" id="model_name" name="model_name" 
+                   placeholder="Enter Model Name" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" 
+                      placeholder="Describe the vehicle" required></textarea>
         </div>
-        <input type="text" id="registration_no" name="registration_no" maxlength="8" 
-               placeholder="e.g. KBC 213R" required>
 
-        <label for="model_name">Model Name:</label>
-        <input type="text" id="model_name" name="model_name" 
-               placeholder="Enter Model Name" required>
+        <div class="form-column">
+            <label for="price_per_day">Price per Day (KSH):</label>
+            <input type="number" id="price_per_day" name="price_per_day" 
+                   step="0.01" min="0" placeholder="Enter price per day" required>
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" 
-                  placeholder="Describe the vehicle" required></textarea>
+            <label for="availability_status">Availability Status:</label>
+            <select id="availability_status" name="availability_status" required>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
 
-        <label for="price_per_day">Price per Day (KSH):</label>
-        <input type="number" id="price_per_day" name="price_per_day" 
-               step="0.01" min="0" placeholder="Enter price per day" required>
-
-        <label for="availability_status">Availability Status:</label>
-        <select id="availability_status" name="availability_status" required>
-            <option value="Available">Available</option>
-            <option value="Unavailable">Unavailable</option>
-        </select>
-
-        <label for="photo" class="custom-file-upload">
-            <i class="fas fa-upload"></i> Upload Photo
-        </label>
-        <input type="file" id="photo" name="photo" accept="image/*" required>
+            <label for="photo" class="custom-file-upload">
+                <i class="fas fa-upload"></i> Upload Photo
+            </label>
+            <input type="file" id="photo" name="photo" accept="image/*" required>
+        </div>
 
         <button type="submit">Add Vehicle</button>
     </form>
-
 </body>
 </html>

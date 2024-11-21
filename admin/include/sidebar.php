@@ -14,7 +14,7 @@
                 <ul id="staff-menu" class="dropdown" hidden>
                     <li><a href="driverreg.php"><i class="fas fa-id-card"></i> Driver</a></li>
                     <li><a href="add_employee.html"><i class="fas fa-user-tie"></i> Employee</a></li>
-                    <li><a href="reg.html"><i class="fas fa-id-card"></i>Add Admin</a></li>
+                    <li><a href="registration.html"><i class="fas fa-id-card"></i>Add Admin</a></li>
                 </ul>
             </li>
             <li>
@@ -45,3 +45,4 @@
         </ul>
     </div>
 </nav>
+

@@ -1,10 +1,15 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 session_name('admin_session');
 session_set_cookie_params([
     'lifetime' => 1800,
     'path' => '/',
     'domain' => '',
-    'secure' => false, 
+    'secure' => true, 
     'httponly' => true,
     'samesite' => 'Strict'
 ]);
@@ -15,63 +20,106 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
+
 $servername = "localhost"; 
 $username = "root"; 
 $password = ""; 
 $dbname = "car_rental_management"; 
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$email = $_SESSION['email'];
-$query = "SELECT * FROM admins WHERE email_address='$email'";
-$result = $conn->query($query);
-
-if ($result && $result->num_rows > 0) {
-    $admin = $result->fetch_assoc();
-} else {
-    echo "Error fetching admin data.";
-    exit();
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $contact_no = $_POST['contact_no'];
-    $gender = $_POST['gender'];
-    $profile_picture = $_FILES['profile_picture']['name'];
-
-    if (!empty($profile_picture)) {
-        $target_dir = "adminprof/"; 
-        $target_file = $target_dir . basename($profile_picture);
-        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file)) {
-            
-        } else {
-            $error_message = "Error uploading file.";
-        }
-    } else {
-        $target_file = $admin['profile_picture']; 
+try {
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    
+    if ($conn->connect_error) {
+        throw new Exception("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "UPDATE admins SET name=?, contact_no=?, gender=?, profile_picture=? WHERE email_address=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssss", $name, $contact_no, $gender, $target_file, $email);
     
-    if ($stmt->execute()) {
-       
-        header("Location: viewprofile.php");
-        exit();
+    $email = filter_var($_SESSION['email'], FILTER_SANITIZE_EMAIL);
+
+    $query = "SELECT * FROM admins WHERE email_address = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $admin = $result->fetch_assoc();
     } else {
-        $error_message = "Error updating profile: " . $stmt->error;
+        throw new Exception("Admin data not found");
     }
-    
     $stmt->close();
+
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $contact_no = filter_input(INPUT_POST, 'contact_no', FILTER_SANITIZE_STRING);
+        $gender = filter_input(INPUT_POST, 'gender', FILTER_SANITIZE_STRING);
+
+        
+        $profile_picture = $admin['profile_picture']; 
+        
+        if (!empty($_FILES['profile_picture']['name'])) {
+            $target_dir = "adminprof/"; 
+            
+           
+            if (!is_dir($target_dir)) {
+                mkdir($target_dir, 0755, true);
+            }
+
+            
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $max_file_size = 5 * 1024 * 1024; 
+            $file_type = mime_content_type($_FILES['profile_picture']['tmp_name']);
+            $file_size = $_FILES['profile_picture']['size'];
+
+            if (in_array($file_type, $allowed_types) && $file_size <= $max_file_size) {
+                $unique_filename = uniqid() . '_' . basename($_FILES['profile_picture']['name']);
+                $target_file = $target_dir . $unique_filename;
+
+                if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file)) {
+                    $profile_picture = $target_file;
+                } else {
+                    $error_message = "Error uploading file.";
+                }
+            } else {
+                $error_message = "Invalid file type or size.";
+            }
+        }
+
+        $sql = "UPDATE admins SET name = ?, contact_no = ?, gender = ?, profile_picture = ? WHERE email_address = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssss", $name, $contact_no, $gender, $profile_picture, $email);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Profile updated successfully";
+            header("Location: viewprofile.php");
+            exit();
+        } else {
+            $error_message = "Error updating profile: " . $stmt->error;
+        }
+        
+        $stmt->close();
+    }
+} catch (Exception $e) {
+    
+    error_log($e->getMessage());
+    $_SESSION['error_message'] = "An error occurred. Please try again.";
+    header("Location: error.php");
+    exit();
+} finally {
+    
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
 
-$conn->close();
-?>
 
+$name = htmlspecialchars($admin['name'] ?? '');
+$contact_no = htmlspecialchars($admin['contact_no'] ?? '');
+$gender = htmlspecialchars($admin['gender'] ?? '');
+$profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -135,6 +183,8 @@ $conn->close();
         }
         img {
             margin-top: 10px;
+            max-width: 200px;
+            max-height: 200px;
         }
         .success-message {
             text-align: center;
@@ -145,49 +195,54 @@ $conn->close();
             color: red;
         }
     </style>
-        <link href="assets/img/p.png" rel="icon">
-        <link href="assets/img/p.png" rel="apple-touch-icon">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
 <body>
-
 <header>
-    <h1>Edit Profile</h1>
-    <nav>
-        <a href="dashboard.php" style="color: white; margin-right: 20px;">Dashboard</a>
-        <a href="viewprofile.php" style="color: white;">View Profile</a>
-    </nav>
+    <?php include('include/header.php')?>
 </header>
+<?php include('include/sidebar.php') ?>
 
 <form action="" method="post" enctype="multipart/form-data">
     <h2>Edit Profile</h2>
-    <?php if (isset($success_message)): ?>
-        <p class="success-message"><?php echo htmlspecialchars($success_message); ?></p>
-    <?php elseif (isset($error_message)): ?>
-        <p class="error-message"><?php echo htmlspecialchars($error_message); ?></p>
-    <?php endif; ?>
+    
+    <?php 
+    
+    if (isset($_SESSION['success_message'])) {
+        echo '<p class="success-message">' . htmlspecialchars($_SESSION['success_message']) . '</p>';
+        unset($_SESSION['success_message']);
+    }
+    
+    if (isset($error_message)) {
+        echo '<p class="error-message">' . htmlspecialchars($error_message) . '</p>';
+    }
+    ?>
+    
     <div>
         <label>Name:</label>
-        <input type="text" name="name" value="<?php echo htmlspecialchars($admin['name']); ?>" required>
+        <input type="text" name="name" value="<?php echo $name; ?>" required>
     </div>
     <div>
         <label>Contact No:</label>
-        <input type="text" name="contact_no" value="<?php echo htmlspecialchars($admin['contact_no']); ?>" required>
+        <input type="text" name="contact_no" value="<?php echo $contact_no; ?>" required>
     </div>
     <div>
         <label>Gender:</label>
         <select name="gender" required>
-            <option value="male" <?php echo ($admin['gender'] == 'male') ? 'selected' : ''; ?>>Male</option>
-            <option value="female" <?php echo ($admin['gender'] == 'female') ? 'selected' : ''; ?>>Female</option>
-            <option value="other" <?php echo ($admin['gender'] == 'other') ? 'selected' : ''; ?>>Other</option>
+            <option value="male" <?php echo ($gender == 'male') ? 'selected' : ''; ?>>Male</option>
+            <option value="female" <?php echo ($gender == 'female') ? 'selected' : ''; ?>>Female</option>
+            <option value="other" <?php echo ($gender == 'other') ? 'selected' : ''; ?>>Other</option>
         </select>
     </div>
     <div>
         <label>Profile Picture:</label>
-        <input type="file" name="profile_picture">
-        <img src="<?php echo htmlspecialchars($admin['profile_picture']); ?>" alt="Profile Picture" width="100">
+        <input type="file" name="profile_picture" accept="image/jpeg,image/png,image/gif">
+        <?php if (!empty($profile_picture)): ?>
+            <img src="<?php echo $profile_picture; ?>" alt="Profile Picture">
+        <?php endif; ?>
     </div>
     <button type="submit">Update Profile</button>
 </form>
-
 </body>
 </html>

@@ -25,6 +25,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Handle vehicle deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $registration_no = $_POST['registration_no'];
     
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $stmt->close();
 }
 
+// Handle availability status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability'])) {
     $registration_no = $_POST['registration_no'];
     $current_status = $_POST['current_status'];
@@ -58,8 +60,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
     $stmt->close();
 }
 
+// Search functionality
+$search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles";
-$result = $conn->query($query);
+
+// Modify query if search is performed
+if (!empty($search_query)) {
+    $search_param = "%" . $search_query . "%";
+    $query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles 
+              WHERE model_name LIKE ? OR registration_no LIKE ?";
+}
+
+// Prepare and execute the query
+$stmt = $conn->prepare($query);
+if (!empty($search_query)) {
+    $stmt->bind_param("ss", $search_param, $search_param);
+}
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -236,6 +254,40 @@ $result = $conn->query($query);
                 grid-template-columns: 1fr;
             }
         }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .search-container form {
+            display: flex;
+            width: 100%;
+            max-width: 500px;
+        }
+        .search-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007BFF;
+            border-radius: 5px 0 0 5px;
+        }
+        .search-button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: 2px solid #007BFF;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+        .no-results {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -248,7 +300,24 @@ $result = $conn->query($query);
     </nav>
 </header>
 
-<h2>Available Vehicles</h2>
+<div class="search-container">
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Search by model name or registration number" 
+               class="search-input" value="<?php echo htmlspecialchars($search_query); ?>">
+        <button type="submit" class="search-button">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </form>
+</div>
+
+<h2>
+    <?php 
+    echo !empty($search_query) 
+        ? "Search Results for: " . htmlspecialchars($search_query) 
+        : "Available Vehicles"; 
+    ?>
+</h2>
+
 <div class="vehicle-list">
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($vehicle = $result->fetch_assoc()): ?>
@@ -302,7 +371,13 @@ $result = $conn->query($query);
             </div>
         <?php endwhile; ?>
     <?php else: ?>
-        <p>No vehicles found.</p>
+        <p class="no-results">
+            <?php 
+            echo !empty($search_query) 
+                ? "No vehicles found matching '" . htmlspecialchars($search_query) . "'." 
+                : "No vehicles found."; 
+            ?>
+        </p>
     <?php endif; ?>
 </div>
 

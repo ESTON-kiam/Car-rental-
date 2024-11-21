@@ -231,9 +231,6 @@ $conn->close();
                     </a>
                 </div>
             </div>
-            <button id="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-adjust"></i>
-            </button>
         </div>
     </header>
 
