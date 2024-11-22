@@ -215,7 +215,7 @@ $conn->close();
         <?php include('include/header.php') ?>
     </header>
     <?php include('include/sidebar.php') ?>
-
+    <main class="main-content">
     <?php if (!empty($success_message)): ?>
         <div class="message success">
             <?php echo $success_message; ?>
@@ -226,7 +226,7 @@ $conn->close();
         <div class="message error">
             <?php echo $error_message; ?>
         </div>
-    <?php endif; ?>
+    <?php endif; ?> <main>
 
     <form action="" method="post" enctype="multipart/form-data">
         <h2>Add Vehicle</h2>
@@ -266,6 +266,6 @@ $conn->close();
         </div>
 
         <button type="submit">Add Vehicle</button>
-    </form>
+    </form></main>
 </body>
 </html>

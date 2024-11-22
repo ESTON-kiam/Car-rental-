@@ -156,6 +156,9 @@ $conn->close();
     </style>
 </head>
 <body>
+<?php include('include/header.php') ?>
+<?php include('include/sidebar.php') ?>
+    <main class="main-content">
     <div class="container">
         <h2>Edit Booking</h2>
       
@@ -182,7 +185,7 @@ $conn->close();
             <button type="submit" name="update_booking" class="btn-primary"><i class="fas fa-save"></i> Update Booking</button>
         </form>
     </div>
-
+    </main>
     <script>
         setTimeout(() => {
             const alert = document.querySelector('.status-success, .status-failure');

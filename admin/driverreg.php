@@ -1,4 +1,21 @@
 <?php
+session_name('admin_session');
+session_set_cookie_params([
+    'lifetime' => 1800,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false, 
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+session_start();
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("Location: http://localhost:8000/admin/");
+    exit();
+}
+
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -89,7 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,148 +115,165 @@ $conn->close();
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
+            margin: 0;
             padding: 20px;
-            background-color: #eaf2f8;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
         }
 
         h1 {
             text-align: center;
-            color: #003366;
+            color: #2c3e50;
             margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #003366;
+            font-size: 2.2rem;
+            font-weight: 600;
         }
 
         form {
             background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #003366;
-            font-weight: bold;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
         input[type="text"],
         input[type="tel"],
         input[type="number"],
         input[type="email"],
+        input[type="password"],
         textarea {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #e1e8ef;
+            border-radius: 8px;
             box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        textarea {
-            height: 100px;
-            resize: vertical;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input[type="file"] {
-            margin-bottom: 20px;
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #e1e8ef;
+            border-radius: 8px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .full-width {
+            grid-column: span 2;
         }
 
         input[type="submit"] {
-            background-color: #003366;
+            background-color: #3498db;
             color: white;
-            padding: 12px 20px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            transition: background-color 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+            grid-column: span 2;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 12px;
         }
 
         input[type="submit"]:hover {
-            background-color: #004080;
+            background-color: #2980b9;
+            transform: translateY(-1px);
         }
 
-        
-        p {
-            text-align: center;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+        input[type="submit"]:active {
+            transform: translateY(1px);
         }
 
-        p[style*="green"] {
-            background-color: #dff0d8;
-            border: 1px solid #d6e9c6;
-        }
-
-        p[style*="red"] {
-            background-color: #f2dede;
-            border: 1px solid #ebccd1;
-        }
-
-        
-        @media screen and (max-width: 600px) {
-            body {
-                padding: 10px;
-                margin: 10px;
-            }
-
+        @media screen and (max-width: 768px) {
             form {
-                padding: 15px;
+                grid-template-columns: 1fr;
+                padding: 24px;
             }
 
-            input[type="text"],
-            input[type="tel"],
-            input[type="number"],
-            input[type="email"],
-            textarea {
-                font-size: 14px;
+            .container {
+                padding: 0 20px;
             }
         }
     </style>
-    <link href="assets/img/p.png" rel="icon">
-    <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
-<body>
-<header style="background-color: #0077b6; color: white; padding: 1rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 style="margin: 0;">Driver Registration</h1>
-        <nav>
-            <a href="dashboard.php" style="color: white; text-decoration: none; margin-right: 1rem;">Dashboard</a>
-            <a href="driverslist.php" style="color: white; text-decoration: none;">Drivers</a>
-        </nav>
-    </div>
-</header>
+<body>  <?php include('include/header.php')?>
+<?php include('include/sidebar.php') ?>
+     <main class="main-content">
+    <div class="container">
+        <h1>Driver Registration</h1>
+        <form action="driverreg.php" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="name">Name (as per license)</label>
+                <input type="text" id="name" name="name" required>
+            </div>
 
-    <form action="driverreg.php" method="POST" enctype="multipart/form-data">
-        <label for="name">Name (as per license):</label>
-        <input type="text" id="name" name="name" required>
+            <div>
+                <label for="contact">Contact Number</label>
+                <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" required>
+            </div>
 
-        <label for="contact">Contact Number:</label>
-        <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" required>
+            <div>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-        <label for="email">Email Address:</label> 
-        <input type="email" id="email" name="email" required>
+            <div>
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" min="18" max="65" required>
+            </div>
 
-        <label for="residence">Permanent Address:</label>
-        <textarea id="residence" name="residence" required></textarea>
+            <div class="full-width">
+                <label for="residence">Permanent Address</label>
+                <textarea id="residence" name="residence" required></textarea>
+            </div>
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" min="18" max="65" required>
+            <div class="full-width">
+                <label for="license_image">Driving License Image</label>
+                <input type="file" id="license_image" name="license_image" accept="image/*" required>
+            </div>
 
-        <label for="license_image">Driving License Image:</label>
-        <input type="file" id="license_image" name="license_image" accept="image/*" required>
-        
-        <label for="password" style="display: block; margin-bottom: 8px; color: #003366; font-weight: bold;">Password:</label>
-        <input type="password" id="password" name="password" required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 16px;">
+            <div class="full-width">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-        <input type="submit" value="Register Driver">
-    </form>
+            <input type="submit" value="Register Driver">
+        </form>
+    </div></main>
 </body>
 </html>

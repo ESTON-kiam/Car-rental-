@@ -62,7 +62,7 @@ $result = $conn->query($query);
         <a href="index.php" class="navbar-brand">Car Rentals</a>
         <a href="dashboard.php" class="dashboard-btn">Dashboard</a>
     </nav>
-
+    <?php include('include/sidebar.php') ?><main class="main-content">
     <div class="container">
         <?php if (isset($_GET['msg'])): ?>
             <?php if ($_GET['msg'] === 'deleted'): ?>
@@ -129,7 +129,7 @@ $result = $conn->query($query);
             </tbody>
         </table>
     </div>
-
+</main>
     <script>
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');

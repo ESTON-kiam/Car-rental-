@@ -74,7 +74,14 @@ $customers = $conn->query($customerQuery);
         }
     </style>
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-gray-100"> <header>
+        <?php include('include/header.php') ?>
+    </header>
+
+    <?php include('include/sidebar.php') ?>
+
+        <main class="main-content">
     <div class="container mx-auto py-10 flex">
         <div class="w-1/3">
             <h2 class="text-2xl font-bold mb-6">Customer Support Messages</h2>
@@ -159,7 +166,7 @@ $customers = $conn->query($customerQuery);
             }
             ?>
         </div>
-    </div>
+    </div></main>
 
     <script>
         

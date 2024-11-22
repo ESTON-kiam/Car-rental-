@@ -203,7 +203,7 @@ $profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
     <?php include('include/header.php')?>
 </header>
 <?php include('include/sidebar.php') ?>
-
+<main class="main-content">
 <form action="" method="post" enctype="multipart/form-data">
     <h2>Edit Profile</h2>
     
@@ -243,6 +243,6 @@ $profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
         <?php endif; ?>
     </div>
     <button type="submit">Update Profile</button>
-</form>
+</form></main>
 </body>
 </html>

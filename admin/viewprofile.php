@@ -146,7 +146,7 @@ $conn->close();
     </header>
     <?php include('include/sidebar.php') ?>
 
-    <!-- Wrapped profile content in a specific class to isolate styles -->
+    <main class="main-content">
     <div class="profile-body">
         <div class="profile-container">
             <div class="profile-picture">
@@ -162,6 +162,6 @@ $conn->close();
                 <a href="logout.php">Logout</a>
             </div>
         </div>
-    </div>
+    </div></main>
 </body>
 </html>

@@ -172,13 +172,10 @@ $conn->close();
 <body>
 
 <header>
-    <h1>Change Password</h1>
-    <nav>
-        <a href="dashboard.php" style="color: white; margin-right: 20px;">Dashboard</a>
-        <a href="viewprofile.php" style="color: white;">View Profile</a>
-    </nav>
+   <?php include('include/header.php') ?>
 </header>
-
+<?php include('include/sidebar.php') ?>
+<main class="main-content">
 <form action="" method="post">
     <h2>Change Your Password</h2>
     <?php if (isset($success_message)): ?>
@@ -200,6 +197,6 @@ $conn->close();
     </div>
     <button type="submit">Change Password</button>
 </form>
-
+</main>
 </body>
 </html>
