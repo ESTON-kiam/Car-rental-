@@ -172,9 +172,15 @@ $conn->close();
                 </a>
             </div>
             <div class="nav-item">
-                <a href="payment_history.php" class="nav-link">
+                <a href="returncar.php" class="nav-link">
                     <i class="fas fa-undo"></i>
                     <span>Return Vehicle</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="cancelbooking.php" class="nav-link">
+                    <i class="fas fa-ban"></i>
+                    <span>Cancel Booking</span>
                 </a>
             </div>
             <div class="nav-item">

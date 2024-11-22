@@ -74,7 +74,8 @@ $result = $conn->query($sql);
                     <button id="sidebarToggle" class="text-white mr-4 lg:hidden">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <a href="dashboard.php" class="text-2xl font-bold text-white tracking-wider" class="fas fa-car">Online Car Rental Admin Panel</a>
+                    <a href="dashboard.php" class="text-2xl font-bold text-white tracking-wider" ><i class="fas fa-car"></i><b>
+                    Online Car Rental Admin Panel</b></a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="logout.php" class="text-white hover:text-blue-200 transition">

@@ -85,7 +85,7 @@ $conn->close();
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .profile-picture img {
+        .profile-picturer img {
             width: 140px;
             height: 140px;
             border-radius: 50%;
@@ -95,7 +95,7 @@ $conn->close();
             transition: transform 0.3s ease;
         }
 
-        .profile-picture img:hover {
+        .profile-picturer img:hover {
             transform: scale(1.05);
         }
 
@@ -149,7 +149,7 @@ $conn->close();
     <main class="main-content">
     <div class="profile-body">
         <div class="profile-container">
-            <div class="profile-picture">
+            <div class="profile-picturer">
                 <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture">
             </div>
             <div class="profile-details">

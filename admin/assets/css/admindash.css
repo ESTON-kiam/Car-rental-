@@ -158,7 +158,8 @@ body {
 }
 
 .card-content h3 {
-    color: var(--light-text);
+    color: #000033;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 1rem;
     font-weight: 500;
     margin-bottom: 0.5rem;

@@ -51,8 +51,8 @@ if ($result && $result->num_rows > 0) {
                 <i class="fas fa-bars"></i>
             </button>
             <h1>
-                <i class="fas fa-car"></i>
-                Online Car Rental Admin Panel
+                <i class="fas fa-car"></i><b>
+                Online Car Rental Admin Panel</b>
             </h1>
             <div class="profile" role="navigation" aria-label="User menu">
                 <button class="profile-button" aria-expanded="false" aria-controls="profile-menu">

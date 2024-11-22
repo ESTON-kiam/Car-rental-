@@ -207,7 +207,7 @@ $conn->close();
                 <article class="card">
     <div class="card-content">
         <h3>Available Vehicles</h3>
-        <p class="card-value">KSH<?php echo number_format($available_vehicles, 0); ?></p>
+        <p class="card-value"><?php echo number_format($available_vehicles, 0); ?></p>
         <p class="card-change <?php echo $change_class; ?>">
             <?php echo number_format($percentage_change, 2); ?>% from last month
         </p>
@@ -219,7 +219,7 @@ $conn->close();
 <article class="card">
     <div class="card-content">
         <h3>Completed Bookings</h3>
-        <p class="card-value">KSH<?php echo number_format($completed_bookings, 0); ?></p>
+        <p class="card-value"><?php echo number_format($completed_bookings, 0); ?></p>
         <p class="card-change <?php echo $change_class; ?>">
             <?php echo number_format($percentage_change, 2); ?>% from last month
         </p>
