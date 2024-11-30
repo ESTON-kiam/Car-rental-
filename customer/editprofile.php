@@ -234,8 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="header">
         <h1>Edit Profile</h1>
         <div>
-            <a href="customer_dashboard.php">Dashboard</a>
-            <a href="customerviewprofile.php">View Profile</a>
+            <a href="dashboard.php">Dashboard</a>
+            <a href="viewprofile.php">View Profile</a>
         </div>
     </div>
 
