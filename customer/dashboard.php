@@ -214,7 +214,13 @@ $conn->close();
                     <div class="profile-picture">
                         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile">
                     </div>
-                    <span class="profile-name"><strong><?php echo htmlspecialchars($full_name); ?></strong></span>
+                    <span class="profile-name">
+    <strong><?php echo htmlspecialchars($full_name); ?></strong>
+    <?php if (isset($_SESSION['customer_id'])): ?>
+        <span style="display: inline-block; width: 10px; height: 10px; background-color: green; border-radius: 50%; margin-left: 5px; vertical-align: middle;"></span>
+    <?php endif; ?>
+</span>
+
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="profile-dropdown">

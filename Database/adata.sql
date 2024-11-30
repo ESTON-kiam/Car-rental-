@@ -90,3 +90,16 @@ CREATE TABLE sessions (
     ip_address VARCHAR(45), 
     FOREIGN KEY (user_id) REFERENCES users(id) 
 );
+
+
+CREATE TABLE services (
+    service_id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    booking_id INT NOT NULL,
+    service_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    return_condition ENUM('good', 'fair', 'damaged') NOT NULL,
+    additional_charges DECIMAL(10, 2) DEFAULT 0,
+    service_comments TEXT,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id),
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+);

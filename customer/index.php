@@ -52,6 +52,12 @@ try {
                 $user = $result->fetch_assoc();
                 
                 if (password_verify($password, $user['password'])) {
+                    // NEW: Update last_login timestamp
+                    $update_last_login_sql = "UPDATE customers SET last_login = NOW() WHERE id = ?";
+                    $stmt_last_login = $conn->prepare($update_last_login_sql);
+                    $stmt_last_login->bind_param("i", $user['id']);
+                    $stmt_last_login->execute();
+
                     $_SESSION['customer_id'] = $user['id'];
                     $_SESSION['customer_email'] = $user['email'];
                     $_SESSION['customer_name'] = $user['full_name']; 
@@ -107,57 +113,15 @@ try {
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="assets/css/login.css">
-    <style>
-        .alert {
-            padding: 15px;
-            margin: 15px 0;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .alert-error {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .alert-warning {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-        }
-
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-
-        .fade-out {
-            animation: fadeOut 5s forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-       
-        .input-field input:invalid {
-            border-color: #dc3545;
-        }
-
-        .input-field input:valid {
-            border-color: #28a745;
-        }
-    </style>
+    
 </head>
 <body>
     <div class="wrapper">
+    
         <form action="" method="POST" novalidate>
+        <div class="login-logo">
+            <i class="fas fa-lock"></i>
+        </div>
             <h2>Customer Login</h2>
             
             <?php if (!empty($error_message)): ?>
