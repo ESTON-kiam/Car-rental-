@@ -169,6 +169,8 @@ $active_bookings_result = $active_stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Return Vehicle</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="assets/css/cancealreturn.css">
 </head>
 <body>

@@ -107,6 +107,7 @@
             background-color: rgba(0, 0, 0, 0.15);
             overflow: hidden;
             max-height: 0;
+            text-decoration: none;
             transition: max-height 0.3s ease-out;
         }
 
@@ -204,6 +205,7 @@
                     <li><a href="dashboard.php" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li><a href="add_vehicles.php"><i class="fas fa-car-side"></i><span>Add Vehicle</span></a></li>
                     <li>
+                    <li><a href="carcollection.php"><i class="fas fa-car"></i><span>Car Collection</span></a></li>
                         <button class="dropdown-toggle" aria-expanded="false" aria-controls="staff-menu">
                             <i class="fas fa-users"></i><span>Add Staff</span><i class="fas fa-chevron-right"></i>
                         </button>
@@ -235,7 +237,7 @@
                             <li><a href="successful_payments.html"><i class="fas fa-check-circle"></i> Successful Payments</a></li>
                         </ul>
                     </li>
-                    <li><a href="carcollection.php"><i class="fas fa-car"></i><span>Car Collection</span></a></li>
+                    
                     <li><a href="invoices.php"><i class="fas fa-file-invoice"></i><span>Invoices</span></a></li>
                     <li><a href="support_view.php"><i class="fas fa-headset"></i><span>Support Reply</span></a></li>
                 </ul>

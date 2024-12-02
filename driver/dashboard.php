@@ -163,7 +163,7 @@ $conn->close();
             <button class="profile-button" aria-expanded="false" aria-controls="profile-menu">
                 <div class="profile-picture">
                     <img id="profile-img" src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Driver profile picture" loading="lazy" width="40" height="40">
-                </div>
+                </div> <span style="display: inline-block; width: 10px; height: 10px; background-color: green; border-radius: 50%; margin-left: 5px; vertical-align: middle;"></span>
                 <span class="profile-name"><?php echo htmlspecialchars($name); ?></span>
             </button>
             <div id="profile-menu" class="profile-dropdown" hidden>
