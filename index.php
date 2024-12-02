@@ -37,7 +37,7 @@
 
       <a href="index.php" class="logo d-flex align-items-center me-auto me-lg-0">
        
-        <h1 class="sitename">Online Car Rental</h1>
+      <h1 class="sitename"><img src="assets/img/p.png" rel="icon">Online Car Rental</h1>
         <span>.</span>
       </a>
 
