@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->AltBody = 'Thank you for being our member! Your registration was successful.';
 
             $mail->send();
-            header("Location: customer_registration_success.html");
+            header("Location: registration_success.html");
             exit();
         } catch (Exception $e) {
             error_log("Mail error: " . $mail->ErrorInfo); 
