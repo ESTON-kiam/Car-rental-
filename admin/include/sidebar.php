@@ -223,6 +223,7 @@
                             <li><a href="customerlist.php"><i class="fas fa-users"></i> Customers List</a></li>
                             <li><a href="add_employee.html"><i class="fas fa-user-tie"></i> Employee List</a></li>
                             <li><a href="driverslist.php"><i class="fas fa-id-card"></i>Driver List</a></li>
+                            <li><a href="adminlist.php"><i class="fas fa-id-card"></i>Admins</a></li>
                         </ul>
                     </li>
                     <li><a href="carbookings.php"><i class="fas fa-book"></i><span>Car Bookings</span></a></li>

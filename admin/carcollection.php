@@ -25,7 +25,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle vehicle deletion
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $registration_no = $_POST['registration_no'];
     
@@ -60,18 +60,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
     $stmt->close();
 }
 
-// Search functionality
+
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles";
 
-// Modify query if search is performed
+
 if (!empty($search_query)) {
     $search_param = "%" . $search_query . "%";
     $query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles 
               WHERE model_name LIKE ? OR registration_no LIKE ?";
 }
 
-// Prepare and execute the query
 $stmt = $conn->prepare($query);
 if (!empty($search_query)) {
     $stmt->bind_param("ss", $search_param, $search_param);

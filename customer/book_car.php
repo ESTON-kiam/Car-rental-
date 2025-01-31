@@ -96,8 +96,11 @@ $result = $stmt->get_result();
     </div>
 
     <div class="search-container">
-        <form method="GET" action="" class="search-bar">
+        <form method="GET" action="" class="search-bar"><!-- searching by model_name and description has an error -->
             <input type="text" name="search" placeholder="Search by model or description" value="<?php echo htmlspecialchars($search_query); ?>">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> Search
+            </button>
         </form>
         
         <form method="GET" action="" class="price-range">
