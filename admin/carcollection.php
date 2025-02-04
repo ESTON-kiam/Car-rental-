@@ -290,7 +290,6 @@ $result = $stmt->get_result();
     </style>
 </head>
 <body>
-
 <header>
     <h1>Car Collection</h1>
     <nav>
