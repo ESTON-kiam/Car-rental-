@@ -287,6 +287,7 @@ $result = $stmt->get_result();
             color: #666;
             margin: 20px 0;
         }
+        
     </style>
 </head>
 <body>
