@@ -55,7 +55,6 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Scoped styles for the profile page */
         .profile-body {
             font-family: 'Roboto', sans-serif;
             background-color: #f4f6f9;
@@ -140,7 +139,7 @@ $conn->close();
     <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
 <body>
-    <!-- Include headers and sidebar as before -->
+    
     <header>
         <?php include('include/header.php')?>
     </header>
