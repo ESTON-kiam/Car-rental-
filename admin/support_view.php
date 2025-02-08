@@ -2,8 +2,6 @@
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-
 session_name('admin_session');
 session_set_cookie_params([
     'lifetime' => 1800,
@@ -14,7 +12,6 @@ session_set_cookie_params([
     'samesite' => 'Strict'
 ]);
 session_start();
-
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: http://localhost:8000/admin/");
