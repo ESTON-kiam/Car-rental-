@@ -72,7 +72,7 @@ function returnVehicle($conn, $booking_id, $customer_id, $additional_details = [
             return false;
         }
 
-        // Calculate total fare including overdue charges
+      
         $total_fare = $booking['total_fare'];
         $overdue_charges = calculateOverdueCharges($booking['end_date']);
         $additional_charges = $additional_details['additional_charges'] ?? 0;
