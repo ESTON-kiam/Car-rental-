@@ -33,7 +33,7 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `name`, `contact_no`, `email_address`, `gender`, `password`, `profile_picture`, `reset_token`, `token_expiration`) VALUES
 (1, 'ESTON KIAMA', '0757196660', 'engestonbrandon@gmail.com', 'male', '$2y$10$pEBsZi8h97piEiugO9z92eEdoVphbk0K.JihKySeOrfcDpRaKm4.6', 'adminprof/673f24ca792e2_prof.jpg', NULL, NULL),
-(2, 'admin', '0757196660', 'admin@gmail.com', 'female', '$2y$10$0W58kh.20HUtu0pou.J7oOBrhKI/JAkH.brGn82AZJhUUNfsu5kca', NULL, NULL, NULL);
+
 
 -- --------------------------------------------------------
 

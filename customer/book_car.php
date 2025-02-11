@@ -88,15 +88,15 @@ $result = $stmt->get_result();
 </head>
 <body>
     <div class="header">
-        <h1>Online Car Collection</h1>
+    <h1><i class="fas fa-car"></i>Online Car Collection</h1>
         <div class="header-links">
             <a href="dashboard.php">Dashboard</a>
-            <a href="viewprofile.php">View Profile</a>
+           
         </div>
     </div>
 
     <div class="search-container">
-        <form method="GET" action="" class="search-bar"><!-- searching by model_name and description has an error -->
+        <form method="GET" action="" class="search-bar">
             <input type="text" name="search" placeholder="Search by model or description" value="<?php echo htmlspecialchars($search_query); ?>">
             <button type="submit" class="search-button">
                 <i class="fas fa-search"></i> Search
