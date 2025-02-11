@@ -12,7 +12,6 @@ session_set_cookie_params([
     'samesite' => 'Strict'
 ]);
 session_start();
-
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: http://localhost:8000/admin/");
     exit();
