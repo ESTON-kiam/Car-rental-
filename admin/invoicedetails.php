@@ -1,30 +1,5 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: http://localhost:8000/admin/");
-    exit();
-}
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'include/db_connection.php';
 
 
 $invoice_id = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : 0;
@@ -74,6 +49,8 @@ $invoice = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Details</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script>
         

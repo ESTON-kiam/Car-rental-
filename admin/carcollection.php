@@ -1,29 +1,5 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: http://localhost:8000/admin/");
-    exit();
-}
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'include/db_connection.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
@@ -41,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $stmt->close();
 }
 
-// Handle availability status update
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability'])) {
     $registration_no = $_POST['registration_no'];
     $current_status = $_POST['current_status'];

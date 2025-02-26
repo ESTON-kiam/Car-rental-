@@ -1,24 +1,5 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params(1800); 
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: http://localhost:8000/admin/");
-    exit();
-}
-
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
+require 'include/db_connection.php';
 
 $query = "SELECT driver_id, name, email, contact_no, residence, driving_license_no, license_image FROM drivers";
 $result = $conn->query($query);
@@ -52,7 +33,7 @@ $result = $conn->query($query);
     <h1 style="color: white; margin: 0; font-size: 24px;">Driver Management</h1>
     <nav style="display: flex; gap: 20px;">
         <a href="dashboard.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Dashboard</a>
-        <a href="driverreg.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Add Driver</a>
+       
     </nav>
 </header>
 

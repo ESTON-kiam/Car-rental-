@@ -1,19 +1,5 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: http://localhost:8000/admin/");
-    exit();
-}
+require 'include/db_connection.php';
 
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -110,6 +96,8 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Registration</title>
     <style>

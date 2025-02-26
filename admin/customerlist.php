@@ -1,23 +1,5 @@
 <?php
-session_name('admin_session');
-session_set_cookie_params(1800); 
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: http://localhost:8000/admin/");
-    exit();
-}
-
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'include/db_connection.php';
 
 
 $query = "SELECT id, full_name, email, mobile, gender, dob, occupation, residence, created_at FROM customers";
@@ -57,7 +39,7 @@ if (!$result) {
     <h1 style="color: white; margin: 0; font-size: 24px;">Car Collection</h1>
     <nav style="display: flex; gap: 20px;">
         <a href="dashboard.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Dashboard</a>
-        <a href="add_vehicles.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Add Vehicle</a>
+        
     </nav>
 </header>
 

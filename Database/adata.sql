@@ -9,11 +9,7 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `car_rental_management` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `car_rental_management`;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `admins`
---
 
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
@@ -27,19 +23,13 @@ CREATE TABLE `admins` (
   `token_expiration` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `admins`
---
+
 
 INSERT INTO `admins` (`id`, `name`, `contact_no`, `email_address`, `gender`, `password`, `profile_picture`, `reset_token`, `token_expiration`) VALUES
 (1, 'ESTON KIAMA', '0757196660', 'engestonbrandon@gmail.com', 'male', '$2y$10$pEBsZi8h97piEiugO9z92eEdoVphbk0K.JihKySeOrfcDpRaKm4.6', 'adminprof/673f24ca792e2_prof.jpg', NULL, NULL),
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `bookings`
---
 
 CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
