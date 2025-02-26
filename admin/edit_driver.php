@@ -6,15 +6,13 @@ $availability_status = "";
 $success_msg = $error_msg = "";
 
 if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
-    // Getting the driver ID from form submission
+  
     $driver_id = $_POST["driver_id"];
     
-    // Only processing the availability_status field
+    
     $availability_status = isset($_POST["availability_status"]) ? $_POST["availability_status"] : "Available";
     
-    // No validation needed as it's a select dropdown with predefined values
-    
-    // Update only the availability_status in the database
+   
     $sql = "UPDATE drivers SET availability_status = ? WHERE driver_id = ?";
     
     if($stmt = mysqli_prepare($conn, $sql)){
@@ -33,7 +31,7 @@ if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
     }
     
 } else {
-    // If no form submitted, fetch driver details from database based on URL parameter
+    
     if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
         
         $driver_id = trim($_GET["id"]);
@@ -50,7 +48,7 @@ if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
                 if(mysqli_num_rows($result) == 1){
                     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
                     
-                    // Get all driver details but we'll only allow editing availability_status
+                   
                     $driver_id = $row["driver_id"];
                     $name = $row["name"];
                     $contact_no = $row["contact_no"];
@@ -123,7 +121,7 @@ mysqli_close($conn);
                         <div class="alert alert-danger"><?php echo $error_msg; ?></div>
                     <?php endif; ?>
                     
-                    <!-- Display driver information (read-only) -->
+                   
                     <div class="driver-info">
                         <div class="row">
                             <div class="col-md-8">
