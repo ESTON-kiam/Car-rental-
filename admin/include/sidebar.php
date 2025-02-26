@@ -66,6 +66,9 @@
             padding: 0;
             margin: 0;
         }
+        button:hover {
+            background-color: #0056b3; 
+        }
 
         .sidebar a, 
         .sidebar button {
