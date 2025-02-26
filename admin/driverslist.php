@@ -69,6 +69,7 @@ $result = $conn->query($query);
                             No Image
                         <?php endif; ?>
                     </td>
+                    <td><a href="edit_driver.php?id=<?php echo $driver['driver_id']; ?>" class="delete-button">Edit</a></td>
                     <td><a href="delete_driver.php?id=<?php echo $driver['driver_id']; ?>" class="delete-button">Delete</a></td>
                 </tr>
             <?php endwhile; ?>
