@@ -221,20 +221,14 @@ CREATE TABLE `drivers` (
   `token_expiration` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `drivers`
---
+
 
 INSERT INTO `drivers` (`driver_id`, `name`, `contact_no`, `residence`, `age`, `driving_license_no`, `license_image`, `email`, `password`, `profile_picture`, `availability_status`, `reset_token`, `token_expiration`) VALUES
 (1, 'TonyRoy Smith', '0765554444', 'Kawangware', 23, 'PHD106', 'Drivers/license.jpeg', 'kiamaeston2@gmail.com', '$2y$10$Prqkg0QdRFDQyFZ0VyaFWO8BIUBl2N4U3qpCygS9B5LbaA4XKIQjC', 'Driverprof/th.jpeg', 'Available', NULL, NULL),
 (2, 'Prestone Ongoro', '0765554444', 'Ngong', 35, 'LIC-6728908c99cf0', 'Drivers/license.jpeg', 'kiamaeston0@gmail.com', '$2y$10$LlCHaivLmqaY4SpaC0TqSOr1wtqME2Ul0gvzywBGAZIChozyLUwoO', 'Driverprof/20220827_203534.jpg', 'Available', NULL, NULL),
 (3, 'Crispin Wambugu', '7575196660', 'Kayole', 33, 'LIC-67404e672fa42', 'Drivers/license.jpeg', 'crispin@gmail.com', '$2y$10$YWcGb4moqhSVvQeTATClzeF/VQqzX1AphSwlJxNJthCqTRRfzfFVi', NULL, 'Available', NULL, NULL);
 
--- --------------------------------------------------------
 
---
--- Table structure for table `driver_assignments`
---
 
 CREATE TABLE `driver_assignments` (
   `assignment_id` int(11) NOT NULL,
@@ -248,9 +242,7 @@ CREATE TABLE `driver_assignments` (
   `assigned_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `driver_assignments`
---
+
 
 INSERT INTO `driver_assignments` (`assignment_id`, `booking_id`, `vehicle_id`, `registration_no`, `model_name`, `driver_id`, `customer_id`, `fullname`, `assigned_at`) VALUES
 (7, 26, 12, 'KBM 510L', 'Fortune', 1, 1, 'Moses Karunga', '2024-11-07 18:36:45'),
@@ -263,11 +255,7 @@ INSERT INTO `driver_assignments` (`assignment_id`, `booking_id`, `vehicle_id`, `
 (17, 36, 14, 'KDM 100Z', 'Mercedez Benz', 3, 1, 'Moses Karunga', '2024-11-30 13:54:24'),
 (19, 38, 1, 'KBF 321W', 'Hatchback', 3, 1, 'Moses Karunga', '2024-11-30 14:13:02');
 
--- --------------------------------------------------------
 
---
--- Table structure for table `newsletter_subscribers`
---
 
 CREATE TABLE `newsletter_subscribers` (
   `id` int(11) NOT NULL,
@@ -275,19 +263,13 @@ CREATE TABLE `newsletter_subscribers` (
   `subscribed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `newsletter_subscribers`
---
+
 
 INSERT INTO `newsletter_subscribers` (`id`, `email`, `subscribed_at`) VALUES
 (1, 'kiamaeston2@gmail.com', '2024-10-28 08:07:19'),
 (2, 'estonnmose@gmail.com', '2024-11-21 12:54:50');
 
--- --------------------------------------------------------
 
---
--- Table structure for table `remember_tokens`
---
 
 CREATE TABLE `remember_tokens` (
   `id` int(11) NOT NULL,
@@ -297,11 +279,7 @@ CREATE TABLE `remember_tokens` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `services`
---
 
 CREATE TABLE `services` (
   `service_id` int(11) NOT NULL,
@@ -313,9 +291,7 @@ CREATE TABLE `services` (
   `service_comments` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `services`
---
+
 
 INSERT INTO `services` (`service_id`, `vehicle_id`, `booking_id`, `service_date`, `return_condition`, `additional_charges`, `service_comments`) VALUES
 (1, 14, 36, '2024-11-30 11:09:35', 'good', 500.00, 'it was awesome ride'),
@@ -415,13 +391,7 @@ INSERT INTO `vehicles` (`vehicle_id`, `registration_no`, `model_name`, `descript
 (39, 'KBM 125L', 'Mercedez Benz', 'Bold, Luxurious, Powerful', 'Available', 'Cars/Mercedes Benz C200.jpeg', '2024-11-21 12:29:46', 7500.00, NULL, NULL, NULL),
 (40, 'KDK 001z', 'Subaru Pleo', '\r\nThe Subaru Pleo is a compact, practical, fuel-efficient kei car.', 'Available', 'Cars/Subaru Pleo.jpeg', '2024-11-30 11:47:17', 800.00, NULL, NULL, NULL);
 
---
--- Indexes for dumped tables
---
 
---
--- Indexes for table `admins`
---
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email_address` (`email_address`);
@@ -517,13 +487,7 @@ ALTER TABLE `support_messages`
 ALTER TABLE `vehicles`
   ADD PRIMARY KEY (`vehicle_id`);
 
---
--- AUTO_INCREMENT for dumped tables
---
 
---
--- AUTO_INCREMENT for table `admins`
---
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
@@ -599,13 +563,7 @@ ALTER TABLE `support_messages`
 ALTER TABLE `vehicles`
   MODIFY `vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
---
--- Constraints for dumped tables
---
 
---
--- Constraints for table `bookings`
---
 ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`vehicle_id`),
   ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
@@ -654,4 +612,3 @@ ALTER TABLE `services`
 ALTER TABLE `support_messages`
   ADD CONSTRAINT `support_messages_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`);
 COMMIT;
-
