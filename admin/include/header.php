@@ -72,3 +72,5 @@ if ($result && $result->num_rows > 0) {
         </div>
         <script src="assets/js/admindash.js" defer></script>
     </header>
+</body>
+</html>
