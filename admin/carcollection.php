@@ -38,19 +38,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
 
 
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
-$query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles";
+$status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
 
+$query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles";
+$params = array();
+$types = "";
+
+
+$where_clauses = array();
 
 if (!empty($search_query)) {
+    $where_clauses[] = "(model_name LIKE ? OR registration_no LIKE ?)";
     $search_param = "%" . $search_query . "%";
-    $query = "SELECT registration_no, model_name, description, availability_status, photo, price_per_day FROM vehicles 
-              WHERE model_name LIKE ? OR registration_no LIKE ?";
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $types .= "ss";
+}
+
+if (!empty($status_filter)) {
+    $where_clauses[] = "availability_status = ?";
+    $params[] = $status_filter;
+    $types .= "s";
+}
+
+if (!empty($where_clauses)) {
+    $query .= " WHERE " . implode(" AND ", $where_clauses);
 }
 
 $stmt = $conn->prepare($query);
-if (!empty($search_query)) {
-    $stmt->bind_param("ss", $search_param, $search_param);
+
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
 }
+
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -236,27 +256,53 @@ $result = $stmt->get_result();
         }
         .search-container form {
             display: flex;
+            flex-wrap: wrap;
             width: 100%;
-            max-width: 500px;
+            max-width: 800px;
+            gap: 10px;
+            justify-content: center;
         }
         .search-input {
             flex-grow: 1;
             padding: 10px;
             font-size: 16px;
             border: 2px solid #007BFF;
-            border-radius: 5px 0 0 5px;
+            border-radius: 5px;
+            min-width: 250px;
+        }
+        .status-select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+            min-width: 150px;
         }
         .search-button {
             padding: 10px 15px;
             background-color: #007BFF;
             color: white;
             border: 2px solid #007BFF;
-            border-radius: 0 5px 5px 0;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            min-width: 100px;
         }
         .search-button:hover {
             background-color: #0056b3;
+        }
+        .reset-button {
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            border: 2px solid #6c757d;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .reset-button:hover {
+            background-color: #5a6268;
         }
         .no-results {
             text-align: center;
@@ -267,7 +313,7 @@ $result = $stmt->get_result();
     </style>
 </head>
 <body>
-<header>
+<header style="display: flex; justify-content: space-between; align-items: center;">
     <h1>Car Collection</h1>
     <nav>
         <a href="dashboard.php">Dashboard</a>
@@ -279,17 +325,36 @@ $result = $stmt->get_result();
     <form method="GET" action="">
         <input type="text" name="search" placeholder="Search by model name or registration number" 
                class="search-input" value="<?php echo htmlspecialchars($search_query); ?>">
+        
+        <select name="status" class="status-select">
+            <option value="">All Availability</option>
+            <option value="Available" <?php echo $status_filter === 'Available' ? 'selected' : ''; ?>>Available</option>
+            <option value="Unavailable" <?php echo $status_filter === 'Unavailable' ? 'selected' : ''; ?>>Unavailable</option>
+        </select>
+        
         <button type="submit" class="search-button">
             <i class="fas fa-search"></i> Search
         </button>
+        
+        <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="reset-button">
+            <i class="fas fa-sync-alt"></i> Reset
+        </a>
     </form>
 </div>
 
 <h2>
     <?php 
-    echo !empty($search_query) 
-        ? "Search Results for: " . htmlspecialchars($search_query) 
-        : "Available Vehicles"; 
+    $title = "Vehicles";
+    
+    if (!empty($search_query) && !empty($status_filter)) {
+        $title = "Search Results for: \"" . htmlspecialchars($search_query) . "\" with status \"" . htmlspecialchars($status_filter) . "\"";
+    } else if (!empty($search_query)) {
+        $title = "Search Results for: \"" . htmlspecialchars($search_query) . "\"";
+    } else if (!empty($status_filter)) {
+        $title = htmlspecialchars($status_filter) . " Vehicles";
+    }
+    
+    echo $title;
     ?>
 </h2>
 
@@ -348,9 +413,11 @@ $result = $stmt->get_result();
     <?php else: ?>
         <p class="no-results">
             <?php 
-            echo !empty($search_query) 
-                ? "No vehicles found matching '" . htmlspecialchars($search_query) . "'." 
-                : "No vehicles found."; 
+            if (!empty($search_query) || !empty($status_filter)) {
+                echo "No vehicles found matching your search criteria.";
+            } else {
+                echo "No vehicles found.";
+            }
             ?>
         </p>
     <?php endif; ?>

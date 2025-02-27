@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $photo = $vehicle['photo']; 
     }
-
     
     $stmt = $conn->prepare("UPDATE vehicles SET model_name = ?, description = ?, availability_status = ?, photo = ?, price_per_day = ? WHERE registration_no = ?");
     $stmt->bind_param("ssssds", $model_name, $description, $availability_status, $photo, $price_per_day, $registration_no);
@@ -45,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,10 +82,17 @@ $conn->close();
             <label for="price_per_day">Price per Day:</label>
             <div class="price-field">
                 <input type="number" id="price_per_day" name="price_per_day" value="<?php echo htmlspecialchars($vehicle['price_per_day']); ?>" required min="0" step="0.01">
-            </div>
+            </div><label for="photo">Current Photo:</label>
+<?php if (!empty($vehicle['photo'])): ?>
+    <div class="current-photo">
+        <img src="<?php echo htmlspecialchars($vehicle['photo']); ?>" alt="Current vehicle photo" style="max-width: 300px;">
+    </div>
+<?php else: ?>
+    <p>No image available</p>
+<?php endif; ?>
 
-            <label for="photo">Upload New Photo:</label>
-            <input type="file" id="photo" name="photo">
+<label for="photo">Upload New Photo:</label>
+<input type="file" id="photo" name="photo">
 
             <button type="submit">Update Vehicle</button>
         </form>
