@@ -2,7 +2,7 @@
 require 'include/db_connection.php';
 
 
-$query = "SELECT id, full_name, email, mobile, gender, dob, occupation, residence, created_at FROM customers";
+$query = "SELECT id, full_name, email,profile_picture, mobile, gender, dob, occupation, residence, created_at FROM customers";
 $result = $conn->query($query);
 
 if (!$result) {
@@ -48,7 +48,7 @@ if (!$result) {
 <table>
     <thead>
         <tr>
-            <th>ID</th>
+        <th>ID</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Mobile</th>
@@ -63,6 +63,7 @@ if (!$result) {
         <?php if ($result->num_rows > 0): ?>
             <?php while ($customer = $result->fetch_assoc()): ?>
                 <tr>
+                
                     <td><?php echo htmlspecialchars($customer['id']); ?></td>
                     <td><?php echo htmlspecialchars($customer['full_name']); ?></td>
                     <td><?php echo htmlspecialchars($customer['email']); ?></td>

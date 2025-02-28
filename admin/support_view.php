@@ -6,6 +6,65 @@ require 'include/db_connection.php';
 $customerQuery = "SELECT DISTINCT c.id, c.full_name FROM support_messages sm JOIN customers c ON sm.customer_id = c.id";
 $customers = $conn->query($customerQuery);
 
+
+if (isset($_POST['simulate_customer_message']) && isset($_POST['customer_id']) && isset($_POST['customer_message'])) {
+    $customer_id = $_POST['customer_id'];
+    $message = $_POST['customer_message'];
+    
+  
+    $query = "INSERT INTO support_messages (customer_id, sender, message) VALUES (?, 'customer', ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("is", $customer_id, $message);
+    $stmt->execute();
+    $stmt->close();
+    
+   
+    $botResponse = generateChatbotResponse($message);
+    
+   
+    $query = "INSERT INTO support_messages (customer_id, sender, message) VALUES (?, 'admin', ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("is", $customer_id, $botResponse);
+    $stmt->execute();
+    $stmt->close();
+    
+ 
+    header("Location: support_view.php?customer_id=" . $customer_id);
+    exit();
+}
+
+
+function generateChatbotResponse($message) {
+  
+    $message = strtolower($message);
+    
+   
+    if (strpos($message, 'hello') !== false || strpos($message, 'hi') !== false || strpos($message, 'hey') !== false ) {
+        return "Hello! How can I assist you today with your car rental needs?";
+    } 
+    else if (strpos($message, 'how are you') !== false || strpos($message,'how are you doing') !==false) {
+        return "I'm just a chatbot, but I'm here to help! How can I assist you today?";
+    }
+    else if (strpos($message, 'price') !== false || strpos($message, 'cost') !== false || strpos($message, 'rate') !== false) {
+        return "Our rental rates vary based on the vehicle model and rental duration. You can check our pricing page for details or let me know which car model you're interested in.";
+    }
+    else if (strpos($message, 'book') !== false || strpos($message, 'reservation') !== false || strpos($message, 'reserve') !== false) {
+        return "To make a reservation, please visit our booking page or provide your preferred dates, location, and vehicle type, and I can help you with the process.";
+    }
+    else if (strpos($message, 'cancel') !== false) {
+        return "Cancellations can be made up to 24 hours before your scheduled pickup without penalty. Would you like me to help you with a cancellation?";
+    }
+    else if (strpos($message, 'payment') !== false || strpos($message, 'pay') !== false) {
+        return "We accept all major credit cards, PayPal, and bank transfers for payments. Is there a specific payment question I can help with?";
+    }
+    else if (strpos($message, 'thank') !== false) {
+        return "You're welcome! Is there anything else I can help you with?";
+    }
+    else {
+        return "Thank you for your message. I'll do my best to assist you. Could you please provide more details about your inquiry so I can better help you?";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -122,7 +181,6 @@ $customers = $conn->query($customerQuery);
                     <input type="text" name="message" required placeholder="Reply to <?= isset($customerDetails) ? htmlspecialchars($customerDetails['full_name']) : '' ?>" class="flex-1 border p-2 rounded-l-lg">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg">Send</button>
                 </form>
-
             <?php endif; ?>
 
             <?php
@@ -143,15 +201,40 @@ $customers = $conn->query($customerQuery);
         
         
         function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
         }
 
         
         window.onload = scrollToBottom;
 
-        document.getElementById('message-form').onsubmit = function() {
-            setTimeout(scrollToBottom, 100); 
-        };
+        if (document.getElementById('message-form')) {
+            document.getElementById('message-form').onsubmit = function() {
+                setTimeout(scrollToBottom, 100); 
+            };
+        }
+        
+        function refreshChat() {
+            const currentUrl = window.location.href;
+            if (currentUrl.includes('customer_id=')) {
+               
+                fetch(currentUrl)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newChatBox = doc.getElementById('chat-box');
+                        if (newChatBox && chatBox) {
+                            chatBox.innerHTML = newChatBox.innerHTML;
+                            scrollToBottom();
+                        }
+                    });
+            }
+        }
+        
+        
+        setInterval(refreshChat, 10000);
     </script>
 </body>
 </html>

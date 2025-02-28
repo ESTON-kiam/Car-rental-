@@ -1,5 +1,5 @@
 <?php
-require 'include/db_connection.php';
+require_once 'include/db_connection.php';
 
 if (isset($_POST['delete_booking'])) {
     $booking_id = $_POST['booking_id'];
@@ -41,12 +41,17 @@ $result = $conn->query($query);
     <link href="assets/css/carbookings.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="dashboard.php" class="navbar-brand">
+     <nav class="navbar">
+    
+       <a href="dashboard.php" class="navbar-brand">
         <i class="fas fa-car"></i><b>
                 Online Car Rental Admin Panel</b></a>
         <a href="dashboard.php" class="dashboard-btn">Dashboard</a>
+        
     </nav>
+    
+    
+    
     <?php include('include/sidebar.php') ?><main class="main-content">
     <div class="container">
         <?php if (isset($_GET['msg'])): ?>

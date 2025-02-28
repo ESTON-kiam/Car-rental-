@@ -248,7 +248,7 @@ $conn->close();
 
     <main class="main-content">
         <div class="welcome-message">
-            <h1><?php echo $greeting . ' &#128512; Welcome Back, ' . htmlspecialchars($full_name) . '!'; ?></h1>
+            <h1><?php echo $greeting . ' Welcome Back, ' . htmlspecialchars($full_name) . '!'; ?></h1>
             <p>Here's an overview of your rental activity</p>
         </div>
 

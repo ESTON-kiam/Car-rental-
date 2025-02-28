@@ -1,229 +1,136 @@
 <?php
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-
-session_name('customer_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-
-if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
-    session_unset();
-    session_destroy();
-    header("Location: http://localhost:8000/customer/?timeout=1");
-    exit();
-}
-$_SESSION['LAST_ACTIVITY'] = time();
-
+require 'include/db_connection.php';
 
 if (!isset($_SESSION['customer_id'])) {
-    header("Location:http://localhost:8000/customer/");
-    exit();
+    
+    $_SESSION['customer_id'] = 1; 
+    $_SESSION['customer_name'] = 'Test Customer'; 
 }
+
 
 $customer_id = $_SESSION['customer_id'];
-$config = [
-    'host' => 'localhost',
-    'username' => 'root',
-    'password' => '',
-    'dbname' => 'car_rental_management'
-];
+$customer_name = $_SESSION['customer_name'];
 
 
-try {
-    $conn = new mysqli($config['host'], $config['username'], $config['password'], $config['dbname']);
-    
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
-    }
-    
-    $conn->set_charset("utf8mb4");
-} catch (Exception $e) {
-    error_log($e->getMessage());
-    die("Sorry, there was a problem connecting to the database. Please try again later.");
+$msgQuery = "SELECT sender, message, created_at FROM support_messages WHERE customer_id = ? ORDER BY created_at ASC";
+$stmt = $conn->prepare($msgQuery);
+if ($stmt) {
+    $stmt->bind_param("i", $customer_id);
+    $stmt->execute();
+    $messages = $stmt->get_result();
 }
-
-
-function fetchMessages($conn, $customer_id) {
-    $query = "SELECT sender, message, created_at FROM support_messages WHERE customer_id = ? ORDER BY created_at ASC";
-    $stmt = $conn->prepare($query);
-    
-    if ($stmt) {
-        $stmt->bind_param("i", $customer_id);
-        $stmt->execute();
-        return $stmt->get_result();
-    }
-    
-    return null;
-}
-
-
-function sendMessage($conn, $customer_id, $message) {
-    $query = "INSERT INTO support_messages (customer_id, sender, message, created_at) VALUES (?, 'customer', ?, NOW())";
-    
-    if ($stmt = $conn->prepare($query)) {
-        $stmt->bind_param("is", $customer_id, $message);
-        return $stmt->execute();
-    }
-    
-    return false;
-}
-
-
-if (isset($_GET['fetch_messages'])) {
-    $result = fetchMessages($conn, $customer_id);
-    
-    while ($row = $result->fetch_assoc()) {
-        if ($row['sender'] == 'customer') {
-            echo '<div class="text-right mb-4">
-                    <span class="inline-block bg-blue-500 text-white p-2 rounded-lg">' . htmlspecialchars($row['message']) . '</span>
-                    <div class="text-xs text-gray-500 mt-1">' . date('H:i', strtotime($row['created_at'])) . '</div>
-                  </div>';
-        } else {
-            echo '<div class="text-left mb-4">
-                    <span class="font-semibold text-gray-600">Admin</span>
-                    <span class="inline-block bg-gray-200 p-2 rounded-lg">' . htmlspecialchars($row['message']) . '</span>
-                    <div class="text-xs text-gray-500 mt-1">' . date('H:i', strtotime($row['created_at'])) . '</div>
-                  </div>';
-        }
-    }
-    
-    exit;
-}
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!empty($_POST['message'])) {
-        $message = trim($_POST['message']);
-        
-        if (sendMessage($conn, $customer_id, $message)) {
-            echo "Message sent successfully.";
-        } else {
-            echo "Failed to send message. Please try again.";
-        }
-        
-        exit;
-    }
-}
-
-
-$result = fetchMessages($conn, $customer_id);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Chat</title>
+    <title>Customer Support</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      h2 {
+    position: relative;
+    z-index: 10;
+    margin-top: 25px; 
+}
+
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .message-bubble.admin {
+            background-color: #e0f7fa; 
+        }
+        .message-bubble.customer {
+            background-color: #f1f1f1; 
+            margin-left: auto;
+        }
+        .chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding:10px;
+        }
+        .bg-gray-100{
+            padding:auto;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-<div class="w-full max-w-md bg-white shadow-lg rounded-lg">
-    <div class="p-4 border-b">
-        <h2 class="text-xl font-semibold">Support Chat</h2>
-        <p class="text-sm text-gray-500">Customer ID: <?= htmlspecialchars($customer_id) ?></p>
+
+
+<body class="bg-gray-100">
+<header>  
+<?php include 'include/header.php'; ?>
+    </header>
+<?php include 'include/sidebar.php'; ?>
+    <div class="container mx-auto py-10">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6">Customer Support</h2>
+            
+          
+            <div class="chat-container border p-4 rounded-lg bg-white mb-4" id="chat-box">
+                <?php if (isset($messages) && $messages->num_rows > 0): ?>
+                    <?php while ($msg = $messages->fetch_assoc()): ?>
+                        <div class="message-bubble <?= ($msg['sender'] == 'admin') ? 'admin' : 'customer' ?>">
+                            <strong><?= ($msg['sender'] == 'admin') ? 'Support Agent' : 'You' ?>:</strong>
+                            <p><?= htmlspecialchars($msg['message']) ?></p>
+                            <span class="text-xs text-gray-500"><?= date('H:i', strtotime($msg['created_at'])) ?></span>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p class="text-gray-500">No messages yet. Start a conversation with our support team!</p>
+                <?php endif; ?>
+            </div>
+            
+            
+            <form action="support_send.php" method="POST" class="flex mt-4" id="message-form">
+                <input type="hidden" name="customer_id" value="<?= htmlspecialchars($customer_id) ?>">
+                <input type="hidden" name="sender" value="customer">
+                <input type="text" name="message" required placeholder="Type your message here..." class="flex-1 border p-2 rounded-l-lg">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg">Send</button>
+            </form>
+        </div>
     </div>
-    
-    <div id="chatBox" class="h-96 overflow-y-scroll p-4 bg-gray-50">
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <?php if ($row['sender'] == 'customer'): ?>
-                <div class="text-right mb-4">
-                    <span class="inline-block bg-blue-500 text-white p-2 rounded-lg"><?= htmlspecialchars($row['message']) ?></span>
-                    <div class="text-xs text-gray-500 mt-1"><?= date('H:i', strtotime($row['created_at'])) ?></div>
-                </div>
-            <?php else: ?>
-                <div class="text-left mb-4">
-                    <span class="font-semibold text-gray-600">Admin</span>
-                    <span class="inline-block bg-gray-200 p-2 rounded-lg"><?= htmlspecialchars($row['message']) ?></span>
-                    <div class="text-xs text-gray-500 mt-1"><?= date('H:i', strtotime($row['created_at'])) ?></div>
-                </div>
-            <?php endif; ?>
-        <?php endwhile; ?>
-    </div>
 
-   
-    <div class="p-4 border-t">
-        <form id="chatForm" class="flex space-x-2" method="POST">
-            <input type="text" name="message" required placeholder="Type your message..." 
-                   class="flex-1 border p-2 rounded-lg focus:outline-none focus:border-blue-500" maxlength="500">
-            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">Send</button>
-        </form>
-        <div id="errorMessage" class="text-red-500 text-sm mt-2 hidden"></div>
-    </div>
-</div>
-
-<script>
-
-const chatBox = document.getElementById('chatBox');
-
-function scrollToBottom() {
-   chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-scrollToBottom();
-
-
-async function fetchNewMessages() {
-   try {
-       const response = await fetch('?fetch_messages=1');
-       if (response.ok) {
-           const messages = await response.text();
-           chatBox.innerHTML = messages;
-           scrollToBottom();
-       }
-   } catch (error) {
-       console.error('Error fetching messages:', error);
-   }
-}
-
-
-setInterval(fetchNewMessages, 5000);
-
-
-document.getElementById('chatForm').addEventListener('submit', async function(event) {
-   event.preventDefault();
-
-   const messageInput = this.querySelector('input[name="message"]');
-   const message = messageInput.value.trim();
-
-   if (message === '') return;
-
-   try {
-       const response = await fetch('', { 
-           method: 'POST', 
-           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-           body: new URLSearchParams({ message: message }) 
-       });
-
-       if (response.ok) {
-           messageInput.value = '';
-           await fetchNewMessages();
-       } else {
-           throw new Error('Failed to send message');
-       }
-   } catch (error) {
-       console.error('Error:', error);
-       document.getElementById('errorMessage').textContent = 'Failed to send message. Please try again.';
-       document.getElementById('errorMessage').classList.remove('hidden');
-   }
-});
-</script>
-
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        
+        function scrollToBottom() {
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+        
+        window.onload = scrollToBottom;
+        
+        if (document.getElementById('message-form')) {
+            document.getElementById('message-form').onsubmit = function() {
+                setTimeout(scrollToBottom, 100);
+            };
+        }
+        
+       
+        function refreshChat() {
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newChatBox = doc.getElementById('chat-box');
+                    if (newChatBox && chatBox) {
+                        chatBox.innerHTML = newChatBox.innerHTML;
+                        scrollToBottom();
+                    }
+                });
+        }
+        
+        
+        setInterval(refreshChat, 5000);
+    </script>
 </body>
 </html>
-
-<?php 
-$conn->close(); 
-?>

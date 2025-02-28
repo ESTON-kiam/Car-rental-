@@ -1,4 +1,7 @@
 <?php
+
+
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: http://localhost:8000/admin/");
     exit();

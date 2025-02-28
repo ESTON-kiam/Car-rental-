@@ -2,17 +2,24 @@
 require 'include/db_connection.php';
 
 $email = $_SESSION['email'];
-$query = "SELECT name, profile_picture FROM admins WHERE email_address='$email'";
+$query = "SELECT role FROM admins WHERE email_address='$email'";
 $result = $conn->query($query);
 
 if ($result && $result->num_rows > 0) {
     $admin = $result->fetch_assoc();
-    $name = $admin['name'];
-    $profile_picture = $admin['profile_picture'];
+    if ($admin['role'] !== 'superadmin') {
+        $_SESSION['message'] = "Only superadmins can register new admins";
+        $_SESSION['message_type'] = "error";
+        header("Location: dashboard.php");
+        exit();
+    }
 } else {
-    $name = "Admin"; 
-    $profile_picture = 'default-profile.png'; 
-} ?>
+    header("Location: login.php");
+    exit();
+}
+
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

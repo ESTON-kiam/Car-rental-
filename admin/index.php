@@ -29,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Connection failed: " . htmlspecialchars($conn->connect_error));
         }
 
-        
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $error_type = 'warning';
             $error_message = "Please enter a valid email address.";
@@ -37,7 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email = $conn->real_escape_string(trim($_POST['email']));
             $password = trim($_POST['password']);
 
-            $stmt = $conn->prepare("SELECT password FROM admins WHERE email_address = ?");
+            
+            $stmt = $conn->prepare("SELECT id, password FROM admins WHERE email_address = ?");
             if (!$stmt) {
                 throw new Exception("Database error: " . htmlspecialchars($conn->error));
             }
@@ -49,20 +49,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows === 1) {
                 $row = $result->fetch_assoc();
                 if (password_verify($password, $row['password'])) {
+                    
                     $_SESSION['loggedin'] = true;
                     $_SESSION['email'] = $email;
+                    $_SESSION['admin_id'] = $row['id']; 
                     $_SESSION['last_activity'] = time();
 
-                    
+                   
                     if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
                         $token = bin2hex(random_bytes(32));
                         $token_hash = password_hash($token, PASSWORD_DEFAULT);
                         
-                        
                         $stmt = $conn->prepare("UPDATE admins SET remember_token = ? WHERE email_address = ?");
                         $stmt->bind_param("ss", $token_hash, $email);
                         $stmt->execute();
-                        
                         
                         setcookie('admin_remember', $token, [
                             'expires' => time() + (30 * 24 * 60 * 60),
@@ -73,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ]);
                     }
 
+                    
                     header("Location: http://localhost:8000/admin/dashboard.php");
                     exit();
                 } else {
@@ -204,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="checkbox" id="remember" name="remember">
                     <p>Remember me</p>
                 </label>
-                <a href="forgotpasswor.php">Forgot password?</a>
+                <a href="forgotpassword.php">Forgot password?</a>
             </div>
             <button type="submit">Log In</button>
             <div class="register">
@@ -215,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
+           
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 setTimeout(() => {
@@ -223,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }, 5000);
             });
 
-            
+           
             const form = document.querySelector('form');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
@@ -239,7 +240,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 );
             });
 
-            
+           
             form.addEventListener('submit', function(e) {
                 const submitButton = this.querySelector('button[type="submit"]');
                 if (submitButton.disabled) {

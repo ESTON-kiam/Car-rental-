@@ -186,7 +186,19 @@ $active_bookings_result = $active_stmt->get_result();
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: 0.3s;
+        }
 
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
         .header-content {
             width: 90%;
             max-width: 1200px;
@@ -418,10 +430,10 @@ $active_bookings_result = $active_stmt->get_result();
             });
         }
 
-        // Initial calculation
+       
         updateAllCharges();
         
-        // Update every minute
+        
         setInterval(updateAllCharges, 60000);
     });
     </script>

@@ -4,24 +4,39 @@ session_set_cookie_params([
     'lifetime' => 1800,
     'path' => '/',
     'domain' => '',
-    'secure' => false, 
+    'secure' => true,
     'httponly' => true,
     'samesite' => 'Strict'
 ]);
 session_start();
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location:http://localhost:8000/admin/");
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_SESSION['admin_id'])) {
+    header("Location: http://localhost:8000/admin/");
     exit();
 }
 
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management"; 
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "car_rental_management";
+
 
 $conn = new mysqli($servername, $username, $password, $dbname);
+
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+
+$timeout = 1800; 
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
+    session_unset();
+    session_destroy();
+    header("Location: http://localhost:8000/admin/?timeout=1");
+    exit();
+}
+$_SESSION['last_activity'] = time();
 ?>
