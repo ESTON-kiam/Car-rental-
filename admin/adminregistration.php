@@ -21,105 +21,7 @@ if ($result && $result->num_rows > 0) {
     <title>Admin Registration Form</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <link rel="stylesheet" href="styles.css">
-    
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 400px;
-            width: 100%;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s;
-        }
-
-        .container:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #007BFF;
-            font-size: 24px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #007BFF;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            border-color: #0056b3;
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007BFF;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-            h2 {
-                font-size: 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/adminregistration.css">
 </head>
 <body>
     <?php include('include/header.php') ?>
@@ -143,6 +45,12 @@ if ($result && $result->num_rows > 0) {
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
+                </select>
+                <label for="role">Role:</label> 
+                <select id="role" name="role" required>
+                <option value="">Select Role</option>
+                <option value="superadmin">SuperAdmin</option>
+                <option value="admin">Admin</option>
                 </select>
 
                 <label for="password">Password:</label>

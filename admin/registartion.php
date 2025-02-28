@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contact_no = $conn->real_escape_string($_POST['contact_no']);
     $email_address = $conn->real_escape_string($_POST['email_address']);
     $gender = $conn->real_escape_string($_POST['gender']);
+    $role=$conn->real_escape_string($_POST['role']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
 
     
@@ -40,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         echo "<p style='color: red;'>Email already exists. Please choose a different email.</p>";
     } else {
-        $insertQuery = "INSERT INTO admins (name, contact_no, email_address, gender, password) VALUES ('$name', '$contact_no', '$email_address', '$gender', '$password')";
+        $insertQuery = "INSERT INTO admins (name, contact_no, email_address, gender,role, password) VALUES ('$name', '$contact_no', '$email_address', '$gender', '$role','$password')";
         
         if ($conn->query($insertQuery) === TRUE) {
             echo "<p style='color: green;'>Registration successful! A confirmation email has been sent.</p>";

@@ -26,7 +26,6 @@ if ($result && $result->num_rows > 0) {
     $profile_picture = 'default-profile.png'; 
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

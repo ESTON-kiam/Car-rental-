@@ -23,6 +23,9 @@ CREATE TABLE `admins` (
   `token_expiration` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+ALTER TABLE `admins`
+ADD `role` ENUM('superadmin', 'admin') NOT NULL DEFAULT 'admin';
+
 
 
 INSERT INTO `admins` (`id`, `name`, `contact_no`, `email_address`, `gender`, `password`, `profile_picture`, `reset_token`, `token_expiration`) VALUES

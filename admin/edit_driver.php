@@ -120,8 +120,7 @@ mysqli_close($conn);
                     <?php if(!empty($error_msg)): ?>
                         <div class="alert alert-danger"><?php echo $error_msg; ?></div>
                     <?php endif; ?>
-                    
-                   
+                
                     <div class="driver-info">
                         <div class="row">
                             <div class="col-md-8">
@@ -135,13 +134,11 @@ mysqli_close($conn);
                             </div>
                             <div class="col-md-4">
                                 <?php if(!empty($profile_picture)): ?>
-                                    <img src="<?php echo $profile_picture; ?>" class="preview-image" alt="Profile Picture">
+                                    <img src="/driver/<?php echo $profile_picture; ?>" class="preview-image" alt="Profile Picture">
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                    
-                   
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="form-group mb-3">
                             <label><strong>Availability Status</strong></label>

@@ -107,67 +107,7 @@ $conn->close();
     <title>Change Password</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        header {
-            background-color: #007BFF; 
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: auto;
-        }
-        div {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #0056b3; 
-        }
-        .success-message {
-            text-align: center;
-            color: #007BFF; 
-        }
-        .error-message {
-            text-align: center;
-            color: red;
-        }
-    </style>
+    <link href="assets/css/changepass.css" rel="stylesheet">
 </head>
 <body>
 

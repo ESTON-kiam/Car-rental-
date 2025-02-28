@@ -2,7 +2,7 @@
 require 'include/db_connection.php';
 
 $email = $_SESSION['email'];
-$query = "SELECT name, contact_no, gender, profile_picture FROM admins WHERE email_address='$email'";
+$query = "SELECT name, contact_no, gender,role, profile_picture FROM admins WHERE email_address='$email'";
 $result = $conn->query($query);
 
 if ($result && $result->num_rows > 0) {
@@ -10,6 +10,7 @@ if ($result && $result->num_rows > 0) {
     $name = $admin['name'];
     $contact_no = $admin['contact_no'];
     $gender = $admin['gender'];
+    $role =$admin['role'];
     $profile_picture = $admin['profile_picture'] ?: 'default-profile.png'; 
 } else {
     $name = "Admin"; 
@@ -130,6 +131,7 @@ $conn->close();
             <div class="profile-details">
                 <div><strong>Name:</strong> <?php echo htmlspecialchars($name); ?></div>
                 <div><strong>Contact No:</strong> <?php echo htmlspecialchars($contact_no); ?></div>
+                <div><strong>Role:</strong> <?php echo htmlspecialchars($role); ?></div>
                 <div><strong>Gender:</strong> <?php echo htmlspecialchars($gender); ?></div>
             </div>
             <div class="button-container">
