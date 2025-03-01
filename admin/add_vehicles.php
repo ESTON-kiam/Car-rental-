@@ -4,7 +4,6 @@ require 'include/db_connection.php';
 $success_message = '';
 $error_message = '';
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $registration_no = $_POST['registration_no'];
     $model_name = $_POST['model_name'];

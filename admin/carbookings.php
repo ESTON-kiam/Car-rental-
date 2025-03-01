@@ -50,8 +50,6 @@ $result = $conn->query($query);
         
     </nav>
     
-    
-    
     <?php include('include/sidebar.php') ?><main class="main-content">
     <div class="container">
         <?php if (isset($_GET['msg'])): ?>
