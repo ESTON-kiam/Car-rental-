@@ -19,7 +19,7 @@ $delete_error = $delete_success = "";
 
 
 if (isset($_GET['action'], $_GET['id']) && $_GET['action'] == 'delete') {
-    $id = intval($_GET['id']);
+    $id = (int) $_GET['id'];
 
     if ($id == $_SESSION['admin_id']) {
         $delete_error = "You cannot delete your own account!";

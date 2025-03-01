@@ -1,5 +1,8 @@
 <?php
 require 'include/db_connection.php';
+if (!function_exists('basename') || !function_exists('move_uploaded_file')) {
+    die('Required functions are not available.');
+}
 
 $success_message = '';
 $error_message = '';

@@ -1,4 +1,5 @@
 <?php
+
 require 'include/db_connection.php';
 
 $email = $_SESSION['email'];

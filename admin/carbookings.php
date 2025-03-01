@@ -15,7 +15,11 @@ if (isset($_POST['delete_booking'])) {
     $stmt = $conn->prepare($delete_booking_query);
     $stmt->bind_param("i", $booking_id);
     if ($stmt->execute()) {
-        header("Location: carbookings.php?msg=deleted");
+        if (!headers_sent()) {
+            header("Location: carbookings.php?msg=deleted");
+        } else {
+            echo "<script>window.location.href='carbookings.php?msg=deleted';</script>";
+        }
         exit();
     }
 }
