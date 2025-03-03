@@ -1,0 +1,190 @@
+/* edit-profile.css */
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #0077b6, #00507a);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #005f8c, #004a6e);
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.dashboard-header a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-header a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.profile-edit {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.profile-edit:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.profile-edit label {
+    font-weight: 600;
+    color: #003366;
+    display: block;
+    margin-top: 15px;
+    font-size: 1.1rem;
+}
+
+.profile-edit input[type="text"],
+.profile-edit input[type="file"],
+.profile-edit input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border 0.3s ease;
+}
+
+.profile-edit input[type="text"]:focus,
+.profile-edit input[type="file"]:focus,
+.profile-edit input[type="number"]:focus {
+    border-color: #0077b6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 119, 182, 0.2);
+}
+
+.profile-edit button {
+    background-color: #0077b6;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.profile-edit button:hover {
+    background-color: #005f8c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.profile-edit img {
+    max-width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 25px auto;
+    display: block;
+    border: 3px solid #0077b6;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.success-message {
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.error-message {
+    color: #c62828;
+    background-color: #ffebee;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.file-upload-container {
+    position: relative;
+    margin-top: 8px;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #d0d0d0;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .profile-edit {
+        padding: 20px;
+    }
+    
+    .profile-edit img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    h1 {
+        font-size: 1.7rem;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .dashboard-header a {
+        display: block;
+        padding: 8px;
+    }
+}

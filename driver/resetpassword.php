@@ -69,6 +69,8 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Reset Password</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/driverdash.css">
     <script src="assets/js/driverdash.js"></script>

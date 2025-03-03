@@ -1,0 +1,130 @@
+/* driver-profile.css */
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #0077b6, #00507a);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+}
+
+.profile {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.profile:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.profile label {
+    font-weight: 600;
+    color: #003366;
+    display: block;
+    margin-top: 15px;
+    font-size: 1.1rem;
+}
+
+.profile img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile p {
+    margin: 8px 0 20px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 1.05rem;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #0077b6;
+    object-fit: cover;
+    margin: 0 auto 25px auto;
+    display: block;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.license-image {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto 25px auto;
+}
+
+a.edit-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #0077b6;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+a.edit-button:hover {
+    background-color: #005f8c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .profile {
+        padding: 20px;
+    }
+    
+    .profile-picture {
+        width: 120px;
+        height: 120px;
+    }
+    
+    h1 {
+        font-size: 1.7rem;
+    }
+}
+a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #0077b6;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+a:hover {
+    background-color: #005f8c;
+}

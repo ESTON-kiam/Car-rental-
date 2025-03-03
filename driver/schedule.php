@@ -1,32 +1,5 @@
 <?php
-session_name('driver_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-if (!isset($_SESSION['driver_id'])) {
-    header("Location: http://localhost:8000/driver/");
-    exit();
-}
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "car_rental_management";
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'include/db_connection.php';
 
 $driver_id = $_SESSION['driver_id'];
 
@@ -61,25 +34,7 @@ $result = $stmt->get_result();
     <title>Upcoming Driver Schedule</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <style>
-   
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; }
-        .header { background-color: #007bff; color: white; padding: 15px; margin-bottom: 20px; text-align: center; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .time-info { background-color: white; padding: 15px; margin: 10px 0; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .current-time { font-weight: bold; color: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); border-radius: 4px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border: 1px solid #dee2e6; }
-        th { background-color: #f8f9fa; font-weight: bold; color: #333; }
-        tr:hover { background-color: #f8f9fa; }
-        .upcoming { background-color: #e7f4e4; }
-        .soon { background-color: #fff3cd; }
-        .vehicle-info { font-size: 0.9em; color: #666; line-height: 1.4; }
-        .no-schedules { text-align: center; padding: 30px; background-color: white; border-radius: 4px; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .countdown { font-size: 0.9em; color: #666; margin-top: 5px; font-weight: bold; }
-        .status-indicator { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
-        .status-upcoming { background-color: #e7f4e4; color: #2d7215; }
-        .status-soon { background-color: #fff3cd; color: #856404; }
-    </style>
+    <link rel="stylesheet" href="assets/css/schedule.css">
 </head>
 <body>
 <div class="header">

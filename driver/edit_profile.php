@@ -1,25 +1,5 @@
 <?php
-session_name('driver_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "car_rental_management";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'include/db_connection.php';
 
 if (isset($_SESSION['driver_email'])) {
     $email = $_SESSION['driver_email'];
@@ -90,90 +70,7 @@ $conn->close();
     <title>Edit Driver Profile</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #eaf2f8;
-        }
-
-        header {
-            background-color: #0077b6;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        h1 {
-            margin: 0;
-        }
-
-        .profile-edit {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-
-        .profile-edit label {
-            font-weight: bold;
-            color: #003366;
-            display: block;
-            margin-top: 10px;
-        }
-
-        .profile-edit input[type="text"],
-        .profile-edit input[type="file"],
-        .profile-edit input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .profile-edit button {
-            background-color: #0077b6;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .profile-edit button:hover {
-            background-color: #005f8c;
-        }
-
-        .profile-edit img {
-            max-width: 150px;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .dashboard-header {
-            background-color: #005f8c;
-            padding: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .dashboard-header a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .dashboard-header a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/drivereditprofile.css">
 </head>
 <body>
 

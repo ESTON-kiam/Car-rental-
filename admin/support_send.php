@@ -147,14 +147,14 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     else if (strpos($message, 'book') !== false || strpos($message, 'reservation') !== false || strpos($message, 'reserve') !== false) {
         return "To make a reservation, $first_name, please provide your preferred dates, location, and vehicle type, and I can help you with the process.";
     }
-    else if (strpos($message, 'cancel') !== false) {
+    else if (strpos($message, 'cancel') !== false || strpos($message, 'cancel booking') !== false || strpos($message, 'cancellation') !== false) {
         return "$first_name, cancellations can be made up to 24 hours before your scheduled pickup without penalty. Would you like me to help you with a cancellation?";
     }
     else if (strpos($message, 'payment') !== false || strpos($message, 'pay') !== false) {
         return "$first_name, we accept all major credit cards, Mpesa, PayPal, and bank transfers for payments. Mainly, we encourage payment through Mpesa as it is easy to follow up. Is there a specific payment question I can help with?";
     }
     else if (strpos($message, 'terms') !== false || strpos($message, 'conditions') !== false || strpos($message, 'terms and conditions') !== false) {
-        return "$first_name, our car rental terms and conditions include requirements such as a valid driving license, a security deposit, fuel policy, mileage limits, and insurance coverage. Please visit our Terms and Conditions page for full details. Let me know if you need any specific clarification!";
+        return "$first_name, our car rental terms and conditions include requirements such as a valid a security deposit or what we call advanced Deposit, fuel policy, mileage limits, and insurance coverage. Please visit our Terms and Conditions page for full details. Let me know if you need any specific clarification!";
     }
     else if (strpos($message, 'thank') !== false) {
         return "You're welcome, $first_name! Is there anything else I can help you with?";

@@ -1,27 +1,5 @@
 <?php
-session_name('driver_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "car_rental_management";
-
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'include/db_connection.php';
 
 
 if (isset($_SESSION['driver_email'])) {
@@ -50,75 +28,7 @@ $conn->close();
     <title>Driver Profile</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #eaf2f8;
-        }
-
-        header {
-            background-color: #0077b6;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        h1 {
-            margin: 0;
-        }
-
-        .profile {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-
-        .profile label {
-            font-weight: bold;
-            color: #003366;
-            display: block;
-            margin-top: 10px;
-        }
-
-        .profile img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .profile p {
-            margin: 5px 0;
-        }
-
-        .profile-picture {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 2px solid #0077b6;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #0077b6;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        a:hover {
-            background-color: #005f8c;
-        }
-    </style>
+   <link rel="stylesheet" href="assets/css/driverviewprofile.css">
 </head>
 <body>
 
