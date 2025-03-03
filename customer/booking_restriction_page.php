@@ -9,9 +9,6 @@
     <link href="assets/css/bookconfirm.css" rel="stylesheet">
 </head>
 <body>
-    <?php include('include/header.php')?>
-    <?php include('include/sidebar.php')?>
-
 <div class="restriction-container">
     <h1>Booking Restricted</h1>
     <p>You cannot book another vehicle until your previous booking is completed.</p>
