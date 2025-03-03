@@ -136,7 +136,9 @@ $result_paginated_history = $stmt_paginated_history->get_result();
     </style>
 </head>
 <body>
-
+    <?php include 'include/header.php'; ?>
+    <?php include 'include/sidebar.php'; ?>
+    <main class="main-content">
 <div class="container mt-5">
     <div class="card">
         <div class="card-header">
@@ -190,11 +192,11 @@ $result_paginated_history = $stmt_paginated_history->get_result();
         </div>
     </div>
 </div>
-
+    </main>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
 
-<?php $conn->close(); ?>
+

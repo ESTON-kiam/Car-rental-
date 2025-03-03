@@ -96,9 +96,7 @@ $conn->close();
 <link rel="stylesheet" href="assets/css/customerdash.css"></head>
 <header class="header">
         <div class="header-content">
-            <div class="search-bar">
-                <input type="text" placeholder="Search...">
-            </div>
+        <div></div>
             <div class="profile">
                 <button class="profile-button" onclick="toggleDropdown()">
                     <div class="profile-picture">
