@@ -56,6 +56,8 @@ $result = $conn->query($query);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -100,7 +102,7 @@ $result = $conn->query($query);
                     <tr>
                         <td><?php echo $row['id']; ?></td>
                         <td>
-                            <img src="<?php echo !empty($row['profile_picture']) && file_exists('uploads/profiles/' . $row['profile_picture']) ? 'uploads/profiles/' . $row['profile_picture'] : 'assets/default-avatar.png'; ?>" class="admin-img">
+                            <img src="/admin/<?php echo htmlspecialchars($row['profile_picture']); ?>" class="admin-img">
                         </td>
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
                         <td><?php echo htmlspecialchars($row['contact_no']); ?></td>

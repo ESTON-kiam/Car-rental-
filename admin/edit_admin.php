@@ -136,7 +136,7 @@ if ($admin_id > 0) {
                         
                         <?php if ($admin_data): ?>
                             <div class="admin-profile text-center">
-                                <img src="<?php echo !empty($admin_data['profile_picture']) ? 'uploads/profiles/' . htmlspecialchars($admin_data['profile_picture']) : 'assets/img/default-profile.png'; ?>" 
+                                <img src="/admin/<?php echo htmlspecialchars($admin_data['profile_picture']); ?>" 
                                      alt="Profile Picture" class="profile-img mb-3">
                                 <h4><?php echo htmlspecialchars($admin_data['name']); ?></h4>
                                 <p class="text-muted"><?php echo htmlspecialchars($admin_data['email_address']); ?></p>

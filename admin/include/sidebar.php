@@ -352,11 +352,7 @@
                 <li><a href="support_view.php" data-title="Support Tickets"><i class="fas fa-headset"></i><span class="item-text">Support Tickets</span></a></li>
             </ul>
         </div>
-        <h2 class="section-title">Management</h2>
-            <ul>
-                <li><a href="customerinformation.php" data-title="Support Tickets"><i class="fas fa-users"></i><span class="item-text">Customers</span></a></li>
-            </ul>
-        </div>
+        
     </nav>
 
     <button class="toggle-btn" aria-label="Toggle Sidebar">

@@ -70,6 +70,9 @@ body {
     cursor: pointer;
     color: var(--text-color);
 }
+.profile-button:hover {
+    background-color: #000033;
+}
 
 .profile-picture img {
     width: 40px;
@@ -104,7 +107,7 @@ body {
 }
 
 .profile-dropdown a:hover {
-    background-color: var(--background-color);
+    background-color: #000033;
 }
 
 
