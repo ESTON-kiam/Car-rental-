@@ -1,0 +1,90 @@
+.header { 
+    background: linear-gradient(135deg, #1a3a6c, #3498db, #2c3e50);
+     padding: 1.5rem 0; 
+     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      margin-bottom: 2rem;
+       border-bottom: 3px solid #f39c12; 
+       position: relative; overflow: hidden;
+     } 
+     .header::before { 
+        content: ''; 
+        position: absolute; 
+        top: 0; 
+        left: 0;
+         right: 0;
+          bottom: 0;
+           background: radial-gradient(circle at right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); 
+           pointer-events: none; }
+            .header-content { width: 90%; max-width: 1200px
+                ; margin: 0 auto;
+                 display: flex
+                ; justify-content: space-between;
+                 align-items: center;
+                  position: relative; 
+                  z-index: 1; }
+                   .header h1 { color: #fff;
+                     font-size: 2rem;
+                      margin: 0;
+                       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                        font-weight: 600; letter-spacing: 1px;
+                     } 
+                     
+                     .nav-links { display: flex; 
+                        gap: 1rem; } 
+                        .nav-links a { 
+                            color: #fff; 
+                            text-decoration: none; 
+                            font-weight: bold; 
+                            padding: 0.7rem 1.5rem; 
+                            background: rgba(255, 255, 255, 0.15);
+                             border-radius: 30px;
+                              transition: all 0.3s ease; 
+                              border: 1px solid rgba(255, 255, 255, 0.2);
+                               backdrop-filter: blur(5px); } 
+                               .nav-links a:hover { 
+                                background: rgba(255, 255, 255, 0.25);
+                                 transform: translateY(-2px);
+                                  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                                 } .charges-container { 
+                                    margin-bottom: 1rem; } 
+                                    .charges-info {
+                                         display: flex;
+                                          align-items: center;
+                                           gap: 1rem; }
+                                           .charges-explanation
+                                            { font-size: 0.9rem
+                                                ; font-style: italic; 
+                                            } 
+                                            input[name="additional_charges"] { background-color: #f8f9fa;
+                                                 cursor: not-allowed; 
+                                                } .overdue-warning { color: #721c24; 
+                                                    background-color: #f8d7da; 
+                                                    border: 1px solid #f5c6cb; 
+                                                    padding: 0.5rem; border-radius: 4px;
+                                                     margin-top: 0.5rem; }
+                                                      .rating-container { margin: 1rem 0; } 
+                                                      .star-rating { display: flex; 
+                                                        flex-direction: row-reverse;
+                                                         justify-content: flex-end; 
+                                                         gap: 0.5rem; } 
+                                                         .star-rating input { display: none;
+                                                         } .star-rating label { cursor: pointer;
+                                                             width: 30px; height: 30px;
+                                                              background: #ddd; 
+                                                              display: flex; 
+                                                              justify-content: center; 
+                                                              align-items: center;
+                                                               border-radius: 50%; 
+                                                               transition: all 0.2s ease;
+                                                             } 
+                                                             .star-rating label:hover,
+                                                              .star-rating label:hover ~ label, .star-rating input:checked ~ label
+                                                               { background: #ffd700; } 
+                                                               .star-rating label:hover, .star-rating input:checked + label { transform: scale(1.1);
+                                                             } @media (max-width: 768px) { 
+                                                                .header-content { flex-direction: column; 
+                                                                    text-align: center;
+                                                                     gap: 1rem;
+                                                                     } 
+                                                                     .header h1 { font-size: 1.75rem;
+                                                                     } } 
