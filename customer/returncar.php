@@ -3,11 +3,10 @@ require_once 'include/db_connection.php';
 $customer_id = $_SESSION['customer_id'];
 
 function calculateOverdueCharges($end_date) {
-    // Convert the end_date to a DateTime object
+    
     $end = new DateTime($end_date);
     
-    // Set the time to 23:59:00 of the end date
-    // This ensures it's 1 minute before midnight (the next day)
+   
     $end->setTime(23, 59, 0);
     
     $today = new DateTime();
@@ -327,7 +326,7 @@ $active_bookings_result = $active_stmt->get_result();
     document.addEventListener('DOMContentLoaded', function() {
         function calculateCharges(endDate) {
             const end = new Date(endDate);
-            // Set the end time to 23:59:00 to make it 1 minute before midnight
+            
             end.setHours(23, 59, 0);
             
             const today = new Date();
