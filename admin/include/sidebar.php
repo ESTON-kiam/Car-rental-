@@ -348,10 +348,6 @@
             </ul>
             
             <h2 class="section-title">Support</h2>
-            
-            <ul>
-                <li><a href="setdiscount.php" data-title="Support Tickets"><i class="fas fa-tags"></i><span class="item-text">Set Discount</span></a></li>
-            </ul>
             <ul>
                 <li><a href="support_view.php" data-title="Support Tickets"><i class="fas fa-headset"></i><span class="item-text">Support Tickets</span></a></li>
             </ul>

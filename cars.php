@@ -10,25 +10,72 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$search_query = "";
-if (isset($_GET['search'])) {
-    $search_query = $_GET['search'];
+$search_query = $_GET['search'] ?? '';
+$min_price = $_GET['min_price'] ?? '';
+$max_price = $_GET['max_price'] ?? '';
+
+$sql = "SELECT 
+            vehicle_id, 
+            registration_no, 
+            model_name, 
+            description, 
+            availability_status, 
+            photo, 
+            price_per_day,
+            ac_price_per_day,
+            non_ac_price_per_day,
+            km_price,
+            discount_percentage 
+        FROM vehicles 
+        WHERE availability_status = 'Available'";
+
+$conditions = [];
+$param_types = '';
+$param_values = [];
+
+if (!empty($search_query)) {
+    $conditions[] = "(model_name LIKE ? OR description LIKE ?)";
+    $param_types .= 'ss';
+    $param_values[] = "%$search_query%";
+    $param_values[] = "%$search_query%";
 }
 
-$sql = "SELECT vehicle_id, registration_no, model_name, description, availability_status, photo, price_per_day 
-        FROM vehicles 
-        WHERE availability_status = 'Available' 
-        AND (model_name LIKE ? OR description LIKE ? OR price_per_day LIKE ?)";
+if (!empty($min_price)) {
+    $conditions[] = "price_per_day * (1 - discount_percentage/100) >= ? OR price_per_day >= ?";
+    $param_types .= 'dd';
+    $param_values[] = $min_price;
+    $param_values[] = $min_price;
+}
+
+if (!empty($max_price)) {
+    $conditions[] = "price_per_day * (1 - discount_percentage/100) <= ? OR price_per_day <= ?";
+    $param_types .= 'dd';
+    $param_values[] = $max_price;
+    $param_values[] = $max_price;
+}
+
+if (!empty($conditions)) {
+    $sql .= " AND " . implode(' AND ', $conditions);
+}
+
 $stmt = $conn->prepare($sql);
-$like_query = "%" . $search_query . "%";
-$stmt->bind_param("sss", $like_query, $like_query, $like_query);
+
+if (!empty($param_values)) {
+    $stmt->bind_param($param_types, ...$param_values);
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/book.css">
+    <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Online Car Rental</title>
   <meta name="description" content="">
@@ -44,7 +91,65 @@ $result = $stmt->get_result();
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/css/main.css" rel="stylesheet">
-  <style>
+    <style>
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #d9534f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+        .discounted-price {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .vehicle-card {
+            position: relative;
+        }
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .tab-container {
+            display: flex;
+            margin: 10px 0;
+        }
+        .price-tab {
+            padding: 5px 10px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px 4px 0 0;
+            margin-right: 2px;
+        }
+        .price-tab.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .price-content {
+            display: none;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 0 4px 4px 4px;
+            margin-bottom: 10px;
+        }
+        .price-content.active {
+            display: block;
+        }
+      
         :root {
             --primary-color: #007bff;
             --background-color: #f8f9fa;
@@ -195,11 +300,10 @@ $result = $stmt->get_result();
             font-size: 2rem;
             color: #000033;
         }
+    
+
     </style>
-
-
 </head>
-
 <body class="index-page">
 
   <header id="header" class="header d-flex align-items-center fixed-top">
@@ -240,30 +344,118 @@ $result = $stmt->get_result();
 
     </div>
   </header>
-  <main>
-  <h1>Available Vehicles</h1>
 
     <div class="container">
         <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
+            <?php while($row = $result->fetch_assoc()): 
+                $discount_percentage = $row['discount_percentage'] ?? 0;
+                $has_discount = $discount_percentage > 0;
+                
+                $original_price = $row['price_per_day'] ?? 0;
+                $discounted_price = $original_price - ($original_price * $discount_percentage / 100);
+                
+                $original_ac_price = $row['ac_price_per_day'] ?? 0;
+                $discounted_ac_price = $original_ac_price - ($original_ac_price * $discount_percentage / 100);
+                
+                $original_non_ac_price = $row['non_ac_price_per_day'] ?? 0;
+                $discounted_non_ac_price = $original_non_ac_price - ($original_non_ac_price * $discount_percentage / 100);
+                
+                $original_km_price = $row['km_price'] ?? 0;
+                $discounted_km_price = $original_km_price - ($original_km_price * $discount_percentage / 100);
+                
+                $final_price = $has_discount ? $discounted_price : $original_price;
+                if ((!empty($min_price) && $final_price < $min_price) || 
+                    (!empty($max_price) && $final_price > $max_price)) {
+                    continue; 
+                }
+            ?>
                 <div class="vehicle-card">
+                    <?php if ($has_discount): ?>
+                        <div class="discount-badge">
+                            -<?php echo number_format($discount_percentage, 0); ?>% OFF
+                        </div>
+                    <?php endif; ?>
+                    
                     <img src="/admin/<?php echo htmlspecialchars($row['photo']); ?>" alt="<?php echo htmlspecialchars($row['model_name']); ?>">
                     <div class="vehicle-info">
                         <h3><?php echo htmlspecialchars($row['model_name']); ?></h3>
-                        <p><strong style="color: var(--details-color);">Registration No:</strong> <?php echo htmlspecialchars($row['registration_no']); ?></p>
-                        <p><strong style="color: var(--details-color);">Description:</strong> <?php echo htmlspecialchars($row['description']); ?></p>
-                        <p class="vehicle-price">Price per day: KSH <?php echo number_format($row['price_per_day'], 2); ?></p>
-                        <button class="rent-button" onclick="location.href='customer/?id=<?php echo $row['vehicle_id']; ?>'">Rent Now</button>
+                        <p><strong>Registration No:</strong> <?php echo htmlspecialchars($row['registration_no']); ?></p>
+                        <p><strong>Description:</strong> <?php echo htmlspecialchars($row['description']); ?></p>
+                        
+                        <div class="tab-container">
+                            <div class="price-tab active" onclick="showPriceTab('standard-price-<?php echo $row['vehicle_id']; ?>', this)">Standard</div>
+                            <?php if ($original_ac_price > 0): ?>
+                                <div class="price-tab" onclick="showPriceTab('ac-price-<?php echo $row['vehicle_id']; ?>', this)">AC</div>
+                            <?php endif; ?>
+                            <?php if ($original_non_ac_price > 0): ?>
+                                <div class="price-tab" onclick="showPriceTab('non-ac-price-<?php echo $row['vehicle_id']; ?>', this)">Non-AC</div>
+                            <?php endif; ?>
+                            <?php if ($original_km_price > 0): ?>
+                                <div class="price-tab" onclick="showPriceTab('km-price-<?php echo $row['vehicle_id']; ?>', this)">Per KM</div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div id="standard-price-<?php echo $row['vehicle_id']; ?>" class="price-content active">
+                            <div class="price-section">
+                                <?php if ($has_discount): ?>
+                                    <span class="original-price">KSH <?php echo number_format($original_price, 2); ?></span>
+                                    <span class="discounted-price">KSH <?php echo number_format($discounted_price, 2); ?></span>
+                                <?php else: ?>
+                                    <span class="vehicle-price">Price per day: KSH <?php echo number_format($original_price, 2); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <?php if ($original_ac_price > 0): ?>
+                            <div id="ac-price-<?php echo $row['vehicle_id']; ?>" class="price-content">
+                                <div class="price-section">
+                                    <?php if ($has_discount): ?>
+                                        <span class="original-price">KSH <?php echo number_format($original_ac_price, 2); ?></span>
+                                        <span class="discounted-price">KSH <?php echo number_format($discounted_ac_price, 2); ?></span>
+                                    <?php else: ?>
+                                        <span class="vehicle-price">AC Price per day: KSH <?php echo number_format($original_ac_price, 2); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($original_non_ac_price > 0): ?>
+                            <div id="non-ac-price-<?php echo $row['vehicle_id']; ?>" class="price-content">
+                                <div class="price-section">
+                                    <?php if ($has_discount): ?>
+                                        <span class="original-price">KSH <?php echo number_format($original_non_ac_price, 2); ?></span>
+                                        <span class="discounted-price">KSH <?php echo number_format($discounted_non_ac_price, 2); ?></span>
+                                    <?php else: ?>
+                                        <span class="vehicle-price">Non-AC Price per day: KSH <?php echo number_format($original_non_ac_price, 2); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($original_km_price > 0): ?>
+                            <div id="km-price-<?php echo $row['vehicle_id']; ?>" class="price-content">
+                                <div class="price-section">
+                                    <?php if ($has_discount): ?>
+                                        <span class="original-price">KSH <?php echo number_format($original_km_price, 2); ?></span>
+                                        <span class="discounted-price">KSH <?php echo number_format($discounted_km_price, 2); ?></span>
+                                    <?php else: ?>
+                                        <span class="vehicle-price">Price per KM: KSH <?php echo number_format($original_km_price, 2); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <button class="rent-button" onclick="location.href='customer/?id=<?php echo $row['vehicle_id']; ?>'">
+                            <i class="fas fa-car"></i> Rent Now
+                        </button>
                     </div>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <p>No vehicles available at the moment.</p>
+            <p>No vehicles available matching your search criteria.</p>
         <?php endif; ?>
     </div>
-  </main>
-
-<footer id="footer" class="footer dark-background">
+    <footer id="footer" class="footer dark-background">
 
   <div class="footer-top">
     <div class="container">
@@ -329,21 +521,25 @@ $result = $stmt->get_result();
   </div>
 
 </footer>
-
-<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-<div id="preloader"></div>
-
-<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="assets/vendor/php-email-form/validate.js"></script>
-<script src="assets/vendor/aos/aos.js"></script>
-<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-<script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-<script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-<script src="assets/js/main.js"></script>
-
+    <script>
+    function showPriceTab(tabId, clickedTab) {
+        const allTabs = clickedTab.parentElement.getElementsByClassName('price-tab');
+        for (let i = 0; i < allTabs.length; i++) {
+            allTabs[i].classList.remove('active');
+        }
+        clickedTab.classList.add('active');
+        const vehicleInfo = clickedTab.parentElement.parentElement;
+        const allContent = vehicleInfo.getElementsByClassName('price-content');
+        for (let i = 0; i < allContent.length; i++) {
+            allContent[i].classList.remove('active');
+        }
+        document.getElementById(tabId).classList.add('active');
+    }
+    </script>
 </body>
-
 </html>
+
+<?php
+$stmt->close();
+$conn->close();
+?>

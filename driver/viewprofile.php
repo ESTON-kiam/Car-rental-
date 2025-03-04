@@ -1,11 +1,9 @@
 <?php
 require_once 'include/db_connection.php';
 
-
 if (isset($_SESSION['driver_email'])) {
     $email = $_SESSION['driver_email'];
 
-   
     $stmt = $conn->prepare("SELECT name, contact_no, email, residence, age, driving_license_no, license_image, profile_picture FROM drivers WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -28,7 +26,7 @@ $conn->close();
     <title>Driver Profile</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-   <link rel="stylesheet" href="assets/css/driverviewprofile.css">
+    <link rel="stylesheet" href="assets/css/driverviewprofile.css">
 </head>
 <body>
 
