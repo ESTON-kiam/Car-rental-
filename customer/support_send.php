@@ -29,7 +29,7 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     }
     
    
-    else if (strpos($message, 'available') !== false && (strpos($message, 'car') !== false || strpos($message, 'vehicle') !== false || strpos($message, 'cars') !== false || strpos($message, 'vehicles') !== false)) {
+    else if (strpos($message, 'available') !== false && (strpos($message, 'car') !== false || strpos($message, 'vehicle') !== false || strpos($message, 'cars') !== false || strpos($message, 'vehicles') !== false || strpos($message, 'vehicles available') !== false || strpos($message, 'available vehicle') !== false)) {
         $query = "SELECT model_name, price_per_day FROM vehicles WHERE availability_status = 'Available' ORDER BY price_per_day ASC";
         $result = $conn->query($query);
         
@@ -153,6 +153,9 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     else if (strpos($message, 'payment') !== false || strpos($message, 'pay') !== false) {
         return "$first_name, we accept all major credit cards, Mpesa, PayPal, and bank transfers for payments. Mainly, we encourage payment through Mpesa as it is easy to follow up. Is there a specific payment question I can help with?";
     }
+    else if (strpos($message,'price') !== false || strpos($message,'pricing') !== false) {
+        return "Hello, $first_name! we have different pricing mechanisms as you will be booking";
+    }
     else if (strpos($message, 'terms') !== false || strpos($message, 'conditions') !== false || strpos($message, 'terms and conditions') !== false) {
         return "$first_name, our car rental terms and conditions include requirements such as a valid a security deposit or what we call advanced Deposit, fuel policy, mileage limits, and insurance coverage. Please visit our Terms and Conditions page for full details. Let me know if you need any specific clarification!";
     }
@@ -178,7 +181,7 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         return "$first_name, late returns may incur additional charges. Please return the vehicle on time or contact us in advance to extend your rental period.";
     }
     else if (strpos($message, 'car availability') !== false || strpos($message, 'available cars') !== false) {
-        return "$first_name, our car availability depends on the rental dates and location. Please ask about 'available vehicles' and I can check for you.";
+        return "$first_name, our car availability depends on the rental dates and location. Please ask about 'available cars' and I can check for you.";
     }
     else if (strpos($message, 'discount') !== false || strpos($message, 'promo') !== false || strpos($message, 'offer') !== false) {
         return "$first_name, we occasionally offer discounts and promotions. Please check our website or contact us for the latest deals.";

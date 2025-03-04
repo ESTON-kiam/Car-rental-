@@ -29,7 +29,7 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     }
     
  
-    else if (strpos($message, 'available') !== false && (strpos($message, 'car') !== false || strpos($message, 'vehicle') !== false || strpos($message, 'cars') !== false || strpos($message, 'vehicles') !== false)) {
+    else if (strpos($message, 'available') !== false && (strpos($message, 'car') !== false || strpos($message, 'vehicle') !== false || strpos($message, 'cars') !== false || strpos($message, 'vehicles') !== false || strpos($message, 'vehicles available') !== false || strpos($message, 'available vehicle') !== false)) {
         $query = "SELECT model_name, price_per_day FROM vehicles WHERE availability_status = 'Available' ORDER BY price_per_day ASC";
         $result = $conn->query($query);
         
@@ -158,6 +158,9 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     }
     else if (strpos($message, 'thank') !== false) {
         return "You're welcome, $first_name! Is there anything else I can help you with?";
+    }
+    else if (strpos($message,'price') !== false || strpos($message,'pricing') !== false) {
+        return "Hello, $first_name! we have different pricing mechanisms as you will be booking";
     }
     else if (strpos($message, 'insurance') !== false) {
         return "$first_name, all our rental cars come with basic insurance coverage. Additional insurance options are available for extra protection. Would you like more details?";

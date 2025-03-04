@@ -5,134 +5,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
     $registration_no = $_POST['registration_no'];
     $discount_percentage = $_POST['discount_percentage'];
     
-   
+    // Validate discount percentage
     if ($discount_percentage >= 0 && $discount_percentage <= 100) {
-       
-        $get_original_prices = $conn->prepare("SELECT original_price_per_day, original_ac_price_per_day, original_non_ac_price_per_day, original_km_price FROM vehicles WHERE registration_no = ?");
-        $get_original_prices->bind_param("s", $registration_no);
-        $get_original_prices->execute();
-        $original_result = $get_original_prices->get_result();
+        // Retrieve pricing information
+        $stmt = $conn->prepare("SELECT 
+            original_price_per_day, 
+            original_ac_price_per_day, 
+            original_non_ac_price_per_day, 
+            original_km_price,
+            discount_percentage
+            FROM vehicles 
+            WHERE registration_no = ?");
+        $stmt->bind_param("s", $registration_no);
+        $stmt->execute();
+        $result = $stmt->get_result();
         
-        
-        if ($original_result->num_rows > 0) {
-            $original_prices = $original_result->fetch_assoc();
-            $get_original_prices->close();
+        if ($result->num_rows > 0) {
+            $vehicle = $result->fetch_assoc();
+            $stmt->close();
             
+            // Ensure original prices exist
+            $original_price_per_day = $vehicle['original_price_per_day'] ?? 
+                $vehicle['original_price_per_day'] = 
+                $conn->query("SELECT price_per_day FROM vehicles WHERE registration_no = '$registration_no'")->fetch_assoc()['price_per_day'];
             
-            $should_update_originals = ($original_prices['original_price_per_day'] === NULL);
-            
-            if ($should_update_originals) {
+            // Calculate prices based on true original price
+            if ($discount_percentage > 0) {
+                $price_per_day = $original_price_per_day - 
+                    ($original_price_per_day * $discount_percentage / 100);
                 
-                $get_prices = $conn->prepare("SELECT price_per_day, ac_price_per_day, non_ac_price_per_day, km_price FROM vehicles WHERE registration_no = ?");
-                $get_prices->bind_param("s", $registration_no);
-                $get_prices->execute();
-                $price_result = $get_prices->get_result();
-                $current_prices = $price_result->fetch_assoc();
-                $get_prices->close();
+                $ac_price_per_day = $vehicle['original_ac_price_per_day'] - 
+                    ($vehicle['original_ac_price_per_day'] * $discount_percentage / 100);
                 
-               
-                $update_originals = $conn->prepare("UPDATE vehicles SET 
-                    original_price_per_day = ?,
-                    original_ac_price_per_day = ?,
-                    original_non_ac_price_per_day = ?,
-                    original_km_price = ?
-                    WHERE registration_no = ?");
+                $non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'] - 
+                    ($vehicle['original_non_ac_price_per_day'] * $discount_percentage / 100);
                 
-                $update_originals->bind_param("dddds", 
-                    $current_prices['price_per_day'],
-                    $current_prices['ac_price_per_day'],
-                    $current_prices['non_ac_price_per_day'],
-                    $current_prices['km_price'],
-                    $registration_no
-                );
-                
-                $update_originals->execute();
-                $update_originals->close();
-                
-                
-                $original_prices = [
-                    'original_price_per_day' => $current_prices['price_per_day'],
-                    'original_ac_price_per_day' => $current_prices['ac_price_per_day'],
-                    'original_non_ac_price_per_day' => $current_prices['non_ac_price_per_day'],
-                    'original_km_price' => $current_prices['km_price']
-                ];
+                $km_price = $vehicle['original_km_price'] - 
+                    ($vehicle['original_km_price'] * $discount_percentage / 100);
+            } else {
+                // Reset to original prices if discount is 0
+                $price_per_day = $original_price_per_day;
+                $ac_price_per_day = $vehicle['original_ac_price_per_day'];
+                $non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'];
+                $km_price = $vehicle['original_km_price'];
             }
-        } else {
             
-            $get_prices = $conn->prepare("SELECT price_per_day, ac_price_per_day, non_ac_price_per_day, km_price FROM vehicles WHERE registration_no = ?");
-            $get_prices->bind_param("s", $registration_no);
-            $get_prices->execute();
-            $price_result = $get_prices->get_result();
-            $current_prices = $price_result->fetch_assoc();
-            $get_prices->close();
-            
-            
-            $update_originals = $conn->prepare("UPDATE vehicles SET 
-                original_price_per_day = ?,
-                original_ac_price_per_day = ?,
-                original_non_ac_price_per_day = ?,
-                original_km_price = ?
+            // Update vehicle with new prices and discount
+            $update_stmt = $conn->prepare("UPDATE vehicles SET 
+                discount_percentage = ?,
+                price_per_day = ?,
+                ac_price_per_day = ?,
+                non_ac_price_per_day = ?,
+                km_price = ?
                 WHERE registration_no = ?");
             
-            $update_originals->bind_param("dddds", 
-                $current_prices['price_per_day'],
-                $current_prices['ac_price_per_day'],
-                $current_prices['non_ac_price_per_day'],
-                $current_prices['km_price'],
+            $update_stmt->bind_param("ddddds", 
+                $discount_percentage,
+                $price_per_day,
+                $ac_price_per_day,
+                $non_ac_price_per_day,
+                $km_price,
                 $registration_no
             );
             
-            $update_originals->execute();
-            $update_originals->close();
+            if ($update_stmt->execute()) {
+                echo "<p style='color: green;'>Discount updated successfully!</p>";
+            } else {
+                echo "<p style='color: red;'>Error updating discount: " . $conn->error . "</p>";
+            }
             
-          
-            $original_prices = [
-                'original_price_per_day' => $current_prices['price_per_day'],
-                'original_ac_price_per_day' => $current_prices['ac_price_per_day'],
-                'original_non_ac_price_per_day' => $current_prices['non_ac_price_per_day'],
-                'original_km_price' => $current_prices['km_price']
-            ];
-        }
-        
-       
-        if ($discount_percentage > 0) {
-            $price_per_day = $original_prices['original_price_per_day'] - ($original_prices['original_price_per_day'] * $discount_percentage / 100);
-            $ac_price_per_day = $original_prices['original_ac_price_per_day'] - ($original_prices['original_ac_price_per_day'] * $discount_percentage / 100);
-            $non_ac_price_per_day = $original_prices['original_non_ac_price_per_day'] - ($original_prices['original_non_ac_price_per_day'] * $discount_percentage / 100);
-            $km_price = $original_prices['original_km_price'] - ($original_prices['original_km_price'] * $discount_percentage / 100);
+            $update_stmt->close();
         } else {
-            
-            $price_per_day = $original_prices['original_price_per_day'];
-            $ac_price_per_day = $original_prices['original_ac_price_per_day'];
-            $non_ac_price_per_day = $original_prices['original_non_ac_price_per_day'];
-            $km_price = $original_prices['original_km_price'];
+            echo "<p style='color: red;'>Vehicle not found.</p>";
         }
-        
-       
-        $stmt = $conn->prepare("UPDATE vehicles SET 
-            discount_percentage = ?,
-            price_per_day = ?,
-            ac_price_per_day = ?,
-            non_ac_price_per_day = ?,
-            km_price = ?
-            WHERE registration_no = ?");
-        
-        $stmt->bind_param("ddddds", 
-            $discount_percentage,
-            $price_per_day,
-            $ac_price_per_day,
-            $non_ac_price_per_day,
-            $km_price,
-            $registration_no
-        );
-        
-        if ($stmt->execute()) {
-            echo "<p style='color: green;'>Discount updated successfully!</p>";
-        } else {
-            echo "<p style='color: red;'>Error updating discount: " . $conn->error . "</p>";
-        }
-        
-        $stmt->close();
     } else {
         echo "<p style='color: red;'>Invalid discount percentage. Must be between 0 and 100.</p>";
     }

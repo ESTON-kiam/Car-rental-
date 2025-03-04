@@ -169,11 +169,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button[type="submit"] {
             transition: background-color 0.3s ease;
         }
-
-        button[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
         .register a:hover {
             text-decoration: underline;
         }
