@@ -49,9 +49,7 @@ $result = $conn->query($query);
     
        <a href="dashboard.php" class="navbar-brand">
         <i class="fas fa-car"></i><b>
-                Online Car Rental Admin Panel</b></a>
-        <a href="dashboard.php" class="dashboard-btn">Dashboard</a>
-        
+                Online Car Rental Admin Panel</b></a>       
     </nav>
     
     <?php include('include/sidebar.php') ?><main class="main-content">

@@ -202,6 +202,5 @@ $conn->close();
         availabilitySelect.addEventListener('change', toggleStatusReason);
     });
 </script>
-
 </body>
 </html>

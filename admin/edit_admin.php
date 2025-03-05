@@ -1,17 +1,14 @@
 <?php
 require 'include/db_connection.php';
 
-
 $admin_id = 0;
 $admin_data = null;
 $error_message = '';
 $success_message = '';
 
-
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $admin_id = intval($_GET['id']);
     
-   
     $stmt = $conn->prepare("SELECT role FROM admins WHERE id = ?");
     $stmt->bind_param("i", $_SESSION['admin_id']);
     $stmt->execute();
@@ -29,7 +26,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit();
     }
 }
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $admin_id > 0) {
     
@@ -59,7 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $admin_id > 0) {
     }
 }
 
-
 if ($admin_id > 0) {
     $stmt = $conn->prepare("SELECT id, name, contact_no, email_address, gender, profile_picture, role FROM admins WHERE id = ?");
     $stmt->bind_param("i", $admin_id);
@@ -74,7 +69,6 @@ if ($admin_id > 0) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

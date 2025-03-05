@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $availability_status = $_POST['availability_status'];
     
-    // Price fields
+   
     $original_price_per_day = $_POST['original_price_per_day'];
     $original_ac_price_per_day = $_POST['original_ac_price_per_day'];
     $original_non_ac_price_per_day = $_POST['original_non_ac_price_per_day'];

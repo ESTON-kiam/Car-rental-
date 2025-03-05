@@ -1,8 +1,6 @@
 <?php
-
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 
 session_name('admin_session');
 session_set_cookie_params([
@@ -19,7 +17,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: http://localhost:8000/admin/");
     exit();
 }
-
 
 $servername = "localhost"; 
 $username = "root"; 
@@ -114,13 +111,11 @@ try {
     }
 }
 
-
 $name = htmlspecialchars($admin['name'] ?? '');
 $contact_no = htmlspecialchars($admin['contact_no'] ?? '');
 $gender = htmlspecialchars($admin['gender'] ?? '');
 $profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

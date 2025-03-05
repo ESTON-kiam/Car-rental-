@@ -19,7 +19,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "<p style='color: red;'>No driver ID specified.</p>";
     header("Refresh: 2; url=driverslist.php");

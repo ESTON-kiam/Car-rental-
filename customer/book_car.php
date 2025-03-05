@@ -68,7 +68,6 @@ if (!empty($param_values)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -207,19 +206,16 @@ $result = $stmt->get_result();
                 $discount_percentage = $row['discount_percentage'] ?? 0;
                 $has_discount = $discount_percentage > 0;
                 
-                // Original Prices
                 $original_price = $row['original_price_per_day'] ?? 0;
                 $original_ac_price = $row['original_ac_price_per_day'] ?? 0;
                 $original_non_ac_price = $row['original_non_ac_price_per_day'] ?? 0;
                 $original_km_price = $row['original_km_price'] ?? 0;
 
-                // Discounted Prices
                 $discounted_price = $original_price * (1 - $discount_percentage / 100);
                 $discounted_ac_price = $original_ac_price * (1 - $discount_percentage / 100);
                 $discounted_non_ac_price = $original_non_ac_price * (1 - $discount_percentage / 100);
                 $discounted_km_price = $original_km_price * (1 - $discount_percentage / 100);
 
-                // Filtering logic
                 $final_price = $has_discount ? $discounted_price : $original_price;
                 if ((!empty($min_price) && $final_price < $min_price) || 
                     (!empty($max_price) && $final_price > $max_price)) {

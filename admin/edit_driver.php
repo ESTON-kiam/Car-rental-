@@ -8,11 +8,9 @@ $success_msg = $error_msg = "";
 if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
   
     $driver_id = $_POST["driver_id"];
-    
-    
+        
     $availability_status = isset($_POST["availability_status"]) ? $_POST["availability_status"] : "Available";
-    
-   
+       
     $sql = "UPDATE drivers SET availability_status = ? WHERE driver_id = ?";
     
     if($stmt = mysqli_prepare($conn, $sql)){
@@ -47,8 +45,7 @@ if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
                 
                 if(mysqli_num_rows($result) == 1){
                     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-                    
-                   
+                                       
                     $driver_id = $row["driver_id"];
                     $name = $row["name"];
                     $contact_no = $row["contact_no"];
@@ -78,7 +75,6 @@ if(isset($_POST["driver_id"]) && !empty($_POST["driver_id"])){
 
 mysqli_close($conn);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,11 +1,9 @@
 <?php
 require 'include/db_connection.php';
 
-
 if (isset($_GET['delete_invoice_id'])) {
  
 }
-
 
 $sql = "SELECT b.booking_id, b.created_at, b.total_fare, 
             c.full_name, c.email, c.mobile, c.residence,
@@ -25,7 +23,6 @@ $sql = "SELECT b.booking_id, b.created_at, b.total_fare,
 
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +56,6 @@ $result = $conn->query($sql);
             </div>
         </div>
     </header>
-
     
    <?php include('include/sidebar.php') ?>
 
@@ -113,7 +109,6 @@ $result = $conn->query($sql);
             </div>
         </div>
     </main>
-
     
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {

@@ -73,12 +73,30 @@ $conn->close();
     <link rel="stylesheet" href="assets/css/driverdash.css">
     <script src="assets/js/driverdash.js"></script>
     <style>
-        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f4f4f9; }
-        .container { width: 400px; padding: 20px; background: #ffffff; border-radius: 8px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); }
-        h2 { color: #333; text-align: center; }
-        input[type="password"], button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 4px; box-sizing: border-box; }
-        input[type="password"] { background-color: #f1f1f1; color: #333; }
-        button { background-color: #4CAF50; color: white; font-weight: bold; cursor: pointer; }
+        body { display: flex; 
+            align-items: center; 
+            justify-content: center;
+             min-height: 100vh; 
+             background-color: #f4f4f9; }
+        .container { width: 400px;
+             padding: 20px;
+              background: #ffffff;
+               border-radius: 8px;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); }
+        h2 { color: #333; 
+            text-align: center; }
+        input[type="password"], button { width: 100%; 
+            padding: 12px;
+             margin: 8px 0; 
+             border: none; 
+             border-radius: 4px; 
+             box-sizing: border-box; }
+        input[type="password"] { background-color: #f1f1f1; 
+            color: #333; }
+        button { background-color: #4CAF50;
+             color: white;
+              font-weight: bold;
+               cursor: pointer; }
         button:hover { background-color: #45a049; }
     </style>
 </head>

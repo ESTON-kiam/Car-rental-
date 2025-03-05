@@ -4,7 +4,6 @@ require 'include/db_connection.php';
 $query = "SELECT driver_id, name, email, contact_no, residence, driving_license_no, license_image FROM drivers";
 $result = $conn->query($query);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +37,6 @@ $result = $conn->query($query);
 </header>
 
 <h2>Driver List</h2>
-
 <table>
     <thead>
         <tr>

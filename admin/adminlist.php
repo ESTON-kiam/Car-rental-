@@ -2,7 +2,6 @@
 
 require 'include/db_connection.php';
 
-
 $stmt = $conn->prepare("SELECT role FROM admins WHERE id = ?");
 $stmt->bind_param("i", $_SESSION['admin_id']);
 $stmt->execute();
@@ -51,7 +50,6 @@ $query = "SELECT id, name, contact_no, email_address, gender, role, profile_pict
 $result = $conn->query($query);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

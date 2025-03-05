@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_booking'])) {
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,8 +57,6 @@ $conn->close();
     <main class="main-content">
     <div class="container">
         <h2>Edit Booking</h2>
-      
-
         <form method="POST">
             <input type="hidden" name="booking_id" value="<?php echo htmlspecialchars($booking['booking_id']); ?>">
 

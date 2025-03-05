@@ -14,6 +14,5 @@
     <p>You cannot book another vehicle until your previous booking is completed.</p>
     <a href="bookingconfrimation.php" class="dashboard-button">Go to Confirmation</a>
 </div>
-
 </body>
 </html>

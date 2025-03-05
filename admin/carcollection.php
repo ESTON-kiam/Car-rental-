@@ -341,7 +341,6 @@ $result = $stmt->get_result();
                 $discount_percentage = $vehicle['discount_percentage'] ?? 0;
                 $has_discount = $discount_percentage > 0;
                 
-                // Original prices
                 $original_price = $vehicle['original_price_per_day'] ?? 0;
                 $discounted_price = $original_price - ($original_price * $discount_percentage / 100);
                 

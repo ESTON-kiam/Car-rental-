@@ -132,7 +132,6 @@ $conn->close();
                 <label for="residence">Permanent Address</label>
                 <textarea id="residence" name="residence" required></textarea>
             </div>
-
             <div class="full-width">
                 <label for="license_image">Driving License Image</label>
                 <input type="file" id="license_image" name="license_image" accept="image/*" required>

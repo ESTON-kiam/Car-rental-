@@ -36,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email = $conn->real_escape_string(trim($_POST['email']));
             $password = trim($_POST['password']);
 
-            
             $stmt = $conn->prepare("SELECT id, password FROM admins WHERE email_address = ?");
             if (!$stmt) {
                 throw new Exception("Database error: " . htmlspecialchars($conn->error));
@@ -73,7 +72,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ]);
                     }
 
-                    
                     header("Location: http://localhost:8000/admin/dashboard.php");
                     exit();
                 } else {

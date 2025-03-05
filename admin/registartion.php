@@ -7,9 +7,6 @@ require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
-
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     
@@ -18,15 +15,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = ""; 
     $dbname = "car_rental_management"; 
 
-    
     $conn = new mysqli($servername, $username, $password, $dbname);
 
-    
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    
     $name = $conn->real_escape_string($_POST['name']);
     $contact_no = $conn->real_escape_string($_POST['contact_no']);
     $email_address = $conn->real_escape_string($_POST['email_address']);
@@ -75,7 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-   
     $conn->close();
 }
 ?>

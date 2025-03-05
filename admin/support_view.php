@@ -1,16 +1,12 @@
 <?php
 
 require 'include/db_connection.php';
-
-
 $customerQuery = "SELECT DISTINCT c.id, c.full_name FROM support_messages sm JOIN customers c ON sm.customer_id = c.id";
 $customers = $conn->query($customerQuery);
 
-
 if (isset($_POST['simulate_customer_message']) && isset($_POST['customer_id']) && isset($_POST['customer_message'])) {
     $customer_id = $_POST['customer_id'];
-    $message = $_POST['customer_message'];
-    
+    $message = $_POST['customer_message']; 
   
     $query = "INSERT INTO support_messages (customer_id, sender, message) VALUES (?, 'customer', ?)";
     $stmt = $conn->prepare($query);
@@ -18,10 +14,8 @@ if (isset($_POST['simulate_customer_message']) && isset($_POST['customer_id']) &
     $stmt->execute();
     $stmt->close();
     
-   
     $botResponse = generateChatbotResponse($message);
-    
-   
+
     $query = "INSERT INTO support_messages (customer_id, sender, message) VALUES (?, 'admin', ?)";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("is", $customer_id, $botResponse);
@@ -100,7 +94,6 @@ function generateChatbotResponse($message) {
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,7 +129,6 @@ function generateChatbotResponse($message) {
         }
     </style>
 </head>
-
 <body class="bg-gray-100"> <header>
         <?php include('include/header.php') ?>
     </header>
@@ -159,8 +151,6 @@ function generateChatbotResponse($message) {
                 <?php endwhile; ?>
             </div>
         </div>
-
-        
         <div class="chat-box-container w-2/3">
             <?php if (isset($_GET['customer_id'])): ?>
                 <?php

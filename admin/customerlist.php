@@ -1,7 +1,6 @@
 <?php
 require 'include/db_connection.php';
 
-
 $query = "SELECT id, full_name, email,profile_picture, mobile, gender, dob, occupation, residence, created_at FROM customers";
 $result = $conn->query($query);
 
@@ -9,7 +8,6 @@ if (!$result) {
     die("Query failed: " . $conn->error);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

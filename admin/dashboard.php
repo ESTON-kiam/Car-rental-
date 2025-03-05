@@ -23,7 +23,6 @@ if ($totalCustomersResult) {
     $totalCustomers = 0; 
 }
 
-
 $vehicleQuery = "SELECT COUNT(*) as total_vehicles FROM vehicles";
 $vehicleResult = $conn->query($vehicleQuery);
 $totalVehicles = 0;
@@ -40,12 +39,6 @@ if ($bookingResult) {
     $bookingData = $bookingResult->fetch_assoc();
     $totalBookings = $bookingData['total_bookings'];
 }
-
-
-
-
-
-
 
 date_default_timezone_set('Africa/Nairobi');
 

@@ -21,7 +21,6 @@ if ($result && $result->num_rows > 0) {
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,7 +120,6 @@ $conn->close();
         <?php include('include/header.php')?>
     </header>
     <?php include('include/sidebar.php') ?>
-
     <main class="main-content">
     <div class="profile-body">
         <div class="profile-container">

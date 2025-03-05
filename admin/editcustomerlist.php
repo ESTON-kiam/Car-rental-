@@ -1,7 +1,6 @@
 <?php
 require 'include/db_connection.php';
 
-
 $customerId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $query = "SELECT * FROM customers WHERE id = $customerId";
 $result = $conn->query($query);

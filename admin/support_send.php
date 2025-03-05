@@ -16,7 +16,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     }
     $stmt->close();
     
-   
     $name_parts = explode(' ', $customer_name);
     $first_name = !empty($name_parts[0]) ? $name_parts[0] : $customer_name;
     
@@ -27,8 +26,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
     else if (strpos($message, 'how are you') !== false || strpos($message,'how are you doing') !== false) {
         return "I'm just a chatbot, but I'm here to help you, $first_name! How can I assist you today?";
     }
-    
- 
     else if (strpos($message, 'available') !== false && (strpos($message, 'car') !== false || strpos($message, 'vehicle') !== false || strpos($message, 'cars') !== false || strpos($message, 'vehicles') !== false || strpos($message, 'vehicles available') !== false || strpos($message, 'available vehicle') !== false)) {
         $query = "SELECT model_name, price_per_day FROM vehicles WHERE availability_status = 'Available' ORDER BY price_per_day ASC";
         $result = $conn->query($query);
@@ -43,9 +40,7 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         } else {
             return "I'm sorry $first_name, there are no vehicles available at the moment. Please check back later or contact our office directly.";
         }
-    }
-    
-   
+    } 
     else if ((strpos($message, 'price') !== false || strpos($message, 'cost') !== false || strpos($message, 'rate') !== false) && 
              (strpos($message, 'below') !== false || strpos($message, 'under') !== false || strpos($message, 'less than') !== false || 
               strpos($message, 'cheaper than') !== false || strpos($message, 'maximum') !== false || 
@@ -82,8 +77,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         }
         $stmt->close();
     }
-    
-   
     else if (preg_match('/\b(?:about|details|info|information|specifications|specs)\s+(?:the\s+)?([a-zA-Z0-9\s]+)(?:\s+car|\s+vehicle)?\b/i', $message, $matches)) {
         $model = trim($matches[1]);
         $query = "SELECT * FROM vehicles WHERE model_name LIKE ? LIMIT 1";
@@ -116,8 +109,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         }
         $stmt->close();
     }
-    
-    
     else if (preg_match('/\b(?:do you have|got any|have any|looking for|need a|want a|rent a)\s+([a-zA-Z0-9\s]+)(?:\s+car|\s+vehicle|\s+van|\s+suv|\s+truck)?\b/i', $message, $matches)) {
         $type = trim($matches[1]);
         $query = "SELECT model_name, price_per_day, availability_status FROM vehicles WHERE model_name LIKE ? OR description LIKE ?";
@@ -139,8 +130,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         }
         $stmt->close();
     }
-    
-  
     else if (strpos($message, 'price') !== false || strpos($message, 'cost') !== false || strpos($message, 'rate') !== false) {
         return "$first_name, our rental rates vary based on the vehicle model and rental duration. You can ask about 'available vehicles' to see our current pricing, or ask about a specific car model for details.";
     }
@@ -220,8 +209,6 @@ function generateChatbotResponse($message, $customer_id, $conn) {
         return "Thank you for your message, $first_name. I'll do my best to assist you. Could you please provide more details about your inquiry so I can better help you? You can ask about available vehicles, pricing, booking process, or specific models.";
     }
 }
-
-
 function getLowestPrice($conn) {
     $query = "SELECT MIN(price_per_day) as min_price FROM vehicles WHERE availability_status = 'Available'";
     $result = $conn->query($query);
@@ -266,7 +253,6 @@ if ($sender == 'customer') {
 }
 
 $conn->close();
-
 
 if ($sender == 'admin') {
     header("Location: support_view.php?customer_id=" . $customer_id);
