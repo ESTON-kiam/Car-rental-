@@ -25,6 +25,10 @@ $sql = "SELECT
             ac_price_per_day,
             non_ac_price_per_day,
             km_price,
+            original_price_per_day,
+            original_ac_price_per_day,
+            original_non_ac_price_per_day,
+            original_km_price,
             discount_percentage 
         FROM vehicles 
         WHERE availability_status = 'Available'";
@@ -40,15 +44,22 @@ if (!empty($search_query)) {
     $param_values[] = "%$search_query%";
 }
 
+
 if (!empty($min_price)) {
-    $conditions[] = "price_per_day * (1 - discount_percentage/100) >= ? OR price_per_day >= ?";
+    $conditions[] = "(
+        (original_price_per_day * (1 - discount_percentage/100) >= ?) OR 
+        (price_per_day >= ?)
+    )";
     $param_types .= 'dd';
     $param_values[] = $min_price;
     $param_values[] = $min_price;
 }
 
 if (!empty($max_price)) {
-    $conditions[] = "price_per_day * (1 - discount_percentage/100) <= ? OR price_per_day <= ?";
+    $conditions[] = "(
+        (original_price_per_day * (1 - discount_percentage/100) <= ?) OR 
+        (price_per_day <= ?)
+    )";
     $param_types .= 'dd';
     $param_values[] = $max_price;
     $param_values[] = $max_price;
@@ -348,20 +359,23 @@ $result = $stmt->get_result();
     <div class="container">
         <?php if ($result->num_rows > 0): ?>
             <?php while($row = $result->fetch_assoc()): 
+                
                 $discount_percentage = $row['discount_percentage'] ?? 0;
                 $has_discount = $discount_percentage > 0;
                 
-                $original_price = $row['price_per_day'] ?? 0;
-                $discounted_price = $original_price - ($original_price * $discount_percentage / 100);
                 
-                $original_ac_price = $row['ac_price_per_day'] ?? 0;
-                $discounted_ac_price = $original_ac_price - ($original_ac_price * $discount_percentage / 100);
+                $original_price = $row['original_price_per_day'] ?? 0;
+                $discounted_price = $original_price * (1 - $discount_percentage / 100);
                 
-                $original_non_ac_price = $row['non_ac_price_per_day'] ?? 0;
-                $discounted_non_ac_price = $original_non_ac_price - ($original_non_ac_price * $discount_percentage / 100);
+                $original_ac_price = $row['original_ac_price_per_day'] ?? 0;
+                $discounted_ac_price = $original_ac_price * (1 - $discount_percentage / 100);
                 
-                $original_km_price = $row['km_price'] ?? 0;
-                $discounted_km_price = $original_km_price - ($original_km_price * $discount_percentage / 100);
+                $original_non_ac_price = $row['original_non_ac_price_per_day'] ?? 0;
+                $discounted_non_ac_price = $original_non_ac_price * (1 - $discount_percentage / 100);
+                
+                $original_km_price = $row['original_km_price'] ?? 0;
+                $discounted_km_price = $original_km_price * (1 - $discount_percentage / 100);
+                
                 
                 $final_price = $has_discount ? $discounted_price : $original_price;
                 if ((!empty($min_price) && $final_price < $min_price) || 
@@ -455,6 +469,7 @@ $result = $stmt->get_result();
             <p>No vehicles available matching your search criteria.</p>
         <?php endif; ?>
     </div>
+
     <footer id="footer" class="footer dark-background">
 
   <div class="footer-top">

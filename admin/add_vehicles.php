@@ -12,16 +12,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $model_name = $_POST['model_name'];
     $description = $_POST['description'];
     $availability_status = $_POST['availability_status'];
-    $price_per_day = $_POST['price_per_day'];
+    
+    // Price fields
+    $original_price_per_day = $_POST['original_price_per_day'];
+    $original_ac_price_per_day = $_POST['original_ac_price_per_day'];
+    $original_non_ac_price_per_day = $_POST['original_non_ac_price_per_day'];
+    $original_km_price = $_POST['original_km_price'];
+
     $photo = $_FILES['photo']['name'];
 
     $target_dir = "Cars/"; 
     $target_file = $target_dir . basename($photo);
     move_uploaded_file($_FILES['photo']['tmp_name'], $target_file);
 
-    $sql = "INSERT INTO vehicles (registration_no, model_name, description, availability_status, photo, price_per_day) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO vehicles (
+        registration_no, 
+        model_name, 
+        description, 
+        availability_status, 
+        photo, 
+        original_price_per_day,
+        original_ac_price_per_day,
+        original_non_ac_price_per_day,
+        original_km_price
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssd", $registration_no, $model_name, $description, $availability_status, $target_file, $price_per_day);
+    $stmt->bind_param(
+        "sssssdddd", 
+        $registration_no, 
+        $model_name, 
+        $description, 
+        $availability_status, 
+        $target_file, 
+        $original_price_per_day,
+        $original_ac_price_per_day,
+        $original_non_ac_price_per_day,
+        $original_km_price
+    );
     
     if ($stmt->execute()) {
         $success_message = "Vehicle added successfully!";
@@ -39,7 +67,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Vehicle</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-   <link href="assets/css/addvehicle.css" rel="stylesheet">
+    <link href="assets/css/addvehicle.css" rel="stylesheet">
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
 </head>
@@ -60,7 +88,7 @@ $conn->close();
         <div class="message error">
             <?php echo $error_message; ?>
         </div>
-    <?php endif; ?> <main>
+    <?php endif; ?>
 
     <form action="" method="post" enctype="multipart/form-data">
         <h2>Add Vehicle</h2>
@@ -80,12 +108,24 @@ $conn->close();
             <label for="description">Description:</label>
             <textarea id="description" name="description" rows="4" 
                       placeholder="Describe the vehicle" required></textarea>
+
+            <label for="original_price_per_day">Stand Price per Day (KSH):</label>
+            <input type="number" id="original_price_per_day" name="original_price_per_day" 
+                   step="0.01" min="0" placeholder="Enter base price per day" required>
+
+            <label for="original_ac_price_per_day">AC Price per Day (KSH):</label>
+            <input type="number" id="original_ac_price_per_day" name="original_ac_price_per_day" 
+                   step="0.01" min="0" placeholder="Enter AC price per day">
         </div>
 
         <div class="form-column">
-            <label for="price_per_day">Price per Day (KSH):</label>
-            <input type="number" id="price_per_day" name="price_per_day" 
-                   step="0.01" min="0" placeholder="Enter price per day" required>
+            <label for="original_non_ac_price_per_day">Non-AC Price per Day (KSH):</label>
+            <input type="number" id="original_non_ac_price_per_day" name="original_non_ac_price_per_day" 
+                   step="0.01" min="0" placeholder="Enter non-AC price per day">
+
+            <label for="original_km_price">Price per KM (KSH):</label>
+            <input type="number" id="original_km_price" name="original_km_price" 
+                   step="0.01" min="0" placeholder="Enter price per kilometer">
 
             <label for="availability_status">Availability Status:</label>
             <select id="availability_status" name="availability_status" required>
@@ -100,6 +140,7 @@ $conn->close();
         </div>
 
         <button type="submit">Add Vehicle</button>
-    </form></main>
+    </form>
+    </main>
 </body>
 </html>

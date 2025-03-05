@@ -5,7 +5,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
     $registration_no = $_POST['registration_no'];
     $discount_percentage = $_POST['discount_percentage'];
     
-    
     if ($discount_percentage >= 0 && $discount_percentage <= 100) {
        
         $stmt = $conn->prepare("SELECT 
@@ -25,31 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
             $stmt->close();
             
             
-            $original_price_per_day = $vehicle['original_price_per_day'] ?? 
-                $vehicle['original_price_per_day'] = 
-                $conn->query("SELECT price_per_day FROM vehicles WHERE registration_no = '$registration_no'")->fetch_assoc()['price_per_day'];
+            $original_price_per_day = $vehicle['original_price_per_day'];
+            $original_ac_price_per_day = $vehicle['original_ac_price_per_day'];
+            $original_non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'];
+            $original_km_price = $vehicle['original_km_price'];
             
            
-            if ($discount_percentage > 0) {
-                $price_per_day = $original_price_per_day - 
-                    ($original_price_per_day * $discount_percentage / 100);
-                
-                $ac_price_per_day = $vehicle['original_ac_price_per_day'] - 
-                    ($vehicle['original_ac_price_per_day'] * $discount_percentage / 100);
-                
-                $non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'] - 
-                    ($vehicle['original_non_ac_price_per_day'] * $discount_percentage / 100);
-                
-                $km_price = $vehicle['original_km_price'] - 
-                    ($vehicle['original_km_price'] * $discount_percentage / 100);
-            } else {
-                
-                $price_per_day = $original_price_per_day;
-                $ac_price_per_day = $vehicle['original_ac_price_per_day'];
-                $non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'];
-                $km_price = $vehicle['original_km_price'];
-            }
-            
+            $price_per_day = $original_price_per_day * (1 - $discount_percentage / 100);
+            $ac_price_per_day = $original_ac_price_per_day * (1 - $discount_percentage / 100);
+            $non_ac_price_per_day = $original_non_ac_price_per_day * (1 - $discount_percentage / 100);
+            $km_price = $original_km_price * (1 - $discount_percentage / 100);
             
             $update_stmt = $conn->prepare("UPDATE vehicles SET 
                 discount_percentage = ?,
@@ -83,13 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
     }
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability'])) {
     $registration_no = $_POST['registration_no'];
     $current_status = $_POST['current_status'];
     
     $new_status = ($current_status === 'Available') ? 'Unavailable' : 'Available';
-    
     
     if ($new_status === 'Unavailable' && isset($_POST['status_reason'])) {
         $status_reason = $_POST['status_reason'];
@@ -97,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
         $stmt = $conn->prepare("UPDATE vehicles SET availability_status = ?, status_reason = ? WHERE registration_no = ?");
         $stmt->bind_param("sss", $new_status, $status_reason, $registration_no);
     } else {
-       
         $stmt = $conn->prepare("UPDATE vehicles SET availability_status = ?, status_reason = NULL WHERE registration_no = ?");
         $stmt->bind_param("ss", $new_status, $registration_no);
     }
@@ -110,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_availability']
 
     $stmt->close();
 }
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $registration_no = $_POST['registration_no'];
@@ -127,12 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_vehicle'])) {
     $stmt->close();
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_all_prices'])) {
     $registration_no = $_POST['registration_no'];
     $base_price = $_POST['base_price'];
     
-   
     $stmt = $conn->prepare("UPDATE vehicles SET 
         price_per_day = ?,
         ac_price_per_day = ?,
@@ -165,7 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_all_prices'])) {
     
     $stmt->close();
 }
-
 
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
@@ -207,7 +184,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,7 +195,6 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="assets/css/carcollection.css" rel="stylesheet">
     <style>
-      
         .status-reason {
             margin-top: 5px;
             font-style: italic;
@@ -257,7 +232,7 @@ $result = $stmt->get_result();
             margin-right: 5px;
         }
         .discounted-price {
-            color:   #d9534f;
+            color: #d9534f;
             font-weight: bold;
         }
         .vehicle {
@@ -363,24 +338,20 @@ $result = $stmt->get_result();
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($vehicle = $result->fetch_assoc()): ?>
             <?php
-                
                 $discount_percentage = $vehicle['discount_percentage'] ?? 0;
                 $has_discount = $discount_percentage > 0;
                 
-                
-                $original_price = $vehicle['price_per_day'] ?? 0;
+                // Original prices
+                $original_price = $vehicle['original_price_per_day'] ?? 0;
                 $discounted_price = $original_price - ($original_price * $discount_percentage / 100);
                 
-                
-                $original_ac_price = $vehicle['ac_price_per_day'] ?? 0;
+                $original_ac_price = $vehicle['original_ac_price_per_day'] ?? 0;
                 $discounted_ac_price = $original_ac_price - ($original_ac_price * $discount_percentage / 100);
                 
-              
-                $original_non_ac_price = $vehicle['non_ac_price_per_day'] ?? 0;
+                $original_non_ac_price = $vehicle['original_non_ac_price_per_day'] ?? 0;
                 $discounted_non_ac_price = $original_non_ac_price - ($original_non_ac_price * $discount_percentage / 100);
                 
-               
-                $original_km_price = $vehicle['km_price'] ?? 0;
+                $original_km_price = $vehicle['original_km_price'] ?? 0;
                 $discounted_km_price = $original_km_price - ($original_km_price * $discount_percentage / 100);
             ?>
             <div class="vehicle">
@@ -411,7 +382,6 @@ $result = $stmt->get_result();
                         <div class="price-tab" onclick="showPriceTab('km-price-<?php echo htmlspecialchars($vehicle['registration_no']); ?>', this)">Per KM</div>
                     </div>
                     
-                   
                     <div id="standard-price-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" class="price-content active">
                         <div class="price-row">
                             <span class="price-label">Standard Price:</span>
@@ -425,7 +395,6 @@ $result = $stmt->get_result();
                             </span>
                         </div>
                     </div>
-                    
                     
                     <div id="ac-price-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" class="price-content">
                         <div class="price-row">
@@ -443,7 +412,6 @@ $result = $stmt->get_result();
                         </div>
                     </div>
                     
-                   
                     <div id="non-ac-price-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" class="price-content">
                         <div class="price-row">
                             <span class="price-label">Non-AC Price per Day:</span>
@@ -460,7 +428,6 @@ $result = $stmt->get_result();
                         </div>
                     </div>
                     
-                   
                     <div id="km-price-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" class="price-content">
                         <div class="price-row">
                             <span class="price-label">Price per KM:</span>
@@ -499,7 +466,6 @@ $result = $stmt->get_result();
                         </button>
                     </div>
                     
-                  
                     <form id="status-form-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" method="POST" action="" class="status-form">
                         <input type="hidden" name="registration_no" 
                                value="<?php echo htmlspecialchars($vehicle['registration_no']); ?>">
@@ -518,7 +484,6 @@ $result = $stmt->get_result();
                             <i class="fas fa-check"></i> Update Status
                         </button>
                     </form>
-                    
                     
                     <form id="discount-form-<?php echo htmlspecialchars($vehicle['registration_no']); ?>" method="POST" action="" class="discount-form">
                         <input type="hidden" name="registration_no" 
@@ -583,23 +548,19 @@ function toggleForm(formId) {
 }
 
 function showPriceTab(tabId, clickedTab) {
-    
     const allTabs = clickedTab.parentElement.getElementsByClassName('price-tab');
     for (let i = 0; i < allTabs.length; i++) {
         allTabs[i].classList.remove('active');
     }
     
-   
     clickedTab.classList.add('active');
     
-   
     const tabContainerParent = clickedTab.parentElement.parentElement;
     const allContent = tabContainerParent.getElementsByClassName('price-content');
     for (let i = 0; i < allContent.length; i++) {
         allContent[i].classList.remove('active');
     }
     
-
     document.getElementById(tabId).classList.add('active');
 }
 </script>

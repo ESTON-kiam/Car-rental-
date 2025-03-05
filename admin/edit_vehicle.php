@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $model_name = $_POST['model_name'];
     $description = $_POST['description'];
     $availability_status = $_POST['availability_status'];
-    $price_per_day = $_POST['price_per_day'];
-    $ac_price_per_day = $_POST['ac_price_per_day'];
-    $non_ac_price_per_day = $_POST['non_ac_price_per_day'];
-    $km_price = $_POST['km_price'];
+    $original_price_per_day = $_POST['original_price_per_day'];
+    $original_ac_price_per_day = $_POST['original_ac_price_per_day'];
+    $original_non_ac_price_per_day = $_POST['original_non_ac_price_per_day'];
+    $original_km_price = $_POST['original_km_price'];
     
     $status_reason = ($availability_status === 'Unavailable' && isset($_POST['status_reason'])) 
                      ? $_POST['status_reason'] 
@@ -34,11 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     $stmt = $conn->prepare("UPDATE vehicles SET model_name = ?, description = ?, availability_status = ?, 
-                            photo = ?, price_per_day = ?, status_reason = ?, ac_price_per_day = ?, 
-                            non_ac_price_per_day = ?, km_price = ? WHERE registration_no = ?");
+                            photo = ?, original_price_per_day = ?, status_reason = ?, original_ac_price_per_day = ?, 
+                            original_non_ac_price_per_day = ?,original_km_price = ? WHERE registration_no = ?");
     $stmt->bind_param("ssssdsddds", $model_name, $description, $availability_status, $photo, 
-                      $price_per_day, $status_reason, $ac_price_per_day, $non_ac_price_per_day, 
-                      $km_price, $registration_no);
+                      $original_price_per_day, $status_reason, $original_ac_price_per_day, $original_non_ac_price_per_day, 
+                      $original_km_price, $registration_no);
 
     if ($stmt->execute()) {
         header("Location: carcollection.php");
@@ -140,24 +140,24 @@ $conn->close();
                 
                
                 <div class="form-column">
-                    <label for="price_per_day">Base Price per Day (Standard):</label>
+                    <label for="original_price_per_day">Base Price per Day (Standard):</label>
                     <div class="price-field">
-                        <input type="number" id="price_per_day" name="price_per_day" value="<?php echo htmlspecialchars($vehicle['price_per_day']); ?>" required min="0" step="0.01">
+                        <input type="number" id="original_price_per_day" name="original_price_per_day" value="<?php echo htmlspecialchars($vehicle['original_price_per_day']); ?>" required min="0" step="0.01">
                     </div>
                     
-                    <label for="ac_price_per_day">AC Price per Day (AP):</label>
+                    <label for="original_ac_price_per_day">AC Price per Day (AP):</label>
                     <div class="price-field">
-                        <input type="number" id="ac_price_per_day" name="ac_price_per_day" value="<?php echo htmlspecialchars($vehicle['ac_price_per_day'] ?? 0); ?>" min="0" step="0.01">
+                        <input type="number" id="original_ac_price_per_day" name="original_ac_price_per_day" value="<?php echo htmlspecialchars($vehicle['original_ac_price_per_day'] ?? 0); ?>" min="0" step="0.01">
                     </div>
                     
-                    <label for="non_ac_price_per_day">Non-AC Price per Day (NAP):</label>
+                    <label for="original_non_ac_price_per_day">Non-AC Price per Day (NAP):</label>
                     <div class="price-field">
-                        <input type="number" id="non_ac_price_per_day" name="non_ac_price_per_day" value="<?php echo htmlspecialchars($vehicle['non_ac_price_per_day'] ?? 0); ?>" min="0" step="0.01">
+                        <input type="number" id="original_non_ac_price_per_day" name="original_non_ac_price_per_day" value="<?php echo htmlspecialchars($vehicle['original_non_ac_price_per_day'] ?? 0); ?>" min="0" step="0.01">
                     </div>
                     
-                    <label for="km_price">Price per Kilometer (PPK):</label>
+                    <label for="original_km_price">Price per Kilometer (PPK):</label>
                     <div class="price-field">
-                        <input type="number" id="km_price" name="km_price" value="<?php echo htmlspecialchars($vehicle['km_price'] ?? 0); ?>" min="0" step="0.01">
+                        <input type="number" id="original_km_price" name="original_km_price" value="<?php echo htmlspecialchars($vehicle['original_km_price'] ?? 0); ?>" min="0" step="0.01">
                     </div>
                 </div>
                 
