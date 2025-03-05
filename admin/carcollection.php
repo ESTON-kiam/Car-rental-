@@ -5,9 +5,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
     $registration_no = $_POST['registration_no'];
     $discount_percentage = $_POST['discount_percentage'];
     
-    // Validate discount percentage
+    
     if ($discount_percentage >= 0 && $discount_percentage <= 100) {
-        // Retrieve pricing information
+       
         $stmt = $conn->prepare("SELECT 
             original_price_per_day, 
             original_ac_price_per_day, 
@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
             $vehicle = $result->fetch_assoc();
             $stmt->close();
             
-            // Ensure original prices exist
+            
             $original_price_per_day = $vehicle['original_price_per_day'] ?? 
                 $vehicle['original_price_per_day'] = 
                 $conn->query("SELECT price_per_day FROM vehicles WHERE registration_no = '$registration_no'")->fetch_assoc()['price_per_day'];
             
-            // Calculate prices based on true original price
+           
             if ($discount_percentage > 0) {
                 $price_per_day = $original_price_per_day - 
                     ($original_price_per_day * $discount_percentage / 100);
@@ -43,14 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_discount'])) {
                 $km_price = $vehicle['original_km_price'] - 
                     ($vehicle['original_km_price'] * $discount_percentage / 100);
             } else {
-                // Reset to original prices if discount is 0
+                
                 $price_per_day = $original_price_per_day;
                 $ac_price_per_day = $vehicle['original_ac_price_per_day'];
                 $non_ac_price_per_day = $vehicle['original_non_ac_price_per_day'];
                 $km_price = $vehicle['original_km_price'];
             }
             
-            // Update vehicle with new prices and discount
+            
             $update_stmt = $conn->prepare("UPDATE vehicles SET 
                 discount_percentage = ?,
                 price_per_day = ?,
@@ -207,8 +207,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
