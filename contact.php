@@ -1,5 +1,4 @@
 <?php
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -7,9 +6,7 @@ require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
-
 require 'vendor/autoload.php';
-
 
 $host = 'localhost'; 
 $db_name = 'car_rental_management'; 
