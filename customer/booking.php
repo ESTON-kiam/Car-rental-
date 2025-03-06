@@ -1,45 +1,20 @@
 <?php 
+require 'include/db_connection.php';
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-session_name('customer_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
+require 'PHPMailer/PHPMailer/src/Exception.php';
+require 'PHPMailer/PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/PHPMailer/src/SMTP.php';
 
-
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: http://localhost:8000/customer/"); 
-    exit();
-}
-
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management";
-
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
+require 'vendor/autoload.php';
 
 $vehicle_id = $_GET['id'] ?? null;
-
 $full_name = ''; 
 $registration_no = ''; 
 $model_name = ''; 
-
+$customer_email = ''; 
 
 if ($vehicle_id) {
     $sql = "SELECT * FROM vehicles WHERE vehicle_id = ?";
@@ -61,9 +36,8 @@ if ($vehicle_id) {
     exit();
 }
 
-
 $customer_id = $_SESSION['customer_id']; 
-$customer_sql = "SELECT full_name FROM customers WHERE id = ?";
+$customer_sql = "SELECT full_name, email FROM customers WHERE id = ?";
 $customer_stmt = $conn->prepare($customer_sql);
 $customer_stmt->bind_param("i", $customer_id);
 $customer_stmt->execute();
@@ -72,8 +46,8 @@ $customer_result = $customer_stmt->get_result();
 if ($customer_result->num_rows > 0) {
     $customer = $customer_result->fetch_assoc();
     $full_name = $customer['full_name'];
+    $customer_email = $customer['email']; 
 }
-
 
 $existing_booking_sql = "SELECT * FROM bookings WHERE customer_id = ? AND booking_status != 'completed'";
 $existing_booking_stmt = $conn->prepare($existing_booking_sql);
@@ -86,7 +60,6 @@ if ($existing_booking_result->num_rows > 0) {
     exit();
 }
 
-
 $drivers = [];
 $driver_sql = "SELECT driver_id, name FROM drivers WHERE availability_status = 'Available'";
 $driver_result = $conn->query($driver_sql);
@@ -97,14 +70,213 @@ if ($driver_result->num_rows > 0) {
     }
 }
 
+function sendBookingConfirmationEmail($customer_email, $full_name, $vehicle_details, $booking_details) {
+    
+    
+    if (empty($customer_email)) {
+        error_log("Cannot send email: Customer email is empty");
+        return false;
+    }
+    
+    $mail = new PHPMailer(true);
+    
+    try {
+       
+        $mail->SMTPDebug = 2;    
+        $mail->Debugoutput = function($str, $level) {
+            error_log("PHPMailer Debug: $str");
+        };
+        
+        $mail->isSMTP();                                           
+        $mail->Host       = 'smtp.gmail.com';                   
+        $mail->SMTPAuth   = true;                                
+        $mail->Username   = 'engestonbrandon@gmail.com';            
+        $mail->Password   = 'dsth izzm npjl qebi';                    
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;     
+        $mail->Port       = 587; 
+        
+        $mail->setFrom('noreply@carrentals.com', 'Car Rentals');
+        $mail->addAddress($customer_email, $full_name);
+        
+        $mail->isHTML(true);
+        $mail->Subject = "Car Rental Booking Confirmation";
+        
+        $message = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                h1 { color: #2563eb; }
+                .booking-details { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                .footer { margin-top: 30px; font-size: 12px; color: #6c757d; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <h1>Booking Confirmation</h1>
+                <p>Dear {$full_name},</p>
+                <p>Thank you for booking with Car Rentals. Your booking has been confirmed.</p>
+                
+                <div class='booking-details'>
+                    <h3>Vehicle Details:</h3>
+                    <p>Registration Number: {$vehicle_details['registration_no']}</p>
+                    <p>Model: {$vehicle_details['model_name']}</p>
+                    
+                    <h3>Booking Details:</h3>
+                    <p>Start Date: {$booking_details['start_date']}</p>
+                    <p>End Date: {$booking_details['end_date']}</p>
+                    <p>Pick-up Location: {$booking_details['pick_up_location']}</p>
+                    <p>Pick-up Time: {$booking_details['pick_up_time']}</p>
+                    <p>Car Type: {$booking_details['car_type']}</p>
+                    <p>Driver: " . ($booking_details['driver_option'] === 'yes' ? 'Yes' : 'No') . "</p>
+                    <p>Total Fare: KSH " . number_format($booking_details['fare']) . "</p>
+                    <p>Advance Deposit: KSH " . number_format($booking_details['deposit']) . "</p>
+                </div>
+                
+                <p>If you have any questions, please contact our customer support.</p>
+                
+                <div class='footer'>
+                    <p>&copy; " . date("Y") . " Car Rentals. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+        
+        $mail->Body = $message;
+        
+        
+        $mail->AltBody = "Booking Confirmation\n\nDear {$full_name},\n\nThank you for booking with Car Rentals. Your booking has been confirmed.\n\nVehicle Details:\nRegistration Number: {$vehicle_details['registration_no']}\nModel: {$vehicle_details['model_name']}\n\nBooking Details:\nStart Date: {$booking_details['start_date']}\nEnd Date: {$booking_details['end_date']}\nPick-up Location: {$booking_details['pick_up_location']}\nPick-up Time: {$booking_details['pick_up_time']}\nCar Type: {$booking_details['car_type']}\nDriver: " . ($booking_details['driver_option'] === 'yes' ? 'Yes' : 'No') . "\nTotal Fare: KSH " . number_format($booking_details['fare']) . "\nAdvance Deposit: KSH " . number_format($booking_details['deposit']) . "\n\nIf you have any questions, please contact our customer support.";
+        
+        $result = $mail->send();
+        error_log("Email sending result: " . ($result ? "Success" : "Failed"));
+        return $result;
+    } catch (Exception $e) {
+        error_log("PHPMailer Error: {$mail->ErrorInfo}");
+        
+        error_log("Error details: " . $e->getMessage());
+        error_log("Error trace: " . $e->getTraceAsString());
+        return false;
+    }
+}
+
+function sendReturnReminder($customer_email, $full_name, $vehicle_details, $booking_details) {
+   
+    
+    if (empty($customer_email)) {
+        error_log("Cannot send reminder: Customer email is empty");
+        return false;
+    }
+    
+    $mail = new PHPMailer(true);
+    
+    try {
+       
+        $mail->SMTPDebug = 2;
+        $mail->Debugoutput = function($str, $level) {
+            error_log("PHPMailer Debug: $str");
+        };
+        
+        $mail->isSMTP();                                           
+        $mail->Host       = 'smtp.gmail.com';                   
+        $mail->SMTPAuth   = true;                                
+        $mail->Username   = 'engestonbrandon@gmail.com';            
+        $mail->Password   = 'dsth izzm npjl qebi';                    
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;     
+        $mail->Port       = 587; 
+        
+        $mail->setFrom('noreply@carrentals.com', 'Car Rentals');
+        $mail->addAddress($customer_email, $full_name);
+        
+        $mail->isHTML(true);
+        $mail->Subject = "Car Rental Return Reminder";
+        
+        $message = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                h1 { color: #2563eb; }
+                .reminder-details { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                .important { color: #dc2626; font-weight: bold; }
+                .footer { margin-top: 30px; font-size: 12px; color: #6c757d; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <h1>Vehicle Return Reminder</h1>
+                <p>Dear {$full_name},</p>
+                <p>This is a friendly reminder that your car rental is scheduled to end soon.</p>
+                
+                <div class='reminder-details'>
+                    <h3>Rental Details:</h3>
+                    <p>Registration Number: {$vehicle_details['registration_no']}</p>
+                    <p>Model: {$vehicle_details['model_name']}</p>
+                    <p>End Date: {$booking_details['end_date']}</p>
+                    <p class='important'>Please ensure to return the vehicle on time to avoid additional charges.</p>
+                </div>
+                
+                <p>If you need to extend your rental period, please contact our customer support as soon as possible.</p>
+                
+                <div class='footer'>
+                    <p>&copy; " . date("Y") . " Car Rentals. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+        
+        $mail->Body = $message;
+        $mail->AltBody = "Vehicle Return Reminder\n\nDear {$full_name},\n\nThis is a friendly reminder that your car rental is scheduled to end soon.\n\nRental Details:\nRegistration Number: {$vehicle_details['registration_no']}\nModel: {$vehicle_details['model_name']}\nEnd Date: {$booking_details['end_date']}\n\nPlease ensure to return the vehicle on time to avoid additional charges.\n\nIf you need to extend your rental period, please contact our customer support as soon as possible.";
+        
+        $result = $mail->send();
+        error_log("Return reminder email result: " . ($result ? "Success" : "Failed"));
+        return $result;
+    } catch (Exception $e) {
+        error_log("PHPMailer Error: {$mail->ErrorInfo}");
+        error_log("Error details: " . $e->getMessage());
+        return false;
+    }
+}
+
+function scheduleReturnReminders($booking_id, $customer_id, $customer_email, $full_name, $end_date) {
+    global $conn;
+    
+    if (empty($customer_email)) {
+        error_log("Cannot schedule reminder: Customer email is empty");
+        return false;
+    }
+    
+    
+    $end_date_obj = new DateTime($end_date);
+    $end_date_obj->setTime(12, 0, 0); 
+    $reminder_time = $end_date_obj->format('Y-m-d H:i:s');
+    
+    $sql = "INSERT INTO email_reminders (booking_id, customer_id, customer_email, customer_name, end_date, reminder_time, status) 
+            VALUES (?, ?, ?, ?, ?, ?, 'pending')";
+    
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("Prepare failed for reminder scheduling: " . $conn->error);
+        return false;
+    }
+    
+    $stmt->bind_param("iissss", $booking_id, $customer_id, $customer_email, $full_name, $end_date, $reminder_time);
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        error_log("Failed to schedule reminder: " . $stmt->error);
+        return false;
+    }
+    
+    error_log("Reminder scheduled for: " . $reminder_time . " (12 hours before midnight of end date: " . $end_date . ")");
+    return true;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    echo "POST Data:<br>";
-    print_r($_POST);
-    echo "<br>";
+    error_log("Starting booking process with POST data: " . json_encode($_POST));
 
-    
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $pick_up_location = $_POST['pick_up_location'];
@@ -112,13 +284,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $car_type = $_POST['car_type'];
     $charge_type = $_POST['charge_type'];
     $driver_option = $_POST['driver_option'];
+    $kilometers = isset($_POST['kilometers']) ? intval($_POST['kilometers']) : 0;
     
-   
     $fare = floatval($_POST['fare_hidden']);
     $advance_deposit = floatval($_POST['deposit_hidden']);
 
+   
     if ($fare <= 0 || $advance_deposit <= 0) {
         echo "Invalid fare or deposit amount";
+        exit();
+    }
+    
+    if (empty($customer_email)) {
+        error_log("Customer email is missing or empty. Cannot proceed.");
+        echo "Customer email is required for booking.";
         exit();
     }
     
@@ -131,14 +310,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update_stmt->bind_param("i", $vehicle_id);
         $update_stmt->execute();
 
-        
+       
         $booking_sql = "INSERT INTO bookings (
             vehicle_id, customer_id, start_date, end_date, 
             pick_up_location, pick_up_time, car_type, 
             charge_type, driver_option, total_fare, 
             advance_deposit, booking_status, registration_no, 
-            model_name
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)";
+            model_name,kilometers
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?,?)";
         
         $booking_stmt = $conn->prepare($booking_sql);
         if (!$booking_stmt) {
@@ -146,7 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $booking_status = 'pending';
-        if (!$booking_stmt->bind_param("iisssssssddss", 
+        if (!$booking_stmt->bind_param("iisssssssddssi", 
             $vehicle_id, 
             $customer_id,
             $start_date,
@@ -159,7 +338,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fare,
             $advance_deposit,
             $registration_no,
-            $model_name
+            $model_name,
+            $kilometers
         )) {
             throw new Exception("Binding parameters failed: " . $booking_stmt->error);
         }
@@ -169,8 +349,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $booking_id = $conn->insert_id;
+        error_log("New booking created with ID: $booking_id");
         
-       
+      
         if ($driver_option === 'yes' && isset($_POST['driver_id'])) {
             $driver_id = $_POST['driver_id'];
 
@@ -187,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $driver_assign_stmt = $conn->prepare($driver_assign_sql);
             if (!$driver_assign_stmt) {
-                throw new Exception("Prepare failed: " . $conn->error);
+                throw new Exception("Prepare failed for driver assignment: " . $conn->error);
             }
 
             if (!$driver_assign_stmt->bind_param("iississ", 
@@ -199,36 +380,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $customer_id,
                 $full_name
             )) {
-                throw new Exception("Binding parameters failed: " . $driver_assign_stmt->error);
+                throw new Exception("Binding parameters failed for driver assignment: " . $driver_assign_stmt->error);
             }
 
             if (!$driver_assign_stmt->execute()) {
-                throw new Exception("Execute failed: " . $driver_assign_stmt->error);
+                throw new Exception("Execute failed for driver assignment: " . $driver_assign_stmt->error);
             }
 
-            
+           
             $update_driver_sql = "UPDATE drivers SET availability_status = 'Unavailable' WHERE driver_id = ?";
             $update_driver_stmt = $conn->prepare($update_driver_sql);
             $update_driver_stmt->bind_param("i", $driver_id);
             $update_driver_stmt->execute();
         }
 
+        
+        $booking_details = [
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'pick_up_location' => $pick_up_location,
+            'pick_up_time' => $pick_up_time,
+            'car_type' => $car_type,
+            'driver_option' => $driver_option,
+            'fare' => $fare,
+            'deposit' => $advance_deposit
+        ];
+        
+        $vehicle_details = [
+            'registration_no' => $registration_no,
+            'model_name' => $model_name
+        ];
+        
+        
+        error_log("Attempting to send confirmation email to: $customer_email");
+        error_log("Email details - Name: $full_name, Vehicle: $model_name, Booking ID: $booking_id");
+        
+      
+        $email_result = false;
+        try {
+            $email_result = sendBookingConfirmationEmail($customer_email, $full_name, $vehicle_details, $booking_details);
+            if ($email_result) {
+                error_log("Booking confirmation email sent successfully");
+            } else {
+                error_log("Booking confirmation email failed to send, but continuing with booking");
+            }
+        } catch (Exception $e) {
+            error_log("Exception when sending email: " . $e->getMessage());
+            
+        }
+        
+        
+        try {
+            $reminder_result = scheduleReturnReminders($booking_id, $customer_id, $customer_email, $full_name, $end_date);
+            if ($reminder_result) {
+                error_log("Return reminder scheduled successfully for 12 hours before end date");
+            } else {
+                error_log("Failed to schedule return reminder, but continuing with booking");
+            }
+        } catch (Exception $e) {
+            error_log("Exception when scheduling reminder: " . $e->getMessage());
+            
+        }
+
+      
         $conn->commit();
-        echo "Transaction committed successfully!<br>";
+        error_log("Transaction committed successfully!");
+        
+        
         header("Location: bookingconfrimation.php");
         exit();
     } catch (Exception $e) {
+        
         $conn->rollback();
-        echo "Error occurred:<br>";
-        echo "Error message: " . $e->getMessage() . "<br>";
-        echo "Stack trace:<br>";
-        echo nl2br($e->getTraceAsString());
+        error_log("Error occurred: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
+        
+        
+        echo "<div style='color:red; padding:20px; margin:20px; border:1px solid red;'>";
+        echo "<h2>Error Occurred</h2>";
+        echo "<p>Error message: " . $e->getMessage() . "</p>";
+        echo "<p>Please try again or contact support if the problem persists.</p>";
+        echo "</div>";
         exit();
     }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,120 +473,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Premium Car Booking Experience</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #dbeafe;
-            --text-color: #1f2937;
-            --light-gray: #f3f4f6;
-            --border-radius: 12px;
-            --gradient-start: #4f46e5;
-            --gradient-end: #2563eb;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f6f7ff 0%, #ffffff 100%);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: var(--text-color);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            background: linear-gradient(to right, #1e293b, #334155);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .booking-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-            outline: none;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .btn-dashboard {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-dashboard:hover {
-            background: white;
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .fare-card {
-            background: linear-gradient(145deg, #ffffff, var(--accent-color));
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .select-wrapper {
-            position: relative;
-        }
-
-        .select-wrapper::after {
-            content: '▼';
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #6b7280;
-            font-size: 0.8rem;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/booking.css">
 </head>
 <body class="bg-gray-50">
     
     <nav class="navbar fixed w-full top-0 z-50 px-6 py-4">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.php" class="text-2xl font-bold text-white tracking-wider">Car Rentals</a>
-            <a href="dashboard.php" class="btn-dashboard">Dashboard</a>
+            <a href="index.php" class="text-2xl font-bold text-white tracking-wider"><i class="fas fa-car"></i>Car Rentals</a>
+           </i> <a href="dashboard.php" class="btn-dashboard">Dashboard</a>
         </div>
     </nav>
-
-    
     <div class="container mx-auto mt-24 px-4">
         <div class="booking-container">
             <div class="text-center mb-10">
@@ -360,18 +494,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
                 <h2 class="text-2xl font-semibold mb-4">Selected Vehicle Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-gray-600">Registration Number</p>
-                        <p class="font-semibold"><?php echo htmlspecialchars($registration_no); ?></p>
+                
+                <div class="vehicle-details-grid mb-6">
+                    <div class="detail-item">
+                        <div class="label">Registration Number</div>
+                        <div class="value"><?php echo htmlspecialchars($registration_no); ?></div>
                     </div>
-                    <div>
-                        <p class="text-gray-600">Model Name</p>
-                        <p class="font-semibold"><?php echo htmlspecialchars($model_name); ?></p>
+                    
+                    <div class="detail-item">
+                        <div class="label">Model Name</div>
+                        <div class="value"><?php echo htmlspecialchars($model_name); ?></div>
                     </div>
-                    <div>
-                        <p class="text-gray-600">Price Per Day</p>
-                        <p class="font-semibold">KSH <?php echo number_format($vehicle['price_per_day']); ?></p>
+                    
+                    <div class="detail-item">
+                        <div class="label">Price Per Day (Standard)</div>
+                        <div class="value">KSH <?php echo number_format($vehicle['price_per_day']); ?></div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="label">Price Per Day (With AC)</div>
+                        <div class="value">KSH <?php echo number_format($vehicle['ac_price_per_day']); ?></div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="label">Price Per Day (Without AC)</div>
+                        <div class="value">KSH <?php echo number_format($vehicle['non_ac_price_per_day']); ?></div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="label">Price Per KM</div>
+                        <div class="value">KSH <?php echo number_format($vehicle['km_price']); ?></div>
                     </div>
                 </div>
             </div>
@@ -407,7 +559,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    
                     <div class="space-y-6">
                         <div class="form-group">
                             <label class="form-label">End Date</label>
@@ -421,27 +572,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         <div class="form-group">
                             <label class="form-label">Charge Type</label>
-                            <select class="form-control" name="charge_type" required>
+                            <select class="form-control" name="charge_type" id="charge_type" required>
                                 <option value="per_day">Per Day</option>
                                 <option value="per_km">Per KM</option>
                             </select>
                         </div>
+                        
+                        <div class="form-group" id="km_input_container" style="display:none;">
+                            <label class="form-label">Number of Kilometers</label>
+                            <input type="number" class="form-control" name="kilometers" id="kilometers" min="1">
+                        </div>
+                        
                         <input type="hidden" name="fare_hidden" id="fare_hidden" value="0">
                         <input type="hidden" name="deposit_hidden" id="deposit_hidden" value="0">
+                        
                         <div id="driver_details" class="form-group" style="display:none;">
                             <label class="form-label">Select Driver</label>
                             <select class="form-control" name="driver_id">
-                                <?php foreach ($drivers as $driver): ?>
-                                    <option value="<?php echo $driver['driver_id']; ?>">
-                                        <?php echo htmlspecialchars($driver['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php if (empty($drivers)): ?>
+                                    <option value="">No drivers available</option>
+                                <?php else: ?>
+                                    <?php foreach ($drivers as $driver): ?>
+                                        <option value="<?php echo $driver['driver_id']; ?>">
+                                            <?php echo htmlspecialchars($driver['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     <div class="fare-card">
                         <h3 class="text-xl font-semibold mb-2">Total Fare</h3>
@@ -461,7 +622,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    
     <footer class="bg-white py-6 mt-12">
         <div class="container mx-auto text-center text-gray-600">
             <p>&copy; <?php echo date("Y"); ?> Online Car Rentals. All rights reserved. Designed by Eston Kiama</p>
@@ -472,36 +632,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     function calculateAndDisplayFare() {
         const startDate = new Date(document.getElementById('start_date').value);
         const endDate = new Date(document.getElementById('end_date').value);
-        const pricePerDay = <?php echo $vehicle['price_per_day']; ?>;
-        const driverOption = document.getElementById('driver_option').value;
         const carType = document.getElementById('car_type').value;
+        const driverOption = document.getElementById('driver_option').value;
+        const chargeType = document.getElementById('charge_type').value;
+        const kilometersInput = document.getElementById('kilometers');
+        
+       
+        let basePrice = 0;
+        if (chargeType === 'per_day') {
+            if (carType === 'With AC') {
+                basePrice = <?php echo floatval($vehicle['ac_price_per_day']); ?>;
+            } else {
+                basePrice = <?php echo floatval($vehicle['non_ac_price_per_day']); ?>;
+            }
+        } else {
+            basePrice = <?php echo floatval($vehicle['km_price']); ?>;
+        }
+        
+        
+        const detailItems = document.querySelectorAll('.detail-item');
+        detailItems.forEach(item => item.classList.remove('bg-blue-50'));
+        
+        if (chargeType === 'per_day') {
+            if (carType === 'With AC') {
+                detailItems[3].classList.add('bg-blue-50'); 
+            } else {
+                detailItems[4].classList.add('bg-blue-50'); 
+            }
+        } else {
+            detailItems[5].classList.add('bg-blue-50'); 
+        }
         
         if (startDate && endDate && startDate < endDate) {
             const timeDiff = endDate - startDate;
             const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            const driverCost = driverOption === 'yes' ? 2000 : 0; 
-            const acCost = carType === 'With AC' ? 500 : 0;
+            const driverCost = driverOption === 'yes' ? 2000 * dayDiff : 0; 
             
-            const chargeType = document.querySelector('select[name="charge_type"]').value;
-            let totalFare;
+            let totalFare = 0;
+            
             if (chargeType === 'per_day') {
-                totalFare = (pricePerDay * dayDiff) + driverCost + (acCost * dayDiff);
+                
+                totalFare = (basePrice * dayDiff) + driverCost;
             } else {
-                const distance = 1; 
-                totalFare = (distance * 2000) + driverCost;
+               
+                const kilometers = parseInt(kilometersInput.value) || 0;
+                if (kilometers > 0) {
+                    totalFare = (basePrice * kilometers) + driverCost;
+                } else {
+                    totalFare = driverCost;
+                }
             }
             
             const deposit = totalFare * 0.7;
             
-           
             document.getElementById('fare_display').textContent = `KSH ${totalFare.toLocaleString()}`;
             document.getElementById('deposit_display').textContent = `KSH ${deposit.toLocaleString()}`;
-            
             
             document.getElementById('fare_hidden').value = totalFare;
             document.getElementById('deposit_hidden').value = deposit;
 
-            
             window.calculatedFare = totalFare;
             window.calculatedDeposit = deposit;
         }
@@ -512,14 +701,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         driverDetails.style.display = document.getElementById('driver_option').value === 'yes' ? 'block' : 'none';
         calculateAndDisplayFare();
     }
+    
+    function toggleKilometerInput() {
+        const kmContainer = document.getElementById('km_input_container');
+        const chargeType = document.getElementById('charge_type').value;
+        
+        kmContainer.style.display = chargeType === 'per_km' ? 'block' : 'none';
+        
+        if (chargeType === 'per_km') {
+            document.getElementById('kilometers').setAttribute('required', 'required');
+        } else {
+            document.getElementById('kilometers').removeAttribute('required');
+        }
+        
+        calculateAndDisplayFare();
+    }
 
     function validateAndSubmit() {
         const startDate = new Date(document.getElementById('start_date').value);
         const endDate = new Date(document.getElementById('end_date').value);
+        const chargeType = document.getElementById('charge_type').value;
         
         if (endDate <= startDate) {
             alert("End date must be after start date.");
             return false;
+        }
+        
+        if (chargeType === 'per_km') {
+            const kilometers = parseInt(document.getElementById('kilometers').value) || 0;
+            if (kilometers <= 0) {
+                alert("Please enter a valid number of kilometers.");
+                return false;
+            }
         }
         
         calculateAndDisplayFare();
@@ -535,16 +748,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return true;
     }
 
+   
     document.getElementById('start_date').addEventListener('change', calculateAndDisplayFare);
     document.getElementById('end_date').addEventListener('change', calculateAndDisplayFare);
     document.getElementById('car_type').addEventListener('change', calculateAndDisplayFare);
-    document.getElementById('driver_option').addEventListener('change', function() {
+    document.getElementById('driver_option').addEventListener('change', toggleDriverOptions);
+    document.getElementById('charge_type').addEventListener('change', toggleKilometerInput);
+    document.getElementById('kilometers').addEventListener('input', calculateAndDisplayFare);
+    
+   
+    window.addEventListener('load', function() {
         toggleDriverOptions();
+        toggleKilometerInput();
         calculateAndDisplayFare();
+        
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start_date').min = today;
+        document.getElementById('end_date').min = today;
     });
-    document.querySelector('select[name="charge_type"]').addEventListener('change', calculateAndDisplayFare);
-
-    window.addEventListener('load', calculateAndDisplayFare);
 </script>
 </body>
 </html>

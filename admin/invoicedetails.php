@@ -7,17 +7,8 @@ if ($invoice_id == 0) {
 }
 
 $sql = "SELECT b.booking_id, b.created_at, b.total_fare, b.vehicle_id, b.driver_option, 
+            b.invoice_number, b.start_date, b.end_date,
             c.full_name, c.email, c.mobile, c.residence,
-            CONCAT(
-                'INV-', 
-                DATE_FORMAT(b.created_at, '%Y%m%d'), 
-                '-', 
-                WEEK(b.created_at), 
-                '-', 
-                UNIX_TIMESTAMP(b.created_at),
-                '-', 
-                LPAD(FLOOR(RAND() * 1000000), 6, '0')
-            ) AS invoice_number,
             v.model_name, v.registration_no,
             IF(b.driver_option = 'yes', d.name, NULL) AS driver_name,
             IF(b.driver_option = 'yes', d.contact_no, NULL) AS driver_phone
@@ -49,7 +40,6 @@ $invoice = $result->fetch_assoc();
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script>
-        
         window.addEventListener("beforeunload", function (event) {
             var message = "Are you sure you want to leave this page? You might lose your changes.";
             event.returnValue = message; 
@@ -80,6 +70,7 @@ $invoice = $result->fetch_assoc();
                 <p><strong>Customer Mobile:</strong> <?php echo htmlspecialchars($invoice['mobile']); ?></p>
                 <p><strong>Customer Residence:</strong> <?php echo htmlspecialchars($invoice['residence']); ?></p>
                 <p><strong>Booking Date:</strong> <?php echo date('F d, Y', strtotime($invoice['created_at'])); ?></p>
+                <p><strong>Rental Period:</strong> <?php echo date('F d, Y', strtotime($invoice['start_date'])); ?> to <?php echo date('F d, Y', strtotime($invoice['end_date'])); ?></p>
                 <p><strong>Total Fare:</strong> KSH <?php echo number_format($invoice['total_fare'], 2); ?></p>
             </div>
 
@@ -87,20 +78,22 @@ $invoice = $result->fetch_assoc();
                 <h2 class="text-xl font-semibold text-gray-800">Vehicle Information</h2>
                 <p><strong>Model Name:</strong> <?php echo htmlspecialchars($invoice['model_name']); ?></p>
                 <p><strong>Registration No:</strong> <?php echo htmlspecialchars($invoice['registration_no']); ?></p>
-                
             </div>
 
             <div class="mb-4">
                 <h2 class="text-xl font-semibold text-gray-800">Driver Information</h2>
-                <?php if ($invoice['driver_name'] && $invoice['driver_phone']) { ?>
+                <?php if ($invoice['driver_option'] == 'yes' && $invoice['driver_name'] && $invoice['driver_phone']) { ?>
                     <p><strong>Driver Name:</strong> <?php echo htmlspecialchars($invoice['driver_name']); ?></p>
                     <p><strong>Driver Phone:</strong> <?php echo htmlspecialchars($invoice['driver_phone']); ?></p>
                 <?php } else { ?>
-                    <p><strong>Driver Information:</strong> Not Assigned</p>
+                    <p><strong>Driver Option:</strong> No driver requested</p>
                 <?php } ?>
             </div>
 
-            <a href="invoices.php" class="text-blue-600 hover:underline">Back to All Invoices</a>
+            <div class="mt-8 flex space-x-4">
+                <a href="invoices.php" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Back to All Invoices</a>
+                <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Print Invoice</button>
+            </div>
         </div>
     </div>
 </body>

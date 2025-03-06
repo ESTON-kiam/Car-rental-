@@ -1,22 +1,39 @@
 <?php
 require 'include/db_connection.php';
 
+
 if (isset($_GET['delete_invoice_id'])) {
- 
+    $delete_id = intval($_GET['delete_invoice_id']);
+    
+    
+    $conn->begin_transaction();
+    
+    try {
+        
+        $delete_sql = "DELETE FROM bookings WHERE booking_id = ?";
+        $stmt = $conn->prepare($delete_sql);
+        $stmt->bind_param("i", $delete_id);
+        $result = $stmt->execute();
+        
+        if ($result) {
+            $conn->commit();
+            $_SESSION['success_message'] = "Invoice deleted successfully.";
+        } else {
+            throw new Exception("Failed to delete invoice.");
+        }
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['error_message'] = "Error: " . $e->getMessage();
+    }
+    
+    
+    header("Location: invoices.php");
+    exit();
 }
 
-$sql = "SELECT b.booking_id, b.created_at, b.total_fare, 
-            c.full_name, c.email, c.mobile, c.residence,
-            CONCAT(
-                'INV-', 
-                DATE_FORMAT(b.created_at, '%Y%m%d'), 
-                '-', 
-                WEEK(b.created_at), 
-                '-', 
-                UNIX_TIMESTAMP(b.created_at),
-                '-', 
-                LPAD(FLOOR(RAND() * 1000000), 6, '0')
-            ) AS invoice_number
+
+$sql = "SELECT b.booking_id, b.created_at, b.total_fare, b.invoice_number, 
+            c.full_name, c.email, c.mobile, c.residence
         FROM bookings b
         JOIN customers c ON b.customer_id = c.id
         ORDER BY b.created_at DESC";
@@ -97,7 +114,7 @@ $result = $conn->query($sql);
                             <td class="px-4 py-2">KSH <?php echo number_format($invoice['total_fare'], 2); ?></td>
                             <td class="px-4 py-2">
                                 <a href="invoicedetails.php?invoice_id=<?php echo $invoice['booking_id']; ?>" class="text-blue-600 hover:underline">View</a> |
-                                <a href="?delete_invoice_id=<?php echo $invoice['booking_id']; ?>" class="text-red-600 hover:underline" onclick="return confirm('Are you sure you want to delete this invoice?');">Delete</a>
+                                <!--<a href="?delete_invoice_id=<?php echo $invoice['booking_id']; ?>" class="text-red-600 hover:underline" onclick="return confirm('Are you sure you want to delete this invoice?');">Delete</a>-->
                             </td>
                         </tr>
                         <?php endwhile; ?>
