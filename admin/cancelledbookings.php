@@ -18,60 +18,7 @@ $result = $conn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cancelled Bookings-Admin Panel</title>
     <link rel="stylesheet" href="styles.css"> 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-        .main-content {
-    position: relative;
-    z-index: 1;
-}
-.navbar { background: #1e293b; 
-    padding: 1rem 2rem;
-     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-       position: fixed;
-        width: 100%;
-         top: 0;
-          z-index: 1000; } .navbar-brand { color: white;
-             font-size: 1.5rem;
-              font-weight: 700; 
-              text-decoration: none; 
-              text-transform: uppercase; 
-              letter-spacing: 0.5px; }
-.container {
-    position: relative;
-    z-index: 2;
-    
-}
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/cancelledbookings.css">
 </head>
 <body>
 <nav class="navbar">
