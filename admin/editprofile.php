@@ -121,7 +121,7 @@ $profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Edit Profile</title>
+    <title>Admin Edit Profile-Admin Panel<</title>
     <style>
         body {
             font-family: Arial, sans-serif;
