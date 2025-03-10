@@ -162,10 +162,11 @@ $conn->close();
                 </a>
             </div>
             <div class="nav-item">
-                <a href="stk_payment.php" class="nav-link">
-                    <i class="fas fa-mobile-alt"></i>
-                    <span>STK Payment</span>
-                </a>
+            <a href="bookingconfrimation.php#makePaymentBtn" class="nav-link">
+    <i class="fas fa-mobile-alt"></i>
+    <span>STK Payment</span>
+</a>
+
             </div>
             <div class="nav-item">
                 <a href="support.php" class="nav-link">

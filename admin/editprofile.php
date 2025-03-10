@@ -49,9 +49,9 @@ try {
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-        $contact_no = filter_input(INPUT_POST, 'contact_no', FILTER_SANITIZE_STRING);
-        $gender = filter_input(INPUT_POST, 'gender', FILTER_SANITIZE_STRING);
+        $name = filter_input(INPUT_POST, 'name');
+        $contact_no = filter_input(INPUT_POST, 'contact_no');
+        $gender = filter_input(INPUT_POST, 'gender');
 
         
         $profile_picture = $admin['profile_picture']; 

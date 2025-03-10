@@ -29,15 +29,15 @@ try {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
    
-    $full_name = trim(filter_var($_POST['first'], FILTER_SANITIZE_STRING));
-    $email = trim(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL));
+    $full_name = trim(filter_var($_POST['first']));
+    $email = trim(filter_var($_POST['email']));
     $password = trim($_POST['password']);
     $repassword = trim($_POST['repassword']);
-    $mobile = trim(filter_var($_POST['mobile'], FILTER_SANITIZE_STRING));
-    $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
+    $mobile = trim(filter_var($_POST['mobile']));
+    $gender = filter_var($_POST['gender']);
     $dob = $_POST['dob'];
-    $occupation = trim(filter_var($_POST['occupation'], FILTER_SANITIZE_STRING));
-    $residence = trim(filter_var($_POST['residence'], FILTER_SANITIZE_STRING));
+    $occupation = trim(filter_var($_POST['occupation']));
+    $residence = trim(filter_var($_POST['residence']));
 
     
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

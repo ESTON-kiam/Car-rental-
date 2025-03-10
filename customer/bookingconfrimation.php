@@ -291,8 +291,8 @@ $balance = $total_fare - $deposit;
                 </div>
             </div>
 
-            <div class="mt-6 text-center no-print">
-                <a href="make_payment.php?booking_id=<?php echo $booking['booking_id']; ?>" 
+            <div class="mt-6 text-center no-print" id="makePaymentBtn">
+                <a href="mpesa_payment.php?booking_id=<?php echo $booking['booking_id']; ?>" 
                    class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition duration-200">
                     Make Payment
                 </a>
