@@ -5,7 +5,7 @@ ini_set('display_errors', '1');
 
 session_name('driver_session');
 session_set_cookie_params([
-    'lifetime' => 1800,
+    'lifetime' => 3600,
     'path' => '/',
     'domain' => '',
     'secure' => true,
