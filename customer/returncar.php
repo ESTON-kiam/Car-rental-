@@ -92,12 +92,19 @@ function returnVehicle($conn, $booking_id, $customer_id, $additional_details = [
         }
 
        
-        $rows_affected = $update_vehicle_stmt->affected_rows;
-        if ($rows_affected == 0) {
-            error_log("Vehicle update didn't affect any rows. Vehicle ID: $vehicle_id");
-            throw new Exception("Vehicle update didn't affect any rows");
-        }
-        
+        $update_vehicle_query = "UPDATE vehicles 
+        SET availability_status = 'available' 
+        WHERE vehicle_id = ?";
+$update_vehicle_stmt = $conn->prepare($update_vehicle_query);
+$update_vehicle_stmt->bind_param("i", $vehicle_id);
+$vehicle_update_result = $update_vehicle_stmt->execute();
+
+if (!$vehicle_update_result) {
+error_log("Failed to update vehicle availability: " . $conn->error);
+throw new Exception("Vehicle availability update failed: " . $conn->error);
+}
+
+
       
         $check_vehicle_query = "SELECT availability_status FROM vehicles WHERE vehicle_id = ?";
         $check_vehicle_stmt = $conn->prepare($check_vehicle_query);

@@ -13,7 +13,7 @@ if (!$result) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer List -Admin Panel<</title>
+    <title>Customer List -Admin Panel</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,17 +29,34 @@ if (!$result) {
         .delete-button, .edit-button { padding: 8px 12px; border-radius: 4px; cursor: pointer; }
         .delete-button { color: red; background-color: #f8d7da; border: 1px solid red; }
         .edit-button { color: green; background-color: #d4edda; border: 1px solid green; }
+        .navbar { background: #1e293b; 
+    padding: 1rem 2rem;
+     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+       position: fixed;
+        width: 100%;
+         top: 0;
+          z-index: 1000; } .navbar-brand { color: white;
+             font-size: 1.5rem;
+              font-weight: 700; 
+              text-decoration: none; 
+              text-transform: uppercase; 
+              letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
+<nav class="navbar">
+    
+    <a href="dashboard.php" class="navbar-brand">
+     <i class="fas fa-car"></i><b>
+             Online Car Rental Admin Panel</b></a>       
+ </nav>
+    <?php include'include/sidebar.php' ?>
+    <main class="main-content">
 
-<header style="background-color: #333; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-    <h1 style="color: white; margin: 0; font-size: 24px;">Car Collection</h1>
-    <nav style="display: flex; gap: 20px;">
-        <a href="dashboard.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Dashboard</a>
-        
-    </nav>
-</header>
+
 
 <h2>Customer List</h2>
 
@@ -81,7 +98,7 @@ if (!$result) {
         <?php endif; ?>
     </tbody>
 </table>
-
+    </main>
 <?php 
 $conn->close(); 
 ?>

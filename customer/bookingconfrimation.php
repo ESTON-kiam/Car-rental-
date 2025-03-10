@@ -4,7 +4,7 @@ require_once 'include/db_connection.php';
 
 $customer_id = $_SESSION['customer_id'];
 
-// Modified SQL to fetch the stored invoice_number
+
 $sql = "SELECT b.*, c.full_name, c.email, c.mobile, c.residence
         FROM bookings b
         JOIN customers c ON b.customer_id = c.id
@@ -23,9 +23,9 @@ if ($result->num_rows === 0) {
 
 $booking = $result->fetch_assoc();
 
-// Check if the invoice number exists, if not, generate and save it
+
 if (empty($booking['invoice_number'])) {
-    // Generate invoice number
+ 
     $invoice_number = 'INV-' . 
                       date('Ymd', strtotime($booking['created_at'])) . 
                       '-' . 
@@ -33,13 +33,13 @@ if (empty($booking['invoice_number'])) {
                       '-' . 
                       substr(md5($booking['booking_id'] . $booking['customer_id'] . $booking['created_at']), 0, 6);
     
-    // Save to database
+   
     $update_sql = "UPDATE bookings SET invoice_number = ? WHERE booking_id = ?";
     $update_stmt = $conn->prepare($update_sql);
     $update_stmt->bind_param("si", $invoice_number, $booking['booking_id']);
     $update_stmt->execute();
     
-    // Update the booking array
+    
     $booking['invoice_number'] = $invoice_number;
 }
 

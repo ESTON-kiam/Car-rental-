@@ -1,21 +1,6 @@
 <?php
 
-session_name('customer_session');
-session_set_cookie_params([
-    'lifetime' => 1800,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false, 
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-session_start();
-
-
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: http://localhost:8000/customer/"); 
-    exit();
-}
+require 'include/db_connection.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -25,23 +10,6 @@ require 'PHPMailer/PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
 
 
-require 'vendor/autoload.php';
-
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "car_rental_management";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.php");
-    exit();
-}
 
 $customer_id = $_SESSION['customer_id'];
 

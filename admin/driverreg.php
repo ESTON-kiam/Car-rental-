@@ -99,7 +99,7 @@ $conn->close();
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Registration-Admin Panel<</title>
+    <title>Driver Registration-Admin Panel</title>
    <link href="assets/css/driverreg.css" rel="stylesheet">
 </head>
 <body>  <?php include('include/header.php')?>

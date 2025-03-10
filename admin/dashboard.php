@@ -104,7 +104,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Admin dashboard for Online Car Rental system">
-    <title>Admin Dashboard - Admin Panel<</title>
+    <title>Admin Dashboard - Admin Panel</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="preload" href="assets/css/admindash.css" as="style">

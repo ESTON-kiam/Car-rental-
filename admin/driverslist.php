@@ -9,7 +9,7 @@ $result = $conn->query($query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver List - Admin Panel<</title>
+    <title>Driver List - Admin Panel</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,17 +24,34 @@ $result = $conn->query($query);
         h2 { color: #333; text-align: center; }
         .delete-button { color: red; text-decoration: none; padding: 8px 12px; border: 1px solid red; border-radius: 4px; background-color: #f8d7da; cursor: pointer; }
         .driver-image { width: 50px; height: auto; } 
+        .navbar { background: #1e293b; 
+    padding: 1rem 2rem;
+     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+       position: fixed;
+        width: 100%;
+         top: 0;
+          z-index: 1000; } .navbar-brand { color: white;
+             font-size: 1.5rem;
+              font-weight: 700; 
+              text-decoration: none; 
+              text-transform: uppercase; 
+              letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
-<header style="background-color: #333; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-    <h1 style="color: white; margin: 0; font-size: 24px;">Driver Management</h1>
-    <nav style="display: flex; gap: 20px;">
-        <a href="dashboard.php" style="color: white; text-decoration: none; padding: 8px 16px; background-color: #444; border-radius: 4px; transition: background-color 0.3s;">Dashboard</a>
-       
-    </nav>
-</header>
+
+<nav class="navbar">
+    
+    <a href="dashboard.php" class="navbar-brand">
+     <i class="fas fa-car"></i><b>
+             Online Car Rental Admin Panel</b></a>       
+ </nav>
+    <?php include'include/sidebar.php' ?>
+    <main class="main-content">
 
 <h2>Driver List</h2>
 <table>
@@ -76,7 +93,7 @@ $result = $conn->query($query);
         <?php endif; ?>
     </tbody>
 </table>
-
+    </main>
 <?php $conn->close(); ?>
 </body>
 </html>

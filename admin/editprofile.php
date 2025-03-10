@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 
 session_name('admin_session');
 session_set_cookie_params([
-    'lifetime' => 1800,
+    'lifetime' => 3600,
     'path' => '/',
     'domain' => '',
     'secure' => true, 
@@ -121,7 +121,7 @@ $profile_picture = htmlspecialchars($admin['profile_picture'] ?? '');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Edit Profile-Admin Panel<</title>
+    <title>Admin Edit Profile-Admin Panel</title>
     <style>
         body {
             font-family: Arial, sans-serif;

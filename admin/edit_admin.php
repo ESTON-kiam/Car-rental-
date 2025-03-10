@@ -74,7 +74,7 @@ if ($admin_id > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Admin-Admin Panel<</title>
+    <title>Edit Admin-Admin Panel</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     

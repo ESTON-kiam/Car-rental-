@@ -81,7 +81,7 @@ mysqli_close($conn);
     <meta charset="UTF-8">
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
-    <title>Edit Driver Availability-Admin Panel<</title>
+    <title>Edit Driver Availability-Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <style>
         .wrapper{

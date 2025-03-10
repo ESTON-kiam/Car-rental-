@@ -3,7 +3,7 @@ require_once 'include/db_connection.php';
 
 $customer_id = $_SESSION['customer_id'];
 
-$sql_history = "SELECT b.booking_id, b.booking_date, b.vehicle_id, v.model_name AS car, b.booking_status
+$sql_history = "SELECT b.booking_id, b.booking_date,b.invoice_number, b.vehicle_id, v.model_name AS car, b.booking_status
                 FROM bookings b 
                 INNER JOIN vehicles v ON b.vehicle_id = v.vehicle_id
                 WHERE b.customer_id = ? ORDER BY b.booking_date DESC";
@@ -119,7 +119,7 @@ $result_paginated_history = $stmt_paginated_history->get_result();
         <div class="card-body">
             <table class="table table-striped table-bordered">
                 <thead>
-                    <tr>
+                    <tr><th>Invoice</th>
                         <th>Booking ID</th>
                         <th>Vehicle</th>
                         <th>Booking Date</th>
@@ -130,6 +130,7 @@ $result_paginated_history = $stmt_paginated_history->get_result();
                     <?php if ($result_paginated_history->num_rows > 0): ?>
                         <?php while ($row = $result_paginated_history->fetch_assoc()): ?>
                             <tr>
+                                <td><?php echo $row['invoice_number']; ?></td>
                                 <td><?php echo $row['booking_id']; ?></td>
                                 <td><?php echo $row['car']; ?></td>
                                 <td><?php echo date('F j, Y', strtotime($row['booking_date'])); ?></td>
@@ -170,5 +171,3 @@ $result_paginated_history = $stmt_paginated_history->get_result();
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
-
-

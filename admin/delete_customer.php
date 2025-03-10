@@ -1,10 +1,10 @@
 <?php
 session_name('admin_session');
-session_set_cookie_params(1800); 
+session_set_cookie_params(3600); 
 session_start();
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: Admin_login.php");
+    header("Location: index.php");
     exit();
 }
 

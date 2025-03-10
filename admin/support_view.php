@@ -98,7 +98,7 @@ function generateChatbotResponse($message) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Support View-Admin Panel<</title>
+    <title>Admin Support View-Admin Panel</title>
     <link href="assets/img/p.png" rel="icon">
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
