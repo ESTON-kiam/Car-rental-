@@ -2,22 +2,24 @@
 require_once 'include/db_connection.php';
 require_once 'MpesaPaymentController.php';
 
-// Initialize variables
+
 $errorMsg = '';
 $successMsg = '';
 $showPaymentForm = true;
-$showSuccessPage = false;
+$showStatusPage = false;
 $bookingDetails = null;
 $bookingId = 0;
+$paymentStatus = '';
 
-// Check if booking ID is provided
+
+
 if(!isset($_GET['booking_id']) || empty($_GET['booking_id'])) {
     $errorMsg = 'Invalid booking reference.';
     $showPaymentForm = false;
 } else {
     $bookingId = intval($_GET['booking_id']);
     
-    // Get booking details
+    
     $stmt = $conn->prepare("SELECT * FROM bookings WHERE booking_id = ?");
     $stmt->bind_param("i", $bookingId);
     $stmt->execute();
@@ -33,10 +35,10 @@ if(!isset($_GET['booking_id']) || empty($_GET['booking_id'])) {
     $stmt->close();
 }
 
-// Initialize payment controller
+
 $mpesaPayment = new MpesaPaymentController($conn);
 
-// Handle payment form submission
+
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
     $phoneNumber = $_POST['phone_number'];
     $paymentType = $_POST['payment_type'];
@@ -45,7 +47,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
     if(empty($phoneNumber)) {
         $errorMsg = 'Please enter your M-Pesa phone number.';
     } else {
-        // Determine amount based on payment type
+       
         switch($paymentType) {
             case 'deposit':
                 $amount = $bookingDetails['advance_deposit'];
@@ -65,12 +67,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
         }
         
         if(empty($errorMsg)) {
-            // Initiate payment
+            
             $response = $mpesaPayment->initiatePayment($bookingId, $phoneNumber, $amount, $paymentType);
             
             if($response['success']) {
-                // Store payment ID in session
+                
                 $_SESSION['current_payment_id'] = $response['payment_id'];
+                $_SESSION['payment_start_time'] = time();
+                $_SESSION['payment_type'] = $paymentType;
+                $_SESSION['payment_amount'] = $amount;
+                
                 $successMsg = $response['message'];
                 $showPaymentForm = false;
             } else {
@@ -80,37 +86,59 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
     }
 }
 
-// Check current payment status
+
 if(isset($_SESSION['current_payment_id'])) {
     $paymentId = $_SESSION['current_payment_id'];
     $paymentStatus = $mpesaPayment->checkPaymentStatus($paymentId);
+    $currentTime = time();
+    $startTime = $_SESSION['payment_start_time'] ?? $currentTime;
+    $elapsedTime = $currentTime - $startTime;
+    
+    
+    $hasTimedOut = $elapsedTime > 120;
     
     if($paymentStatus == 'completed') {
-        $showSuccessPage = true;
+        $showStatusPage = true;
         $showPaymentForm = false;
         $successMsg = 'Payment completed successfully!';
         
         unset($_SESSION['current_payment_id']);
+        unset($_SESSION['payment_start_time']);
     } elseif($paymentStatus == 'failed') {
+        $showStatusPage = true;
+        $showPaymentForm = false;
         $errorMsg = 'Payment failed. Please try again.';
         
         unset($_SESSION['current_payment_id']);
-    } elseif($paymentStatus == 'canceled') {
+        unset($_SESSION['payment_start_time']);
+    } elseif($paymentStatus == 'cancelled') {
+        $showStatusPage = true;
+        $showPaymentForm = false;
         $errorMsg = 'Payment was canceled.';
         
         unset($_SESSION['current_payment_id']);
+        unset($_SESSION['payment_start_time']);
+    } elseif($hasTimedOut) {
+        $showStatusPage = true;
+        $showPaymentForm = false;
+        $errorMsg = 'Payment verification timed out. Please check your M-Pesa account to see if payment was processed and try refreshing this page.';
+        
+        
     }
 }
 
-// Handle payment cancellation
+
 if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
     $paymentId = $_SESSION['current_payment_id'];
     $response = $mpesaPayment->cancelPayment($paymentId);
     
     if($response['success']) {
         $errorMsg = $response['message'];
-       
+        $showStatusPage = true;
+        $showPaymentForm = false;
+        
         unset($_SESSION['current_payment_id']);
+        unset($_SESSION['payment_start_time']);
     }
 }
 ?>
@@ -137,6 +165,8 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
             --dark-gray: #6c757d;
             --white: #ffffff;
             --shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
         }
         
         body {
@@ -179,14 +209,12 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
             padding: 30px;
         }
         
-        .success-container {
+        .status-container {
             text-align: center;
             padding: 40px 20px;
         }
         
-        .success-icon {
-            background-color: var(--primary-color);
-            color: white;
+        .status-icon {
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -195,6 +223,21 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
             justify-content: center;
             font-size: 50px;
             margin: 0 auto 30px;
+        }
+        
+        .status-icon.success {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .status-icon.failed {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .status-icon.warning {
+            background-color: var(--warning-color);
+            color: white;
         }
         
         .booking-details {
@@ -315,6 +358,12 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
             font-weight: 500;
         }
         
+        .timer-text {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
         .total-amount {
             background-color: var(--primary-color);
             color: white;
@@ -332,6 +381,13 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
         .mpesa-logo {
             text-align: center;
             margin-bottom: 20px;
+        }
+        
+        .payment-details {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
         }
         
         @media (max-width: 768px) {
@@ -356,21 +412,70 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
 </head>
 <body>
     <div class="container">
-        <?php if($showSuccessPage): ?>
+        <?php if($showStatusPage): ?>
             <div class="payment-container">
                 <div class="payment-header">
                     <h2>Payment Status</h2>
                 </div>
                 <div class="payment-body">
-                    <div class="success-container">
-                        <div class="success-icon">
-                            <i class="fas fa-check"></i>
+                    <div class="status-container">
+                        <?php if($paymentStatus == 'completed'): ?>
+                            <div class="status-icon success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h2 class="mb-4">Payment Successful!</h2>
+                            <p class="mb-4">Your booking has been confirmed. Thank you for your payment.</p>
+                            
+                            <?php if(isset($_SESSION['payment_type']) && isset($_SESSION['payment_amount'])): ?>
+                            <div class="payment-details">
+                                <div class="booking-item">
+                                    <span class="booking-label">Payment Type:</span>
+                                    <span class="booking-value"><?php echo ucfirst(str_replace('_', ' ', $_SESSION['payment_type'])); ?></span>
+                                </div>
+                                <div class="booking-item">
+                                    <span class="booking-label">Amount Paid:</span>
+                                    <span class="booking-value">KSh <?php echo number_format($_SESSION['payment_amount'], 2); ?></span>
+                                </div>
+                                <div class="booking-item">
+                                    <span class="booking-label">Transaction Date:</span>
+                                    <span class="booking-value"><?php echo date('d M Y, h:i A'); ?></span>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            
+                        <?php elseif($paymentStatus == 'failed'): ?>
+                            <div class="status-icon failed">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <h2 class="mb-4">Payment Failed</h2>
+                            <p class="mb-4">We couldn't process your payment. Please try again.</p>
+                            
+                        <?php elseif($paymentStatus == 'cancelled'): ?>
+                            <div class="status-icon warning">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <h2 class="mb-4">Payment Cancelled</h2>
+                            <p class="mb-4">Your payment request was cancelled.</p>
+                            
+                        <?php else: ?>
+                            <div class="status-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h2 class="mb-4">Payment Status Unknown</h2>
+                            <p class="mb-4"><?php echo $errorMsg; ?></p>
+                            
+                        <?php endif; ?>
+                        
+                        <div class="payment-actions">
+                            <a href="dashboard.php" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Go to Dashboard
+                            </a>
+                            <?php if($paymentStatus != 'completed'): ?>
+                            <a href="payment.php?booking_id=<?php echo $bookingId; ?>" class="btn btn-secondary">
+                                <i class="fas fa-redo me-2"></i>Try Again
+                            </a>
+                            <?php endif; ?>
                         </div>
-                        <h2 class="mb-4">Payment Successful!</h2>
-                        <p class="mb-4">Your booking has been confirmed. Thank you for your payment.</p>
-                        <a href="dashboard.php" class="btn btn-primary">
-                            <i class="fas fa-home me-2"></i>Go to Dashboard
-                        </a>
                     </div>
                 </div>
             </div>
@@ -395,6 +500,9 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                             <p class="waiting-text">Waiting for payment confirmation...</p>
+                            <p class="timer-text">
+                                <span id="timer-count">120</span> seconds remaining before timeout
+                            </p>
                             <div class="mt-4">
                                 <a href="payment.php?booking_id=<?php echo $bookingId; ?>&cancel=1" class="btn btn-danger">
                                     <i class="fas fa-times me-2"></i>Cancel Payment
@@ -402,9 +510,25 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                             </div>
                         </div>
                         <script>
-                            // Reload the page every 5 seconds to check payment status
-                            setInterval(function() {
-                                location.reload();
+                           
+                            var timeLeft = 120;
+                            var timer = setInterval(function() {
+                                timeLeft--;
+                                document.getElementById('timer-count').textContent = timeLeft;
+                                
+                                if(timeLeft <= 0) {
+                                    clearInterval(timer);
+                                    location.reload();
+                                }
+                            }, 1000);
+                            
+                        
+                            var checkStatus = setInterval(function() {
+                                if(timeLeft <= 0) {
+                                    clearInterval(checkStatus);
+                                } else {
+                                    location.reload();
+                                }
                             }, 5000);
                         </script>
                     <?php endif; ?>
@@ -479,7 +603,7 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                                 <h4 id="selected-amount">
                                     KSh 
                                     <?php 
-                                    // Default to the first available option
+                                    
                                     if($bookingDetails['booking_status'] == 'pending') {
                                         echo number_format($bookingDetails['advance_deposit'], 2);
                                     } elseif($bookingDetails['due_payment'] > 0) {
@@ -502,7 +626,7 @@ if(isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                                 </a>
                             </div>
                         </form>
-                    <?php elseif(!$showSuccessPage): ?>
+                    <?php elseif(!$showStatusPage): ?>
                         <div class="text-center mt-4">
                             <a href="dashboard.php" class="btn btn-primary">
                                 <i class="fas fa-home me-2"></i>Back to Dashboard
