@@ -233,16 +233,7 @@ function test_input($data) {
     <link href="assets/img/p.png" rel="apple-touch-icon">
     <title>Employee Registration - Car Rental Management</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .error {
-            color: red;
-            font-size: 14px;
-        }
-        .required-field::after {
-            content: " *";
-            color: red;
-        }
-    </style>
+   <link href="assets/css/addemplo.css" rel="stylesheet">
 </head>
 <body>
     <?php include 'include/header.php'; ?>

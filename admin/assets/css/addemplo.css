@@ -1,0 +1,9 @@
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+.required-field::after {
+    content: " *";
+    color: red;
+}
