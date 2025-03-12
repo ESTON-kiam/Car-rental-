@@ -1,7 +1,6 @@
 <?php
 require 'include/db_connection.php';
 
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -73,9 +72,124 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->addAddress($email, $name);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Driver Registration Confirmation';
-            $mail->Body    = "Hello $name,<br><br>Your registration as a driver has been successfully completed. Here are your login details:<br><br>Email: $email<br>Password: $password<br><br>Please remember to update your driving license information and upload an image.<br><br>Thank you!";
-            $mail->AltBody = "Hello $name,\n\nYour registration as a driver has been successfully completed. Here are your login details:\n\nEmail: $email\nPassword: $password\n\nPlease remember to update your driving license information and upload an image.\n\nThank you!";
+            $mail->Subject = 'Driver Registration Confirmation - Online Car Rental';
+
+            // Create a more visually appealing HTML email
+            $mail->Body = "
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333333;
+                        max-width: 600px;
+                        margin: 0 auto;
+                    }
+                    .email-container {
+                        border: 1px solid #dddddd;
+                        border-radius: 5px;
+                        padding: 20px;
+                        background-color: #f9f9f9;
+                    }
+                    .header {
+                        background-color: #4a7c59;
+                        color: white;
+                        padding: 15px;
+                        text-align: center;
+                        border-radius: 5px 5px 0 0;
+                        margin: -20px -20px 20px -20px;
+                    }
+                    .content {
+                        padding: 0 15px;
+                    }
+                    .credentials {
+                        background-color: #eef7f2;
+                        border-left: 4px solid #4a7c59;
+                        padding: 10px 15px;
+                        margin: 15px 0;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 12px;
+                        text-align: center;
+                        color: #777777;
+                        border-top: 1px solid #dddddd;
+                        padding-top: 15px;
+                    }
+                    .button {
+                        display: inline-block;
+                        background-color: #4a7c59;
+                        color: white;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin: 15px 0;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='header'>
+                        <h2>Welcome to Online Car Rental</h2>
+                    </div>
+                    <div class='content'>
+                        <p>Hello <strong>$name</strong>,</p>
+                        
+                        <p>Thank you for registering as a driver with our service! Your registration has been successfully completed.</p>
+                        
+                        <div class='credentials'>
+                            <p><strong>Your Login Details:</strong></p>
+                            <p>Email: <strong>$email</strong><br>
+                            Password: <strong>$password</strong></p>
+                        </div>
+                        
+                        <p>For security reasons, we recommend changing your password after your first login.</p>
+                        
+                        <p>Your driver license number is: <strong>$license_no</strong></p>
+                        
+                        <p>Please ensure that all your information is accurate. If you need to make any changes, you can update your profile after logging in.</p>
+                        
+                        <center><a href='https://yourcarrentalwebsite.com/login' class='button'>Login to Your Account</a></center>
+                        
+                        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+                        
+                        <p>Best regards,<br>
+                        Online Car Rental Team</p>
+                    </div>
+                    <div class='footer'>
+                        <p>This is an automated message. Please do not reply to this email.</p>
+                        <p>&copy; " . date('Y') . " Online Car Rental. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            ";
+
+            // Plain text version for email clients that don't support HTML
+            $mail->AltBody = "Hello $name,
+
+            Thank you for registering as a driver with our service! Your registration has been successfully completed.
+
+            YOUR LOGIN DETAILS:
+            Email: $email
+            Password: $password
+
+            For security reasons, we recommend changing your password after your first login.
+
+            Your driver license number is: $license_no
+
+            Please ensure that all your information is accurate. If you need to make any changes, you can update your profile after logging in.
+
+            To login to your account, please visit: http://localhost:8000/driver/
+
+            If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+            Best regards,
+            Online Car Rental Team
+
+            © " . date('Y') . " Online Car Rental. All rights reserved.";
 
             if ($mail->send()) {
                 echo "<p style='color: green;'>Confirmation email sent to $email!</p>";

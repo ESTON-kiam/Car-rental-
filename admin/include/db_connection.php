@@ -31,7 +31,7 @@ if ($conn->connect_error) {
 }
 
 
-$timeout = 1800; 
+$timeout = 3600; 
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
     session_unset();
     session_destroy();

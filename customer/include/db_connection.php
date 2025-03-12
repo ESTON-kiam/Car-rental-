@@ -25,6 +25,14 @@ $dbname = "car_rental_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+$timeout = 3600; 
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
+    session_unset();
+    session_destroy();
+    header("Location: http://localhost:8000/customer/?timeout=1");
+    exit();
+}
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
