@@ -207,8 +207,7 @@
             left: var(--sidebar-collapsed-width);
         }
 
-        /* Tooltip for collapsed sidebar */
-        .sidebar.collapsed a,
+                .sidebar.collapsed a,
         .sidebar.collapsed button {
             position: relative;
         }
@@ -308,7 +307,7 @@
                     </button>
                     <ul id="staff-menu" class="dropdown">
                         <li><a href="driverreg.php" data-title="Add Driver"><i class="fas fa-id-card"></i><span class="item-text">Add Driver</span></a></li>
-                        <li><a href="add_employee.html" data-title="Add Employee"><i class="fas fa-user-tie"></i><span class="item-text">Add Employee</span></a></li>
+                        <li><a href="add_employee.php" data-title="Add Employee"><i class="fas fa-user-tie"></i><span class="item-text">Add Employee</span></a></li>
                         <li><a href="adminregistration.php" data-title="Add Admin"><i class="fas fa-user-shield"></i><span class="item-text">Add Admin</span></a></li>
                     </ul>
                 </li>
@@ -318,7 +317,7 @@
                     </button>
                     <ul id="list-menu" class="dropdown">
                         <li><a href="customerlist.php" data-title="Customers"><i class="fas fa-users"></i><span class="item-text">Customers</span></a></li>
-                        <li><a href="employeelist.html" data-title="Employees"><i class="fas fa-user-tie"></i><span class="item-text">Employees</span></a></li>
+                        <li><a href="employeelist.php" data-title="Employees"><i class="fas fa-user-tie"></i><span class="item-text">Employees</span></a></li>
                         <li><a href="driverslist.php" data-title="Drivers"><i class="fas fa-id-card"></i><span class="item-text">Drivers</span></a></li>
                         <li><a href="adminlist.php" data-title="Admins"><i class="fas fa-user-shield"></i><span class="item-text">Admins</span></a></li>
                     </ul>
