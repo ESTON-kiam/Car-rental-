@@ -3,7 +3,6 @@ require 'include/db_connection.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
 require 'PHPMailer/PHPMailer/src/Exception.php';
 require 'PHPMailer/PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/PHPMailer/src/SMTP.php';
@@ -13,7 +12,6 @@ require 'vendor/autoload.php';
 $employee_id = $name = $gender = $contact_no = $email = $designation = $date_hired = $address = $emergency_contact = $password = "";
 $employee_idErr = $nameErr = $genderErr = $contactErr = $emailErr = $designationErr = $dateErr = $addressErr = $emergencyErr = $passwordErr = "";
 $success_message = $error_message = "";
-
 
 function generateEmployeeID($conn) {
     $prefix = "EMP";

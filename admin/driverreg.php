@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isHTML(true);
             $mail->Subject = 'Driver Registration Confirmation - Online Car Rental';
 
-            // Create a more visually appealing HTML email
+          
             $mail->Body = "
             <!DOCTYPE html>
             <html>
@@ -132,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <body>
                 <div class='email-container'>
                     <div class='header'>
-                        <h2>Welcome to Online Car Rental</h2>
+                        <h2>Welcome to Car Rental Management System</h2>
                     </div>
                     <div class='content'>
                         <p>Hello <strong>$name</strong>,</p>
@@ -151,7 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <p>Please ensure that all your information is accurate. If you need to make any changes, you can update your profile after logging in.</p>
                         
-                        <center><a href='https://yourcarrentalwebsite.com/login' class='button'>Login to Your Account</a></center>
+                        <center><a href='http://localhost:8000/driver/' class='button'>Login to Your Account</a></center>
                         
                         <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
                         
@@ -167,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </html>
             ";
 
-            // Plain text version for email clients that don't support HTML
+            
             $mail->AltBody = "Hello $name,
 
             Thank you for registering as a driver with our service! Your registration has been successfully completed.

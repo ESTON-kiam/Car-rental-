@@ -1,11 +1,11 @@
 <?php
 require 'include/db_connection.php';
 
-// Handle employee deletion
+
 if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     $employee_id = $_GET['delete'];
     
-    // Check if deletion is confirmed
+  
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete']) && $_POST['confirm_delete'] === 'yes') {
         try {
             $delete_sql = "DELETE FROM employees WHERE employee_id = ?";
@@ -20,7 +20,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
             }
             $stmt->close();
             
-            // Redirect after successful deletion
+           
             header("Location: employeelist.php?deleted=success");
             exit();
         } catch (Exception $e) {
@@ -29,27 +29,26 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     }
 }
 
-// Fetch employees data
+
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $records_per_page = 10;
 $offset = ($current_page - 1) * $records_per_page;
 
-// Count total records
 $sql_count = "SELECT COUNT(*) as total FROM employees";
 $sql = "SELECT * FROM employees";
 
-// Add search conditions if search term exists
+
 if (!empty($search)) {
     $search_term = "%$search%";
     $sql_count .= " WHERE employee_id LIKE ? OR name LIKE ? OR email_address LIKE ? OR designation LIKE ?";
     $sql .= " WHERE employee_id LIKE ? OR name LIKE ? OR email_address LIKE ? OR designation LIKE ?";
 }
 
-// Add pagination
+
 $sql .= " ORDER BY date_hired DESC LIMIT ?, ?";
 
-// Execute count query
+
 if (!empty($search)) {
     $stmt_count = $conn->prepare($sql_count);
     $stmt_count->bind_param("ssss", $search_term, $search_term, $search_term, $search_term);
@@ -68,7 +67,8 @@ $stmt_count->close();
 
 $stmt = $conn->prepare($sql);
 if (!empty($search)) {
-    $stmt->bind_param("sssssii", $search_term, $search_term, $search_term, $search_term, $offset, $records_per_page);
+    $stmt->bind_param("ssssii", $search_term, $search_term, $search_term, $search_term, $offset, $records_per_page);
+
 } else {
     $stmt->bind_param("ii", $offset, $records_per_page);
 }

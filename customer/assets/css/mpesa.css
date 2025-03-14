@@ -1,0 +1,254 @@
+
+:root {
+    --primary-color: #06a54d;
+    --secondary-color: #e02b73;
+    --accent-color: #fbb03c;
+    --text-color: #333;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e9ecef;
+    --dark-gray: #6c757d;
+    --white: #ffffff;
+    --shadow: 0 5px 15px rgba(0,0,0,0.1);
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--white);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.payment-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.payment-header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.payment-body {
+    padding: 30px;
+}
+
+.status-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.status-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    margin: 0 auto 30px;
+}
+
+.status-icon.success {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.status-icon.failed {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.status-icon.warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.booking-details {
+    background-color: var(--light-gray);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.booking-details h5 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.booking-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.booking-item:last-child {
+    border-bottom: none;
+}
+
+.booking-label {
+    font-weight: 500;
+}
+
+.booking-value {
+    font-weight: 600;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-control, .form-select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--medium-gray);
+    margin-bottom: 5px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(6, 165, 77, 0.25);
+}
+
+.form-text {
+    color: var(--dark-gray);
+    font-size: 0.85rem;
+}
+
+.payment-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #058f42;
+    border-color: #058f42;
+}
+
+.btn-secondary {
+    background-color: var(--dark-gray);
+    border-color: var(--dark-gray);
+}
+
+.btn-danger {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-danger:hover {
+    background-color: #c02663;
+    border-color: #c02663;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: var(--primary-color);
+}
+
+.waiting-text {
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.timer-text {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.total-amount {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.total-amount h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.mpesa-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.payment-details {
+    background-color: var(--light-gray);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .payment-body {
+        padding: 20px;
+    }
+    
+    .booking-item {
+        flex-direction: column;
+    }
+    
+    .payment-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
