@@ -7,7 +7,7 @@ class MpesaPaymentController {
     private $consumerSecret = 'agskGrWUs4A9NwazyA6bRhk9fCUm5wDmGfoPA9RQjA5biDaOJckGIAAIkJPFH0uU';
     private $businessShortCode = '174379';
     private $passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
-    private $callbackUrl = 'https://655a-196-250-209-180.ngrok-free.app/callback_url.php';
+    private $callbackUrl = 'https://abcd1234.ngrok.io/customer/mpesa_callback.php';
     private $baseUrl = 'https://sandbox.safaricom.co.ke';
 
 
