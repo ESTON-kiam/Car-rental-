@@ -224,14 +224,18 @@ class MpesaPaymentController {
     $query = "UPDATE mpesa_payments SET $statusField = ?, result_description = ?, updated_at = NOW() WHERE id = ?";
     $stmt = $this->conn->prepare($query);
     if (!$stmt) {
-        logError("Prepare failed: " . $this->conn->error);
+        $this->logError("Prepare failed: " . $this->conn->error);
         return;
     }
     $stmt->bind_param("ssi", $status, $resultDesc, $paymentId);
     if (!$stmt->execute()) {
-        logError("Execute failed: " . $stmt->error);
+        $this->logError("Execute failed: " . $stmt->error);
     }
     $stmt->close();
+}
+
+private function logError($message) {
+    file_put_contents('mpesa_error_log.txt', date('Y-m-d H:i:s') . " - " . $message . PHP_EOL, FILE_APPEND);
 }
 
     public function updateBookingStatus($bookingId, $paymentType) {
