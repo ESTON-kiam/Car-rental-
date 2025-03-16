@@ -7,9 +7,8 @@ class MpesaPaymentController {
     private $consumerSecret = 'agskGrWUs4A9NwazyA6bRhk9fCUm5wDmGfoPA9RQjA5biDaOJckGIAAIkJPFH0uU';
     private $businessShortCode = '174379';
     private $passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
-    private $callbackUrl = 'https://abcd1234.ngrok.io/customer/mpesa_callback.php';
+    private $callbackUrl = 'https://abcd1234.ngrok.io/customer/mpesa_callback.php'; // Replace with your actual Ngrok URL
     private $baseUrl = 'https://sandbox.safaricom.co.ke';
-
 
     public function __construct($conn) {
         $this->conn = $conn;
@@ -221,13 +220,19 @@ class MpesaPaymentController {
     }
 
     private function updatePaymentStatus($paymentId, $paymentType, $status, $resultDesc = '') {
-        $statusField = $paymentType . '_status';
-        $query = "UPDATE mpesa_payments SET $statusField = ?, result_description = ?, updated_at = NOW() WHERE id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ssi", $status, $resultDesc, $paymentId);
-        $stmt->execute();
-        $stmt->close();
+    $statusField = $paymentType . '_status';
+    $query = "UPDATE mpesa_payments SET $statusField = ?, result_description = ?, updated_at = NOW() WHERE id = ?";
+    $stmt = $this->conn->prepare($query);
+    if (!$stmt) {
+        logError("Prepare failed: " . $this->conn->error);
+        return;
     }
+    $stmt->bind_param("ssi", $status, $resultDesc, $paymentId);
+    if (!$stmt->execute()) {
+        logError("Execute failed: " . $stmt->error);
+    }
+    $stmt->close();
+}
 
     public function updateBookingStatus($bookingId, $paymentType) {
         try {

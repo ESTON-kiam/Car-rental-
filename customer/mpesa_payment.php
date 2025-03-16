@@ -1,5 +1,4 @@
 <?php
-
 require_once 'include/db_connection.php';
 require_once 'MpesaPaymentController.php';
 
@@ -10,7 +9,6 @@ $showStatusPage = false;
 $bookingDetails = null;
 $bookingId = 0;
 $paymentStatus = '';
-
 
 if (!isset($_GET['booking_id']) || empty($_GET['booking_id'])) {
     $errorMsg = 'Invalid booking reference.';
@@ -32,7 +30,6 @@ if (!isset($_GET['booking_id']) || empty($_GET['booking_id'])) {
     $stmt->close();
 }
 
-
 $mpesaPayment = new MpesaPaymentController($conn);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
@@ -43,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
     if (empty($phoneNumber)) {
         $errorMsg = 'Please enter your M-Pesa phone number.';
     } else {
-        
         switch ($paymentType) {
             case 'deposit':
                 $amount = $bookingDetails['advance_deposit'];
@@ -63,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
         }
 
         if (empty($errorMsg)) {
-          
             $response = $mpesaPayment->initiatePayment($bookingId, $phoneNumber, $amount, $paymentType);
 
             if ($response['success']) {
@@ -81,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_payment'])) {
     }
 }
 
-
 if (isset($_SESSION['current_payment_id'])) {
     $paymentId = $_SESSION['current_payment_id'];
     $paymentStatus = $mpesaPayment->checkPaymentStatus($paymentId);
@@ -89,7 +83,7 @@ if (isset($_SESSION['current_payment_id'])) {
     $startTime = $_SESSION['payment_start_time'] ?? $currentTime;
     $elapsedTime = $currentTime - $startTime;
 
-    $hasTimedOut = $elapsedTime >30;
+    $hasTimedOut = $elapsedTime > 30;
 
     if ($paymentStatus == 'completed') {
         $showStatusPage = true;
@@ -119,7 +113,6 @@ if (isset($_SESSION['current_payment_id'])) {
     }
 }
 
-
 if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
     $paymentId = $_SESSION['current_payment_id'];
     $response = $mpesaPayment->cancelPayment($paymentId);
@@ -144,12 +137,11 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <link rel="stylesheet" href="assets/css/mpesa.css">
+    <link rel="stylesheet" href="assets/css/mpesa.css">
 </head>
 <body>
     <div class="container">
         <?php if ($showStatusPage): ?>
-            
             <div class="payment-container">
                 <div class="payment-header">
                     <h2>Payment Status</h2>
@@ -195,7 +187,6 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                 </div>
             </div>
         <?php else: ?>
-           
             <div class="payment-container">
                 <div class="payment-header">
                     <h2>M-Pesa Payment</h2>
