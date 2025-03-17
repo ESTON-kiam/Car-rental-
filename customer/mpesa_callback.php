@@ -29,15 +29,7 @@ $checkoutRequestID = $callback->CheckoutRequestID;
 $resultCode = $callback->ResultCode;
 $resultDesc = $callback->ResultDesc;
 
-
 file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Callback Details: MerchantRequestID: $merchantRequestID, CheckoutRequestID: $checkoutRequestID, ResultCode: $resultCode, ResultDesc: $resultDesc" . PHP_EOL, FILE_APPEND);
-
-
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
-if ($conn->connect_error) {
-    logError("Database connection failed: " . $conn->connect_error);
-    exit;
-}
 
 
 storeFullCallback($conn, $callbackJson, $checkoutRequestID, $resultCode, $resultDesc);
@@ -54,79 +46,81 @@ if ($result->num_rows > 0) {
     $paymentType = $payment['payment_type'];
     $stmt->close();
 
-    $mpesaPayment = new MpesaPaymentController($conn);
 
-    if ($resultCode == 0) {
-        $status = 'COMPLETED';
-        $mpesaReceiptNumber = '';
-        $transactionAmount = 0;
-        $phoneNumber = '';
+    $status = 'FAILED';
+    switch ((string)$resultCode) {
+        case '0':
+            $status = 'COMPLETED';
+            break;
+        case '1032':
+            $status = 'CANCELLED';
+            break;
+        case '1037':
+            $status = 'TIMEOUT';
+            break;
+        default:
+            $status = 'FAILED';
+    }
 
-        
-        if (isset($callback->CallbackMetadata) && isset($callback->CallbackMetadata->Item)) {
-            foreach ($callback->CallbackMetadata->Item as $item) {
-                if ($item->Name == "MpesaReceiptNumber" && isset($item->Value)) {
-                    $mpesaReceiptNumber = $item->Value;
-                } elseif ($item->Name == "Amount" && isset($item->Value)) {
-                    $transactionAmount = $item->Value;
-                } elseif ($item->Name == "PhoneNumber" && isset($item->Value)) {
-                    $phoneNumber = $item->Value;
+   
+    $mpesaReceiptNumber = null;
+    $transactionDate = null;
+    $phoneNumber = null;
+    $amount = null;
+
+    if (isset($callback->CallbackMetadata) && isset($callback->CallbackMetadata->Item)) {
+        foreach ($callback->CallbackMetadata->Item as $item) {
+            if ($item->Name == "MpesaReceiptNumber" && isset($item->Value)) {
+                $mpesaReceiptNumber = $item->Value;
+            } elseif ($item->Name == "Amount" && isset($item->Value)) {
+                $amount = $item->Value;
+            } elseif ($item->Name == "PhoneNumber" && isset($item->Value)) {
+                $phoneNumber = $item->Value;
+            } elseif ($item->Name == "TransactionDate" && isset($item->Value)) {
+                $dateStr = (string)$item->Value;
+                if (strlen($dateStr) >= 14) {
+                    $transactionDate = substr($dateStr, 0, 4) . '-' . 
+                                      substr($dateStr, 4, 2) . '-' . 
+                                      substr($dateStr, 6, 2) . ' ' . 
+                                      substr($dateStr, 8, 2) . ':' . 
+                                      substr($dateStr, 10, 2) . ':' . 
+                                      substr($dateStr, 12, 2);
                 }
             }
-        } else {
-            logError("CallbackMetadata missing or invalid for CheckoutRequestID: $checkoutRequestID");
         }
+    }
 
-        
-        file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Payment Successful: MpesaReceiptNumber: $mpesaReceiptNumber, Amount: $transactionAmount, PhoneNumber: $phoneNumber" . PHP_EOL, FILE_APPEND);
+   
+    $stmt = $conn->prepare("UPDATE mpesa_payments SET 
+        result_code = ?,
+        result_description = ?, 
+        mpesa_receipt_number = ?, 
+        transaction_date = ?,
+        updated_at = NOW(),
+        {$paymentType}_status = ?
+        WHERE id = ?");
+    
+    $stmt->bind_param("sssssi", 
+        $resultCode, 
+        $resultDesc, 
+        $mpesaReceiptNumber, 
+        $transactionDate, 
+        $status, 
+        $paymentId
+    );
 
-        
-        $statusField = $paymentType . '_status';
-        $stmt = $conn->prepare("UPDATE mpesa_payments SET 
-            $statusField = ?, 
-            result_description = ?, 
-            mpesa_receipt_number = ?, 
-            transaction_date = NOW(),
-            updated_at = NOW() 
-            WHERE id = ?");
-        $stmt->bind_param("sssi", $status, $resultDesc, $mpesaReceiptNumber, $paymentId);
-
-        if (!$stmt->execute()) {
-            logError("Failed to update payment record: " . $stmt->error);
-        } else {
-            file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Payment record updated successfully for PaymentID: $paymentId" . PHP_EOL, FILE_APPEND);
-        }
-        $stmt->close();
-
-        
-        $mpesaPayment->updateBookingStatus($bookingId, $paymentType);
+    if (!$stmt->execute()) {
+        logError("Failed to update payment record: " . $stmt->error);
     } else {
-        
-        $status = 'FAILED';
-        if ($resultCode == 1032) {
-            $status = 'CANCELLED';
-        } elseif ($resultCode == 1037) {
-            $status = 'TIMEOUT';
-        }
+        file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Payment record updated successfully for PaymentID: $paymentId, PaymentType: $paymentType, Status: $status" . PHP_EOL, FILE_APPEND);
+    }
+    $stmt->close();
 
-        
-        file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Payment Failed: Status: $status, ResultDesc: $resultDesc" . PHP_EOL, FILE_APPEND);
-
-        
-        $statusField = $paymentType . '_status';
-        $stmt = $conn->prepare("UPDATE mpesa_payments SET 
-            $statusField = ?, 
-            result_description = ?, 
-            updated_at = NOW() 
-            WHERE id = ?");
-        $stmt->bind_param("ssi", $status, $resultDesc, $paymentId);
-
-        if (!$stmt->execute()) {
-            logError("Failed to update payment status: " . $stmt->error);
-        } else {
-            file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Payment status updated to $status for PaymentID: $paymentId" . PHP_EOL, FILE_APPEND);
-        }
-        $stmt->close();
+   
+    if ($status == 'COMPLETED') {
+        $mpesaPayment = new MpesaPaymentController($conn);
+        $updateResult = $mpesaPayment->updateBookingStatus($bookingId, $paymentType);
+        file_put_contents('mpesa_callback_log.txt', date('Y-m-d H:i:s') . " - Booking status update result: " . ($updateResult ? "Success" : "Failed") . PHP_EOL, FILE_APPEND);
     }
 
     echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Callback received successfully']);
@@ -143,8 +137,7 @@ function storeFullCallback($conn, $callbackJson, $checkoutRequestID, $resultCode
     $transactionDate = null;
     $phoneNumber = null;
     $amount = null;
-    
-    
+
     if (isset($callbackJson->Body->stkCallback->CallbackMetadata) && 
         isset($callbackJson->Body->stkCallback->CallbackMetadata->Item)) {
             
@@ -156,7 +149,6 @@ function storeFullCallback($conn, $callbackJson, $checkoutRequestID, $resultCode
             } elseif ($item->Name == "PhoneNumber" && isset($item->Value)) {
                 $phoneNumber = $item->Value;
             } elseif ($item->Name == "TransactionDate" && isset($item->Value)) {
-                
                 $dateStr = (string)$item->Value;
                 if (strlen($dateStr) >= 14) {
                     $transactionDate = substr($dateStr, 0, 4) . '-' . 
@@ -169,8 +161,7 @@ function storeFullCallback($conn, $callbackJson, $checkoutRequestID, $resultCode
             }
         }
     }
-    
-    
+
     $fullResponse = json_encode($callbackJson);
     $stmt = $conn->prepare("INSERT INTO mpesa_callbacks 
                            (checkout_request_id, result_code, result_desc, 

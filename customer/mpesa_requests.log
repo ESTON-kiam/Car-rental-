@@ -1,0 +1,45 @@
+[2025-03-17 13:53:37] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025135507552757196660
+[2025-03-17 13:53:39] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025135507552757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 13:54:41] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025135612105757196660
+[2025-03-17 13:54:42] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025135612105757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 13:59:27] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025135612105757196660
+[2025-03-17 13:59:28] [DEBUG] Parsed MPesa Response: {"ResponseCode":"0","ResponseDescription":"The service request has been accepted successsfully","MerchantRequestID":"5fe8-4261-87f6-6d7d41adc6c31612687","CheckoutRequestID":"ws_CO_17032025135612105757196660","ResultCode":"1032","ResultDesc":"Request cancelled by user","ResultMessage":"Transaction cancelled by user"}
+[2025-03-17 13:59:28] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025135612105757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Request cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 13:59:28] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 13:59:28] [ERROR] Error checking payment status: Unknown column 'status' in 'field list'
+[2025-03-17 14:41:05] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025144104665757196660
+[2025-03-17 14:41:07] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025144104665757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 14:41:36] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025144104665757196660
+[2025-03-17 14:41:38] [DEBUG] Parsed MPesa Response: {"ResponseCode":"0","ResponseDescription":"The service request has been accepted successsfully","MerchantRequestID":"836e-40c2-b744-41781ceb557f141168","CheckoutRequestID":"ws_CO_17032025144104665757196660","ResultCode":"1032","ResultDesc":"Request cancelled by user","ResultMessage":"Transaction cancelled by user"}
+[2025-03-17 14:41:38] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025144104665757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Request cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 14:41:38] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 14:41:38] [ERROR] Error checking payment status: Unknown column 'status' in 'field list'
+[2025-03-17 14:41:38] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025144104665757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 14:41:38] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 14:41:38] [ERROR] Error cancelling payment: Unknown column 'status' in 'field list'
+[2025-03-17 14:52:20] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025144104665757196660
+[2025-03-17 14:52:22] [DEBUG] Parsed MPesa Response: {"ResponseCode":"0","ResponseDescription":"The service request has been accepted successsfully","MerchantRequestID":"836e-40c2-b744-41781ceb557f141168","CheckoutRequestID":"ws_CO_17032025144104665757196660","ResultCode":"1032","ResultDesc":"Request cancelled by user","ResultMessage":"Transaction cancelled by user"}
+[2025-03-17 14:52:22] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025144104665757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Request cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 14:52:22] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 14:52:22] [ERROR] Error checking payment status: Unknown column 'status' in 'field list'
+[2025-03-17 14:52:28] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145227891757196660
+[2025-03-17 14:52:29] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025145227891757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 14:53:36] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145335622757196660
+[2025-03-17 14:53:39] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025145335622757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 14:58:31] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145335622757196660
+[2025-03-17 14:58:32] [DEBUG] Parsed MPesa Response: {"ResponseCode":"0","ResponseDescription":"The service request has been accepted successsfully","MerchantRequestID":"027c-413f-b715-561b76afc534344663","CheckoutRequestID":"ws_CO_17032025145335622757196660","ResultCode":"1032","ResultDesc":"Request cancelled by user","ResultMessage":"Transaction cancelled by user"}
+[2025-03-17 14:58:32] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025145335622757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Request cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 14:58:32] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 14:58:32] [ERROR] Error checking payment status: Unknown column 'status' in 'field list'
+[2025-03-17 14:58:52] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145852111757196660
+[2025-03-17 14:58:54] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025145852111757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 14:59:56] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145955603757196660
+[2025-03-17 14:59:57] [DEBUG] Parsed MPesa Response: {"requestId":"ws_CO_17032025145955603757196660","errorCode":"500.001.1001","errorMessage":"The transaction is being processed","ResultMessage":"Unknown result code: N\/A"}
+[2025-03-17 15:00:27] [INFO] Starting transaction query for CheckoutRequestID: ws_CO_17032025145955603757196660
+[2025-03-17 15:00:28] [DEBUG] Parsed MPesa Response: {"ResponseCode":"0","ResponseDescription":"The service request has been accepted successsfully","MerchantRequestID":"5fe8-4261-87f6-6d7d41adc6c31613715","CheckoutRequestID":"ws_CO_17032025145955603757196660","ResultCode":"1032","ResultDesc":"Request cancelled by user","ResultMessage":"Transaction cancelled by user"}
+[2025-03-17 15:00:28] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025145955603757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Request cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 15:00:28] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 15:00:28] [ERROR] Error checking payment status: Unknown column 'status' in 'field list'
+[2025-03-17 15:00:28] [DEBUG] Attempting to update payment status with details: {"checkoutRequestId":"ws_CO_17032025145955603757196660","status":"CANCELLED","resultCode":"1032","resultDesc":"Cancelled by user","mpesaReceiptNumber":null,"phoneNumber":null}
+[2025-03-17 15:00:28] [ERROR] Database update error: Unknown column 'status' in 'field list'
+[2025-03-17 15:00:28] [ERROR] Error cancelling payment: Unknown column 'status' in 'field list'

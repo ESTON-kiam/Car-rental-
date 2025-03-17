@@ -2,6 +2,8 @@
 require_once 'include/db_connection.php';
 require_once 'MpesaPaymentController.php';
 
+
+
 $errorMsg = '';
 $successMsg = '';
 $showPaymentForm = true;
@@ -83,33 +85,36 @@ if (isset($_SESSION['current_payment_id'])) {
     $startTime = $_SESSION['payment_start_time'] ?? $currentTime;
     $elapsedTime = $currentTime - $startTime;
 
-    $hasTimedOut = $elapsedTime > 30;
+    $hasTimedOut = $elapsedTime > 60;
 
-    if ($paymentStatus == 'completed') {
+    if ($paymentStatus == 'COMPLETED') {
         $showStatusPage = true;
         $showPaymentForm = false;
         $successMsg = 'Payment completed successfully!';
 
         unset($_SESSION['current_payment_id']);
         unset($_SESSION['payment_start_time']);
-    } elseif ($paymentStatus == 'failed') {
+    } elseif ($paymentStatus == 'FAILED') {
         $showStatusPage = true;
         $showPaymentForm = false;
         $errorMsg = 'Payment failed. Please try again.';
 
         unset($_SESSION['current_payment_id']);
         unset($_SESSION['payment_start_time']);
-    } elseif ($paymentStatus == 'cancelled') {
+    } elseif ($paymentStatus == 'CANCELLED') {
         $showStatusPage = true;
         $showPaymentForm = false;
         $errorMsg = 'Payment was canceled.';
 
         unset($_SESSION['current_payment_id']);
         unset($_SESSION['payment_start_time']);
-    } elseif ($hasTimedOut) {
+    } elseif ($paymentStatus == 'TIMEOUT' || $hasTimedOut) {
         $showStatusPage = true;
         $showPaymentForm = false;
         $errorMsg = 'Payment verification timed out. Please check your M-Pesa account to see if payment was processed and try refreshing this page.';
+
+        unset($_SESSION['current_payment_id']);
+        unset($_SESSION['payment_start_time']);
     }
 }
 
@@ -134,6 +139,8 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M-Pesa Payment</title>
+    <link href="assets/img/p.png" rel="icon">
+    <link href="assets/img/p.png" rel="apple-touch-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -148,24 +155,30 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                 </div>
                 <div class="payment-body">
                     <div class="status-container">
-                        <?php if ($paymentStatus == 'completed'): ?>
+                        <?php if ($paymentStatus == 'COMPLETED'): ?>
                             <div class="status-icon success">
                                 <i class="fas fa-check"></i>
                             </div>
                             <h2 class="mb-4">Payment Successful!</h2>
                             <p class="mb-4">Your booking has been confirmed. Thank you for your payment.</p>
-                        <?php elseif ($paymentStatus == 'failed'): ?>
+                        <?php elseif ($paymentStatus == 'FAILED'): ?>
                             <div class="status-icon failed">
                                 <i class="fas fa-times"></i>
                             </div>
                             <h2 class="mb-4">Payment Failed</h2>
                             <p class="mb-4">We couldn't process your payment. Please try again.</p>
-                        <?php elseif ($paymentStatus == 'cancelled'): ?>
+                        <?php elseif ($paymentStatus == 'CANCELLED'): ?>
                             <div class="status-icon warning">
                                 <i class="fas fa-ban"></i>
                             </div>
                             <h2 class="mb-4">Payment Cancelled</h2>
                             <p class="mb-4">Your payment request was cancelled.</p>
+                        <?php elseif ($paymentStatus == 'TIMEOUT'): ?>
+                            <div class="status-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h2 class="mb-4">Payment Timeout</h2>
+                            <p class="mb-4">Payment verification timed out. Please check your M-Pesa account to see if payment was processed and try refreshing this page.</p>
                         <?php else: ?>
                             <div class="status-icon warning">
                                 <i class="fas fa-exclamation-triangle"></i>
@@ -177,7 +190,7 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                             <a href="dashboard.php" class="btn btn-primary">
                                 <i class="fas fa-home me-2"></i>Go to Dashboard
                             </a>
-                            <?php if ($paymentStatus != 'completed'): ?>
+                            <?php if ($paymentStatus != 'COMPLETED'): ?>
                                 <a href="mpesa_payment.php?booking_id=<?php echo $bookingId; ?>" class="btn btn-secondary">
                                     <i class="fas fa-redo me-2"></i>Try Again
                                 </a>
@@ -207,7 +220,7 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                             </div>
                             <p class="waiting-text">Waiting for payment confirmation...</p>
                             <p class="timer-text">
-                                <span id="timer-count">30</span> seconds remaining before timeout
+                                <span id="timer-count">60</span> seconds remaining before timeout
                             </p>
                             <div class="mt-4">
                                 <a href="mpesa_payment.php?booking_id=<?php echo $bookingId; ?>&cancel=1" class="btn btn-danger">
@@ -216,7 +229,7 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                             </div>
                         </div>
                         <script>
-                            var timeLeft = 30;
+                            var timeLeft = 60;
                             var timer = setInterval(function() {
                                 timeLeft--;
                                 document.getElementById('timer-count').textContent = timeLeft;
@@ -229,7 +242,7 @@ if (isset($_GET['cancel']) && isset($_SESSION['current_payment_id'])) {
                     <?php endif; ?>
                     <?php if ($showPaymentForm && $bookingDetails): ?>
                         <div class="mpesa-logo">
-                            <img src="assets/img/mpesa-logo.png" alt="M-Pesa Logo" height="60">
+                            <img src="assets/img/mpesa.png" alt="M-Pesa Logo" height="60">
                         </div>
                         <div class="booking-details">
                             <h5>Booking Details</h5>
