@@ -1,32 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Mar 10, 2025 at 09:25 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `car_rental_management`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `admins`
---
-
+ 
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -40,18 +13,12 @@ CREATE TABLE `admins` (
   `role` enum('superadmin','admin') NOT NULL DEFAULT 'admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `admins`
---
+
 
 INSERT INTO `admins` (`id`, `name`, `contact_no`, `email_address`, `gender`, `password`, `profile_picture`, `reset_token`, `token_expiration`, `role`) VALUES
 (1, 'ESTON KIAMA', '0757196660', 'engestonbrandon@gmail.com', 'male', '$2y$10$5EyDMJu3wLrMux5NoqNJBO/oWUtesrDdsBpvq1aKjdeE1nJF9O7SK', 'adminprof/673f24ca792e2_prof.jpg', NULL, NULL, 'superadmin');
 
--- --------------------------------------------------------
 
---
--- Table structure for table `bookings`
---
 
 CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
@@ -79,16 +46,12 @@ CREATE TABLE `bookings` (
   `return_date` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `bookings`
---
+
 
 INSERT INTO `bookings` (`booking_id`, `vehicle_id`, `customer_id`, `start_date`, `end_date`, `pick_up_location`, `pick_up_time`, `car_type`, `charge_type`, `driver_option`, `total_fare`, `advance_deposit`, `booking_status`, `registration_no`, `model_name`, `created_at`, `booking_date`, `invoice_number`, `additional_charges`, `kilometers`, `due_payment`, `due_payment_status`, `return_date`) VALUES
 (64, 1, 6, '2025-03-11', '2025-03-13', 'Lenana', '14:30:00', 'With AC', 'per_day', 'no', 3500.00, 2450.00, 'completed', 'KBF 321W', 'Hatchback', '2025-03-10 07:47:18', '2025-03-10', 'INV-20250310-0064-0491c3', 0.00, 0, 0.00, 'pending', '2025-03-10 07:55:00');
 
---
--- Triggers `bookings`
---
+
 DELIMITER $$
 CREATE TRIGGER `reset_vehicle_status_on_booking_completion` AFTER UPDATE ON `bookings` FOR EACH ROW BEGIN
     IF NEW.booking_status = 'completed' THEN
@@ -108,11 +71,7 @@ END
 $$
 DELIMITER ;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `cancelledbookings`
---
 
 CREATE TABLE `cancelledbookings` (
   `cancel_id` int(11) NOT NULL,
@@ -125,18 +84,11 @@ CREATE TABLE `cancelledbookings` (
   `cancellation_reason` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `cancelledbookings`
---
+
 
 INSERT INTO `cancelledbookings` (`cancel_id`, `booking_id`, `customer_id`, `vehicle_id`, `start_date`, `end_date`, `cancellation_date`, `cancellation_reason`) VALUES
 (11, 63, 6, 1, '2025-03-11', '2025-03-12', '2025-03-10 07:46:29', 'I will be in a meeting');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `completed_tasks`
---
 
 CREATE TABLE `completed_tasks` (
   `task_id` int(11) NOT NULL,
@@ -150,11 +102,7 @@ CREATE TABLE `completed_tasks` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `contact_messages`
---
 
 CREATE TABLE `contact_messages` (
   `id` int(11) NOT NULL,
@@ -165,11 +113,7 @@ CREATE TABLE `contact_messages` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `customers`
---
 
 CREATE TABLE `customers` (
   `id` int(11) NOT NULL,
