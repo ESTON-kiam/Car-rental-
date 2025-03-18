@@ -191,9 +191,7 @@ CREATE TABLE `customers` (
   `token_expiration` datetime DEFAULT NULL
 ) ;
 
---
--- Dumping data for table `customers`
---
+
 
 INSERT INTO `customers` (`id`, `full_name`, `email`, `status`, `last_logout`, `password`, `mobile`, `gender`, `dob`, `occupation`, `residence`, `created_at`, `profile_picture`, `remember_token`, `last_login`, `reset_token`, `token_expiration`) VALUES
 (1, 'Moses Karunga', 'kiamaeston0@gmail.com', 'active', '2025-03-04 13:45:25', '$2y$10$zjNkNayXMyapOL9019Rs3OwfanqO8GW34TAv0psbP0vhUGSCCdKne', '254757196660', 'male', '1993-08-24', 'Software Engineer', 'Westlands', '2024-10-29 10:46:51', 'Customerprofile/son.jpeg', '$2y$10$kfR4QTOdvSkmZq1FNd6NJuG/WFW8H9veOLJNdbYliGV7ZF6VSqMFm', '2025-03-04 11:07:58', NULL, NULL),
@@ -201,11 +199,6 @@ INSERT INTO `customers` (`id`, `full_name`, `email`, `status`, `last_logout`, `p
 (4, 'Tom Kamau', 'tomkam@gmail.com', 'active', '2024-12-02 14:57:07', '$2y$10$UD.xvr6YVEH0AG0zpAmE3ucqxGfMwf.b4mnKMbitqSr8Q3J.kx1jm', '0765554444', 'male', '2000-12-17', 'A Teacher', 'Kitengela', '2024-12-02 11:51:11', 'Customerprofile/BMW X1.jpeg', NULL, '2024-12-02 14:56:18', NULL, NULL),
 (6, 'Mary Ochieng', 'mary@gmail.com', 'active', '2025-03-10 11:12:36', '$2y$10$mxzJAoxsUAklP23EUnYGVORUKoYRQItrElwEg/57p.K2ufuTiZOrW', '7575196660', 'male', '2002-11-11', 'Doctor', 'Kangemi', '2025-02-28 08:49:39', 'Customerprofile/BMW 523D.jpeg', NULL, '2025-03-10 11:09:52', NULL, NULL);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `drivers`
---
 
 CREATE TABLE `drivers` (
   `driver_id` int(11) NOT NULL,
